@@ -1,65 +1,114 @@
-import Image from "next/image";
+import Link from "next/link";
+import { DeclinationArc, Wordmark, formatDate } from "@/components/brand";
+import { COLLEGES } from "@/lib/data/colleges";
+import { COMPANIES, REGISTRY_UPDATED_ON } from "@/lib/data/companies";
 
-export default function Home() {
+/**
+ * `/` — `docs/platform.md` §4.1: **it is the tool.** Field one above the fold.
+ * Not a hero carousel.
+ *
+ * Approach zone (`docs/brand.md` §10.4, §12.1), so atmosphere is permitted:
+ * the graticule and the declination arc. Nothing sits behind a figure.
+ *
+ * Zero client JS. The form is a plain GET to /check, so the landing works
+ * before hydration and on a dead connection — which matters because the
+ * acquisition path is a link forwarded into a WhatsApp group on campus wifi.
+ */
+
+export default function Landing() {
+  const colleges = [...COLLEGES].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="shell graticule horizon">
+      <DeclinationArc />
+
+      <header className="wrap" style={{ paddingTop: 20, paddingBottom: 8 }}>
+        <Wordmark href={null} eyebrow="For VTU 3rd-years · Bengaluru" />
+      </header>
+
+      <main
+        className="wrap"
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          gap: 22,
+          paddingTop: 24,
+          paddingBottom: 40,
+        }}
+      >
+        <div>
+          <h1 className="verdict v-xl">
+            See which companies you can walk into today.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="lede" style={{ marginTop: 12 }}>
+            Seven questions. Forty-five seconds. No signup.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <form action="/check" method="get" className="stack g14">
+          <label className="field">
+            <span>Your college</span>
+            <select name="college" className="inp" defaultValue="">
+              <option value="">Search VTU colleges…</option>
+              {colleges.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                  {c.area ? ` — ${c.area}` : ""}
+                </option>
+              ))}
+              <option value="other">My college isn&rsquo;t listed</option>
+            </select>
+          </label>
+
+          <button type="submit" className="btn btn--o btn--full">
+            Start
+          </button>
+        </form>
+
+        <hr className="hr" style={{ margin: "4px 0" }} />
+
+        <div className="stack g10">
+          <p className="tiny" style={{ margin: 0 }}>
+            Checked against the published cutoffs of {COMPANIES.length} companies
+            that recruit at colleges like yours. Every number traces to a source.
+          </p>
+          <div
+            className="mono"
+            style={{ fontSize: 12, color: "var(--p-muted)" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {COMPANIES.length} companies · {COLLEGES.length} colleges · updated{" "}
+            {formatDate(REGISTRY_UPDATED_ON)}
+          </div>
+          <p className="tiny mono" style={{ margin: 0 }}>
+            Been here before?{" "}
+            <Link href="/login" style={{ color: "var(--p-accent)" }}>
+              Sign in
+            </Link>
+          </p>
         </div>
       </main>
+
+      <footer className="wrap" style={{ paddingBottom: 28, paddingTop: 8 }}>
+        <p
+          className="tiny mono"
+          style={{ display: "flex", gap: 14, flexWrap: "wrap" }}
+        >
+          <Link href="/pricing" style={{ color: "var(--p-accent)" }}>
+            Pricing
+          </Link>
+          <Link href="/for-colleges" style={{ color: "var(--p-accent)" }}>
+            For colleges
+          </Link>
+          <Link href="/privacy" style={{ color: "var(--p-accent)" }}>
+            Privacy
+          </Link>
+          <Link href="/terms" style={{ color: "var(--p-accent)" }}>
+            Terms
+          </Link>
+        </p>
+      </footer>
     </div>
   );
 }

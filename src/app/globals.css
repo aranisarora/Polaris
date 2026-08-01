@@ -1,26 +1,1348 @@
-@import "tailwindcss";
+/* ============================================================================
+   POLARIS — the Almanac system
+   Implements docs/brand.md. Section references throughout are to that document.
 
+   No Tailwind, no webfonts, no CSS framework. §6.2 ships zero webfonts on the
+   ledger path, and §2.3 makes payload a brand property rather than a
+   compromise: a brand that arrives fast *is* the fixed point behaving as
+   advertised.
+   ========================================================================= */
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+p,
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: break-word;
+}
+ol,
+ul {
+  list-style: none;
+  padding: 0;
+}
+a {
+  color: inherit;
+}
+
+/* ── Tokens · §5, §6, §10.2 ──────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Paper */
+  --p-paper: #fbfbfc;
+  --p-surface: #ffffff;
+
+  /* Ink */
+  --p-ink: #10141c;
+  --p-ink-2: #394152;
+  --p-muted: #626a80; /* the text floor — §5.4 */
+  --p-faint: #949cad; /* NON-TEXT ONLY — ticks, rules, empty states */
+
+  /* Rules */
+  --p-line: #e4e7ed;
+  --p-line-2: #c9cfda;
+  --p-line-3: #868fa4; /* interactive borders — WCAG 1.4.11 */
+
+  /* Meridian — the one accent. Action, links, focus. Never decoration. */
+  --p-accent: #223fa6;
+  --p-accent-w: #ebeffb;
+
+  /* The three states. Load-bearing, never decorative. §5.2 */
+  --p-open: #14654a;
+  --p-open-w: #e8f3ee;
+  --p-fix: #a05a00;
+  --p-fix-w: #fcf3e5;
+  --p-settled: #5a6273;
+  --p-settled-w: #f0f2f5;
+
+  --p-danger: #9e2b20;
+
+  /* Three voices. §6.1 — typography encodes provenance. */
+  --font-display: "Iowan Old Style", Charter, Cambria, Georgia,
+    "Times New Roman", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI",
+    Roboto, "Helvetica Neue", sans-serif;
+  --font-data: ui-monospace, "Cascadia Mono", "SF Mono", "Roboto Mono",
+    Consolas, "Liberation Mono", monospace;
+
+  /* Motion. §10.2 — nothing eases in. */
+  --m-state: 90ms;
+  --m-micro: 120ms;
+  --m-move: 200ms;
+  --m-weight: 260ms;
+  --m-spring: 320ms;
+  --e-out: cubic-bezier(0.2, 0, 0, 1);
+  --e-spring: cubic-bezier(0.34, 1.16, 0.64, 1); /* gesture cancel ONLY */
+
+  --tab-h: 56px;
+
+  /* §5.1 — the product surface stays fixed light. A light, paper-like surface
+     reads as a document rather than an app, and it is the only reliable
+     substrate for a screenshot viewed on an unknown phone at unknown
+     brightness. §15 #5 keeps dark mode out of Phase 0 deliberately. */
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--p-paper);
+  color: var(--p-ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  /* §11.7 — the default grey tap box is unmistakably a web page. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--p-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ── Atmosphere · §12. Approach surfaces only, never behind a figure. ────── */
+.graticule {
+  position: relative;
+  isolation: isolate;
+}
+.graticule::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.4;
+  background-image:
+    repeating-linear-gradient(0deg, var(--p-line) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(90deg, var(--p-line) 0 1px, transparent 1px 24px);
+  /* Fades out before it can sit behind text. §12.2 */
+  -webkit-mask-image: radial-gradient(
+    120% 90% at 80% 0%,
+    #000 0%,
+    transparent 70%
+  );
+  mask-image: radial-gradient(120% 90% at 80% 0%, #000 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* The horizon wash carries a mandatory noise layer — §12.4. A subtle
+   long-distance gradient is the worst case for JPEG banding, which is why it
+   is barred from anything screenshottable and never ships without the noise. */
+.horizon {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.02'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--p-paper) 0%, #f4f6fa 100%);
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.wrap--wide {
+  max-width: 1180px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+.g6 {
+  gap: 6px;
+}
+.g10 {
+  gap: 10px;
+}
+.g14 {
+  gap: 14px;
+}
+.g18 {
+  gap: 18px;
+}
+.g24 {
+  gap: 24px;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Header · §11.6, no collapsing header ────────────────────────────────── */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px 11px;
+  border-bottom: 1px solid var(--p-line);
+  background: var(--p-surface);
+}
+.top .sp {
+  flex: 1;
+}
+.top .tr {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+}
+
+/* ── Wordmark · §7.3. In frame on every shareable surface (§9 rule 3). ───── */
+.wm {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+}
+.wm svg {
+  width: 17px;
+  height: 17px;
+  color: var(--p-accent);
+  flex: none;
+}
+.wm-eyebrow {
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+}
+
+/* ── Type · §6.3 ─────────────────────────────────────────────────────────── */
+.verdict {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.16;
+  text-wrap: balance;
+}
+.v-xl {
+  font-size: 30px;
+}
+.v-lg {
+  font-size: 24px;
+}
+.v-md {
+  font-size: 19px;
+}
+@media (min-width: 1025px) {
+  .v-xl {
+    font-size: 36px;
+  }
+}
+
+.lede {
+  color: var(--p-ink-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.tiny {
+  font-size: 12px;
+  color: var(--p-muted);
+  line-height: 1.5;
+}
+/* §6.3 — labels only. Never information that appears nowhere else. */
+.eyebrow {
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+  display: block;
+}
+.mono {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+.hr {
+  border: 0;
+  border-top: 1px solid var(--p-line);
+  margin: 18px 0;
+}
+
+/* ── The source tag · §8.3 ───────────────────────────────────────────────
+   The smallest element in the system and close to the most important. 12px
+   floor, always adjacent to the figure it justifies. A retrieved figure never
+   ships without one. */
+.prov {
+  display: inline-block;
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  border-left: 2px solid var(--p-line-2);
+  padding-left: 7px;
+  line-height: 1.45;
+  text-decoration: none;
+}
+a.prov:hover {
+  color: var(--p-accent);
+  border-left-color: var(--p-accent);
+}
+
+/* ── The ruled row · §8.1. The atom of the product. ──────────────────────── */
+.rows {
+  border-top: 1px solid var(--p-line);
+}
+.row {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--p-line);
+}
+.row-t {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.row-t b {
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+.row-sub {
+  font-size: 12px;
+  color: var(--p-muted);
+  font-weight: 400;
+}
+
+/* The arithmetic, in the Figure face. §6.1 — if it came from the database it
+   is set in mono, so a student can see which parts are retrieved fact. */
+.arith {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--p-muted);
+  margin-top: 6px;
+  line-height: 1.65;
+}
+.arith b {
+  color: var(--p-ink);
+  font-weight: 500;
+}
+.arith .bad {
+  color: var(--p-settled);
+  font-weight: 600;
+}
+.arith .warn {
+  color: var(--p-fix);
+  font-weight: 600;
+}
+.arith .ok {
+  color: var(--p-open);
+  font-weight: 600;
+}
+
+.fixline {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--p-ink-2);
+  line-height: 1.45;
+  border-left: 2px solid var(--p-open);
+  padding-left: 9px;
+}
+.fixline b {
+  color: var(--p-open);
+  font-weight: 600;
+}
+.fixline--settled {
+  border-left-color: var(--p-line-2);
+}
+
+/* ── State stamps · §5.3 rule 1 ──────────────────────────────────────────
+   Never encode state in colour alone. Every state carries a glyph *and* a
+   word, so it survives a compressed screenshot and a colour vision
+   deficiency — which is ~8% of a majority-male engineering lecture hall. */
+.stamp {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 2px;
+  flex: none;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.stamp--open {
+  color: var(--p-open);
+  background: var(--p-open-w);
+}
+.stamp--fix {
+  color: var(--p-fix);
+  background: var(--p-fix-w);
+}
+.stamp--settled {
+  color: var(--p-settled);
+  background: var(--p-settled-w);
+}
+.stamp--accent {
+  color: var(--p-accent);
+  background: var(--p-accent-w);
+}
+
+/* Section headers */
+.sect {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 11px;
+}
+.sect h3 {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0;
+  color: var(--p-ink-2);
+}
+.sect .ln {
+  flex: 1;
+  height: 1px;
+  background: var(--p-line-2);
+}
+.sect .n {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  font-variant-numeric: tabular-nums;
+}
+.sect--open h3 {
+  color: var(--p-open);
+}
+.sect--fix h3 {
+  color: var(--p-fix);
+}
+.sect--settled h3 {
+  color: var(--p-settled);
+}
+
+/* ── The count and the tick counter · §8.2 ───────────────────────────────
+   Never a donut chart. Never a percentage ring. Legible at 12px and at
+   thumbnail size in a group chat. */
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+.count b {
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: var(--p-open);
+}
+.count s {
+  font-size: 25px;
+  text-decoration: none;
+  color: var(--p-faint);
+}
+.count em {
+  font-style: normal;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+}
+
+.ticks {
+  display: flex;
+  gap: 3px;
+  margin-top: 14px;
+}
+.ticks i {
+  flex: 1;
+  height: 22px;
+  border-radius: 1px;
+  background: var(--p-line-2);
+}
+.ticks i.on {
+  background: var(--p-open);
+}
+.ticks i.fix {
+  background: var(--p-fix);
+  opacity: 0.5;
+}
+.ticks i.settled {
+  background: var(--p-settled);
+  opacity: 0.35;
+}
+
+/* ── Altitude · §15 #1 ───────────────────────────────────────────────────── */
+.alt {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.alt b {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.alt .deg {
+  font-family: var(--font-data);
+  font-size: 20px;
+  color: var(--p-muted);
+  padding-bottom: 4px;
+}
+.alt .d {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-open);
+  padding-bottom: 5px;
+}
+.scale {
+  height: 6px;
+  background: var(--p-line-2);
+  border-radius: 3px;
+  position: relative;
+  margin-top: 12px;
+}
+.scale i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--p-open);
+  border-radius: 3px;
+}
+.scale u {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 14px;
+  background: var(--p-ink);
+  text-decoration: none;
+}
+.scale-l {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--p-surface);
+  border: 1px solid var(--p-line);
+  border-radius: 9px;
+  padding: 15px;
+}
+.card--accent {
+  border-color: color-mix(in srgb, var(--p-accent) 30%, transparent);
+  background: var(--p-accent-w);
+}
+.card--fix {
+  border-color: color-mix(in srgb, var(--p-fix) 32%, transparent);
+  background: var(--p-fix-w);
+}
+.card--open {
+  border-color: color-mix(in srgb, var(--p-open) 30%, transparent);
+  background: var(--p-open-w);
+}
+.card--settled {
+  border-color: var(--p-line-2);
+  background: var(--p-settled-w);
+}
+
+/* ── Controls · §11.7. 44px minimum, 48 preferred. ───────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 14px 18px;
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--m-micro) var(--e-out),
+    border-color var(--m-micro) var(--e-out),
+    transform var(--m-state) var(--e-out);
+}
+.btn:active {
+  transform: scale(0.985);
+}
+.btn--p {
+  background: var(--p-ink);
+  color: #fff;
+}
+.btn--a {
+  background: var(--p-accent);
+  color: #fff;
+}
+.btn--o {
+  background: var(--p-open);
+  color: #fff;
+}
+.btn--g {
+  background: var(--p-surface);
+  color: var(--p-ink);
+  border-color: var(--p-line-3);
+}
+.btn--danger {
+  background: var(--p-surface);
+  color: var(--p-danger);
+  border-color: color-mix(in srgb, var(--p-danger) 35%, transparent);
+}
+.btn--sm {
+  padding: 10px 14px;
+  min-height: 40px;
+  font-size: 13px;
+}
+.btn--full {
+  width: 100%;
+}
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* §11.7 — sticky hover on touch is the loudest "this is a website" tell. */
+@media (hover: hover) {
+  .btn--p:hover {
+    background: #000;
+  }
+  .btn--a:hover {
+    background: #1b3288;
+  }
+  .btn--o:hover {
+    background: #0f5039;
+  }
+  .btn--g:hover {
+    border-color: var(--p-ink-2);
+  }
+}
+
+.btn-note {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  text-align: center;
+  margin-top: 9px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+.actions .btn {
+  flex: 1;
+}
+
+/* Sticky action footer for funnel screens. */
+.foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  gap: 10px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--p-line);
+  background: var(--p-surface);
+}
+.foot .btn {
+  flex: 1;
+}
+.foot .btn--sm {
+  flex: 0 0 auto;
+}
+
+/* ── Fields · §11.7. Inputs at 16px minimum or iOS Safari zooms on focus. ── */
+.field {
+  display: block;
+}
+.field > span,
+.field-label {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+  display: block;
+  margin-bottom: 7px;
+}
+.inp {
+  width: 100%;
+  padding: 13px 14px;
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1px solid var(--p-line-3);
+  background: var(--p-surface);
+  color: var(--p-ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+}
+.inp::placeholder {
+  color: var(--p-faint);
+}
+.inp.num {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+.inp:focus-visible {
+  border-color: var(--p-accent);
+}
+.inp[aria-invalid="true"] {
+  border-color: var(--p-danger);
+}
+.field-error {
+  font-size: 12px;
+  color: var(--p-danger);
+  margin-top: 6px;
+}
+textarea.inp {
+  min-height: 78px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Chips. Four of the eight onboarding inputs raise no keyboard at all. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.chip {
+  padding: 10px 15px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--p-line-3);
+  background: var(--p-surface);
+  font-size: 14px;
+  color: var(--p-ink-2);
+  transition: background var(--m-micro) var(--e-out);
+}
+.chip[aria-pressed="true"],
+.chip.on {
+  background: var(--p-ink);
+  border-color: var(--p-ink);
+  color: #fff;
+}
+
+.steps {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.steps i {
+  flex: 1;
+  height: 2px;
+  background: var(--p-line-2);
+  border-radius: 2px;
+}
+.steps i.on {
+  background: var(--p-ink);
+}
+
+/* Route buttons — the intake choices. */
+.route {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px solid var(--p-line-3);
+  border-radius: 9px;
+  background: var(--p-surface);
+  text-align: left;
+  width: 100%;
+  text-decoration: none;
+  transition: border-color var(--m-micro) var(--e-out);
+}
+.route .ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: var(--p-accent-w);
+  color: var(--p-accent);
+  font-family: var(--font-data);
+  font-size: 13px;
+  font-weight: 600;
+}
+.route .tx {
+  flex: 1;
+  min-width: 0;
+}
+.route .tx b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+}
+.route .tx span {
+  display: block;
+  font-size: 13px;
+  color: var(--p-muted);
+  margin-top: 2px;
+}
+.route[aria-pressed="true"] {
+  border-color: var(--p-ink);
+  box-shadow: 0 0 0 1px var(--p-ink);
+}
+@media (hover: hover) {
+  .route:hover {
+    border-color: var(--p-ink-2);
+  }
+}
+
+/* ── Findings · the audit ────────────────────────────────────────────────── */
+.hit {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--p-line);
+}
+.hit:last-child {
+  border-bottom: 0;
+}
+.hit-t {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+}
+.hit-t b {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+.hit-d {
+  font-size: 13.5px;
+  color: var(--p-ink-2);
+  margin-top: 5px;
+  line-height: 1.45;
+}
+
+/* ── Bands · reach ───────────────────────────────────────────────────────── */
+.band {
+  border-top: 2px solid var(--p-line-2);
+  padding-top: 10px;
+}
+.band--safe {
+  border-top-color: var(--p-open);
+}
+.band--stretch {
+  border-top-color: var(--p-fix);
+}
+.band--reach {
+  border-top-color: var(--p-accent);
+}
+.band-h {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.band-h b {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.band-h .n {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  margin-left: auto;
+}
+.band-l {
+  font-size: 13.5px;
+  color: var(--p-ink-2);
+  margin-top: 7px;
+  line-height: 1.5;
+}
+.band-r {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  margin-top: 6px;
+}
+
+/* ── Timeline · the roadmap ──────────────────────────────────────────────── */
+.tl {
+  position: relative;
+  padding-left: 18px;
+}
+.tl::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--p-line-2);
+}
+.tl-g {
+  position: relative;
+  padding-bottom: 20px;
+}
+.tl-g::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--p-surface);
+  border: 2px solid var(--p-line-2);
+}
+.tl-g.now::before {
+  background: var(--p-open);
+  border-color: var(--p-open);
+}
+.tl-g.block::before {
+  background: var(--p-fix);
+  border-color: var(--p-fix);
+}
+.tl-h {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.tl-h b {
+  color: var(--p-ink-2);
+  font-weight: 500;
+}
+.tl-i {
+  font-size: 13.5px;
+  color: var(--p-ink-2);
+  margin-top: 5px;
+  line-height: 1.45;
+}
+.exam {
+  background: var(--p-fix-w);
+  border-left: 2px solid var(--p-fix);
+  padding: 9px 12px;
+  border-radius: 0 4px 4px 0;
+  margin-top: 7px;
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-fix);
+}
+
+/* ── Tasks ───────────────────────────────────────────────────────────────── */
+.task {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--p-line);
+  text-decoration: none;
+}
+.task:last-child {
+  border-bottom: 0;
+}
+.task .bx {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1.5px solid var(--p-line-3);
+  flex: none;
+  margin-top: 2px;
+  background: var(--p-surface);
+  position: relative;
+}
+.task .bx.done {
+  background: var(--p-open);
+  border-color: var(--p-open);
+}
+.task .bx.done::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.task-b {
+  min-width: 0;
+  flex: 1;
+}
+.task-b b {
+  font-size: 15px;
+  font-weight: 600;
+  display: block;
+}
+.task-m {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.cat {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-accent);
+  background: var(--p-accent-w);
+  padding: 2px 7px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* ── Tabs · §11.2. Four tabs, real links, gesture layer is enhancement. ──── */
+.tabs {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  background: var(--p-surface);
+  border-top: 1px solid var(--p-line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabs a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px 9px;
+  min-height: var(--tab-h);
+  color: var(--p-muted);
+  text-decoration: none;
+  position: relative;
+}
+.tabs a[aria-current="page"] {
+  color: var(--p-accent);
+}
+.tabs a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 22%;
+  right: 22%;
+  height: 2px;
+  background: var(--p-accent);
+}
+.tabs svg {
+  width: 20px;
+  height: 20px;
+}
+.tabs .lb {
+  font-family: var(--font-data);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+
+/* Desktop: a persistent left rail, no tab bar. §11.8 — the desktop layout is
+   not the phone layout stretched. */
+.rail {
+  display: none;
+}
+
+@media (min-width: 1025px) {
+  .app-shell {
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+    align-items: start;
+    max-width: 1180px;
+    margin: 0 auto;
+    gap: 32px;
+    padding: 0 24px;
+  }
+  .rail {
+    display: block;
+    position: sticky;
+    top: 0;
+    padding: 24px 20px 24px 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--p-line);
+  }
+  .rail nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 20px;
+  }
+  .rail nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--p-ink-2);
+  }
+  .rail nav a .rt {
+    font-family: var(--font-data);
+    font-size: 12px;
+    color: var(--p-muted);
+    margin-left: auto;
+  }
+  .rail nav a[aria-current="page"] {
+    background: var(--p-accent-w);
+    color: var(--p-accent);
+    font-weight: 500;
+  }
+  .tabs {
+    display: none;
+  }
+  .app-main {
+    padding: 28px 0 64px;
+    min-width: 0;
+  }
+  /* Two-pane: rows left, detail right. §11.8 */
+  .two-pane {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 32px;
+    align-items: start;
+  }
+  .two-pane .aside {
+    position: sticky;
+    top: 28px;
+  }
+}
+@media (min-width: 1025px) and (hover: hover) {
+  .rail nav a:hover {
+    background: var(--p-settled-w);
+  }
+}
+
+/* ── Sheets · §11.5 ──────────────────────────────────────────────────────── */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(16, 20, 28, 0.32);
+}
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 61;
+  max-height: 92%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--p-surface);
+  border-radius: 14px 14px 0 0;
+  /* The one place a real shadow is permitted — a sheet must read as being in
+     front of the page rather than part of it. §12.5 */
+  box-shadow: 0 -2px 24px rgba(16, 20, 28, 0.1);
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
+  animation: sheet-in var(--m-move) var(--e-out);
+}
+.sheet-grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--p-line-2);
+  margin: 6px auto 14px;
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ── The share card · §8.4 ───────────────────────────────────────────────── */
+.sharecard {
+  border: 1px solid var(--p-line-2);
+  border-radius: 10px;
+  background: var(--p-surface);
+  padding: 22px 20px;
+}
+
+/* ── Panes · §11.3 ───────────────────────────────────────────────────────── */
+.pane {
+  /* Browser pull-to-refresh mid-swipe is a lost gesture and a lost place. */
+  overscroll-behavior-y: contain;
+}
+
+/* ── The re-shock · §10.5. The one choreographed moment. ─────────────────── */
+.flip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--p-line);
+  /* Rows flip in place, staggered 60ms, in ledger order. Row order never
+     re-sorts under the reader — the point is watching *that* row change. */
+  animation: flip-in var(--m-weight) var(--e-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms + 260ms);
+}
+.flip:last-child {
+  border-bottom: 0;
+}
+.flip b {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+.flip .from {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  text-decoration: line-through;
+}
+.flip .ar {
+  color: var(--p-faint);
+  font-size: 12px;
+}
+.flip .to {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-open);
+  font-weight: 600;
+}
+@keyframes flip-in {
+  from {
+    background: var(--p-fix-w);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+/* §10.6, stated so it cannot be misread: reduced motion removes movement, it
+   never removes information. The re-shock still turns the rows green and still
+   says "Seven doors just opened" — it simply arrives without the stagger. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Utility ─────────────────────────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.legal h4 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 22px 0 7px;
+}
+.legal p {
+  font-size: 14px;
+  color: var(--p-ink-2);
+  line-height: 1.6;
+}
+.numlist {
+  counter-reset: n;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.numlist li {
+  counter-increment: n;
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--p-ink-2);
+  line-height: 1.5;
+}
+.numlist li::before {
+  content: counter(n);
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--p-muted);
+  border: 1px solid var(--p-line-2);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  flex: none;
 }
