@@ -185,6 +185,27 @@ button { font: inherit; color: inherit; }
   flex: none; padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--p-line); background: var(--p-surface); display: flex; gap: 9px;
 }
+
+/* bottom tab bar — post-onboarding destinations only */
+.tabs {
+  flex: none; display: flex; background: var(--p-surface);
+  border-top: 1px solid var(--p-line); padding-bottom: env(safe-area-inset-bottom);
+}
+.tabs button {
+  flex: 1; appearance: none; border: 0; background: transparent; cursor: pointer;
+  padding: 9px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--p-faint); position: relative; min-height: 56px; justify-content: center;
+}
+.tabs button.on { color: var(--p-accent); }
+.tabs button.on::before {
+  content: ""; position: absolute; top: -1px; left: 22%; right: 22%; height: 2px; background: var(--p-accent);
+}
+.tabs svg { width: 20px; height: 20px; }
+.tabs .lb { font-family: var(--font-data); font-size: 9.5px; letter-spacing: .05em; }
+.tabs .dot {
+  position: absolute; top: 8px; left: 50%; margin-left: 7px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--p-fix);
+}
 .eyebrow {
   font-family: var(--font-data); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
   color: var(--p-muted); display: block;
@@ -509,7 +530,7 @@ button { font: inherit; color: inherit; }
 <header id="bar">
   <div class="brand">
     <b>Polaris</b>
-    <span>Phase&nbsp;0 flow · 35 screens · v2</span>
+    <span>Phase&nbsp;0 flow · 36 screens · v3</span>
   </div>
   <div class="bar-sp"></div>
   <div class="seg" role="group" aria-label="View mode">
@@ -523,7 +544,7 @@ button { font: inherit; color: inherit; }
     <button type="button" id="z-fit" aria-label="Fit to width" title="Fit to width">⤢</button>
   </div>
   <button type="button" class="qbtn" id="q-toggle" aria-expanded="false" aria-controls="qpanel">
-    <i>⚑</i> Notes · 8
+    <i>⚑</i> Notes · 9
   </button>
 </header>
 
@@ -542,8 +563,35 @@ button { font: inherit; color: inherit; }
 </div>
 
 <aside id="qpanel" aria-label="Notes">
-  <h2>Notes on v2</h2>
+  <h2>Notes on v3</h2>
   <p class="sub">What changed, and what's still open.</p>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">v3</span><b>Mobile navigation added.</b></div>
+    <p class="q-w">
+      A four-item bottom tab bar — <b>Today · Plan · Ledger · You</b> — thumb-reachable, on destination
+      screens only. Funnel screens (audit, reach, task detail, check-in, everything anonymous) keep their
+      action footers, because on the first pass they're steps rather than places. The tab bar appears once
+      onboarding completes.
+    </p>
+    <p class="q-w">
+      This needed a <b>You</b> hub to hold the audit, reachability, CV, connections and settings — five
+      surfaces with nowhere to live before. The Ledger icon is four vertical bars, echoing the 23-tick
+      counter, so the nav belongs to the same system as the ledger it points at.
+    </p>
+    <p class="q-m">closes the v2 gap · affects C3, C5, C6, C7, C9, F1</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">09</span><b>Is "Ledger" the right tab label?</b></div>
+    <p class="q-w">
+      It's the docs' own word and it's in the URL, but it's jargon — a student thinks "which companies can
+      I get into." <b>Companies</b> is more recognisable and would cost nothing; <b>Ledger</b> is
+      distinctive and is the kind of insider vocabulary §13.5 says gets shared. Mocked as Ledger. Renaming
+      it would also mean renaming the screen and the share copy, so decide once.
+    </p>
+    <p class="q-m">affects the tab bar, A7, A9</p>
+  </div>
 
   <div class="q">
     <div class="q-h"><span class="q-n">v2</span><b>Copy leads with what's open.</b></div>
@@ -1527,10 +1575,8 @@ button { font: inherit; color: inherit; }
 
       <hr class="hr">
       <p class="tiny"><b>28 items.</b> You'll see three at a time. The rest stays here.</p>
-    </div>
-    <div class="s-foot">
-      <button type="button" class="btn btn--g" data-goto="task">Open week 1</button>
-      <button type="button" class="btn btn--o" data-goto="today">This week</button>
+
+      <button type="button" class="btn btn--g" data-goto="task" style="width:100%;margin-top:16px">Open week 1</button>
     </div>
   </div>
 </template>
@@ -1614,11 +1660,9 @@ button { font: inherit; color: inherit; }
         </p>
       </div>
 
+      <button type="button" class="btn btn--o" data-goto="today" style="width:100%;margin-top:18px">Next task</button>
+
       <p class="tiny mono" style="margin-top:14px">Version 4 · history kept · export any time</p>
-    </div>
-    <div class="s-foot">
-      <button type="button" class="btn btn--g btn--sm">View CV</button>
-      <button type="button" class="btn btn--o" data-goto="today">Next task</button>
     </div>
   </div>
 </template>
@@ -1658,13 +1702,11 @@ button { font: inherit; color: inherit; }
         </div>
       </div>
 
-      <p class="tiny mono" style="margin-top:16px;color:var(--p-faint)">
+      <button type="button" class="btn btn--o" data-goto="checkin" style="width:100%;margin-top:18px">Weekly check-in</button>
+
+      <p class="tiny mono" style="margin-top:14px;color:var(--p-faint)">
         Free access: 25 days left. Your plan stays either way.
       </p>
-    </div>
-    <div class="s-foot">
-      <button type="button" class="btn btn--g btn--sm" data-goto="connections">Connections</button>
-      <button type="button" class="btn btn--o" data-goto="checkin">Check in</button>
     </div>
   </div>
 </template>
@@ -1736,7 +1778,6 @@ button { font: inherit; color: inherit; }
         </p>
       </div>
     </div>
-    <div class="s-foot"><button type="button" class="btn btn--g" data-goto="today">Back</button></div>
   </div>
 </template>
 
@@ -1933,6 +1974,55 @@ button { font: inherit; color: inherit; }
       </div>
 
       <button type="button" class="btn btn--o" data-goto="today" style="width:100%">Back to this week</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-you">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">You</span></div>
+    <div class="s-body">
+      <span class="eyebrow">Readiness · vs people who got the role</span>
+      <div class="ready" style="margin-top:12px"><b>34</b><span class="d">▲ 3 this week</span></div>
+      <div class="scale"><i style="width:34%"></i><u style="left:62%"></u></div>
+      <div class="scale-l"><span>You · 34</span><span>Converts at 62</span></div>
+
+      <hr class="hr">
+
+      <div class="stack g10">
+        <button type="button" class="route" data-goto="audit">
+          <span class="ic">SA</span>
+          <span class="tx"><b>Signal audit</b><span>What a recruiter sees · updated 4 Aug</span></span>
+        </button>
+        <button type="button" class="route" data-goto="reach">
+          <span class="ic">IR</span>
+          <span class="tx"><b>What's in reach</b><span>Safe 9 · stretch 7 · reach 6</span></span>
+        </button>
+        <button type="button" class="route" data-goto="cvupdate">
+          <span class="ic">CV</span>
+          <span class="tx"><b>Your CV</b><span>Version 4 · updates itself</span></span>
+        </button>
+        <button type="button" class="route" data-goto="connections">
+          <span class="ic">GH</span>
+          <span class="tx"><b>Connections</b><span>GitHub and LeetCode live · marksheet due Jan</span></span>
+          <span class="stamp stamp--open">2 live</span>
+        </button>
+        <button type="button" class="route" data-goto="settings">
+          <span class="ic">ST</span>
+          <span class="tx"><b>Settings</b><span>Account, notifications, your data</span></span>
+        </button>
+      </div>
+
+      <hr class="hr">
+
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Since you started</span>
+        <div class="arith" style="margin-top:8px;line-height:1.9">
+          <b>Tasks</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4 done<br>
+          <b>Backlogs</b> &nbsp;2 cleared<br>
+          <b>Doors</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9 → 16 open
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -2162,12 +2252,13 @@ button { font: inherit; color: inherit; }
       frames: [
         { id: "reach",       route: "/reach",          name: "Safe / stretch / reach", tags: ["free"] },
         { id: "constraints", route: "/roadmap/new",    name: "Constraints",            tags: ["free"] },
-        { id: "roadmap",     route: "/roadmap",        name: "The whole plan",         tags: ["free"] },
+        { id: "roadmap",     route: "/roadmap",        name: "The whole plan",         tags: ["free"], tabbed: "roadmap" },
         { id: "task",        route: "/roadmap/[task]", name: "Task detail",            tags: ["paid"] },
-        { id: "cvupdate",    route: "/cv",             name: "CV updates itself",      tags: ["paid"], isNew: true, spine: true },
-        { id: "today",       route: "/today",          name: "Home — max 3 items",     tags: ["paid"], flag: 1 },
+        { id: "cvupdate",    route: "/cv",             name: "CV updates itself",      tags: ["paid"], isNew: true, spine: true, tabbed: "you" },
+        { id: "today",       route: "/today",          name: "Home — max 3 items",     tags: ["paid"], flag: 1, tabbed: "today" },
+        { id: "you",         route: "/you",            name: "You — profile hub",      tags: ["paid"], isNew: true, tabbed: "you", flag: 9 },
         { id: "checkin",     route: "/check-in",       name: "Weekly check-in",        tags: ["paid"] },
-        { id: "connections", route: "/connections",    name: "Verification",           tags: ["paid"] },
+        { id: "connections", route: "/connections",    name: "Verification",           tags: ["paid"], tabbed: "you" },
         { id: "marksheet",   route: "/connections",    name: "Marksheet → recompute",  tags: ["paid"], isNew: true }
       ]
     },
@@ -2194,7 +2285,7 @@ button { font: inherit; color: inherit; }
       n: "Stage 06", t: "Account & compliance",
       d: "Phase 0 in the spec and legally required — DPDP Act 2023 applies from the first student record.",
       frames: [
-        { id: "settings", route: "/settings", name: "Account · export · deletion", tags: ["free"], isNew: true },
+        { id: "settings", route: "/settings", name: "Account · export · deletion", tags: ["free"], isNew: true, tabbed: "you" },
         { id: "privacy",  route: "/privacy",  name: "Privacy, in plain words",     tags: ["free"], isNew: true }
       ]
     },
@@ -2234,11 +2325,15 @@ button { font: inherit; color: inherit; }
     ["reach","constraints","Build my plan"],
     ["constraints","roadmap","Generate"],
     ["roadmap","task","Open week 1"],
-    ["roadmap","today","This week"],
     ["task","cvupdate","Mark done"],
     ["cvupdate","today","Next task"],
-    ["today","checkin","Check in"],
-    ["today","connections","Verify"],
+    ["today","checkin","Weekly check-in"],
+    ["today","you","You tab"],
+    ["you","audit","Signal audit"],
+    ["you","reach","What's in reach"],
+    ["you","cvupdate","Your CV"],
+    ["you","connections","Connections"],
+    ["you","settings","Settings"],
     ["connections","marksheet","Upload marksheet"],
     ["checkin","today","Submit"],
     ["marksheet","reshock","See my new ledger"],
@@ -2256,6 +2351,40 @@ button { font: inherit; color: inherit; }
 
   const $  = (s, r = document) => r.querySelector(s);
   const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; };
+
+  /* bottom tab bar — injected into screens flagged `tabbed`, so it stays
+     defined once rather than pasted into nine templates */
+  const TABS = [
+    { id: "today",   label: "Today",  badge: true,
+      icon: '<rect x="3" y="4.5" width="14" height="13" rx="2"/><path d="M3 8.5h14M7 2.5v3M13 2.5v3"/>' },
+    { id: "roadmap", label: "Plan",
+      icon: '<path d="M3.5 5h13M3.5 10h9.5M3.5 15h6"/>' },
+    { id: "ledger",  label: "Ledger",
+      icon: '<path d="M4 5.5v9M8 5.5v9M12 5.5v9M16 5.5v9"/>' },
+    { id: "you",     label: "You",
+      icon: '<circle cx="10" cy="7" r="3.1"/><path d="M4 17c0-3.2 2.7-4.9 6-4.9s6 1.7 6 4.9"/>' }
+  ];
+
+  function makeTabs(active) {
+    return el("nav", "tabs", TABS.map(t =>
+      `<button type="button" class="${t.id === active ? "on" : ""}" data-goto="${t.id}" aria-label="${t.label}">
+         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${t.icon}</svg>
+         <span class="lb">${t.label}</span>${t.badge && t.id !== active ? '<span class="dot"></span>' : ""}
+       </button>`).join(""));
+  }
+
+  function screenNode(id) {
+    const tpl = $("#t-" + id);
+    if (!tpl) return null;
+    const node = document.importNode(tpl.content, true);
+    const m = meta.get(id);
+    if (m && m.tabbed) {
+      const root = node.querySelector(".s");
+      if (root) root.append(makeTabs(m.tabbed));
+    }
+    return node;
+  }
 
   const stage = $("#stage"), lanesEl = $("#lanes"), wires = $("#wires");
   const labelsEl = $("#labels"), viewport = $("#viewport");
@@ -2288,7 +2417,7 @@ button { font: inherit; color: inherit; }
       dev.dataset.open = f.id;
       dev.setAttribute("role", "button");
       dev.setAttribute("aria-label", "Open prototype at " + f.name);
-      dev.append(document.importNode($("#t-" + f.id).content, true));
+      dev.append(screenNode(f.id));
 
       fr.append(dev);
       L.append(fr);
@@ -2395,11 +2524,11 @@ button { font: inherit; color: inherit; }
   let stack = [];
 
   function render(id, push = true) {
-    const tpl = $("#t-" + id);
-    if (!tpl) return;
+    const node = screenNode(id);
+    if (!node) return;
     if (push) stack.push(id);
     pDev.textContent = "";
-    pDev.append(document.importNode(tpl.content, true));
+    pDev.append(node);
     const m = meta.get(id);
     pRoute.textContent = m ? m.route : "/";
     proto.classList.toggle("wide", !!(m && m.wide));
