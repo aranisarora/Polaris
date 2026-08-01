@@ -2,332 +2,213 @@
 
 <style>
 /* ============================================================
-   POLARIS — PHASE 0 FLOW BOARD
-   Two palettes, deliberately separate:
+   POLARIS — PHASE 0 FLOW BOARD  ·  v2
      --cv-*  the canvas. A design tool. Follows the viewer's theme.
      --p-*   the product. Fixed light — it IS the spec of a light UI.
    ============================================================ */
 
 :root {
-  /* canvas — light */
-  --cv-bg:      #E8EBF0;
-  --cv-grid:    #D8DDE6;
-  --cv-panel:   #FFFFFF;
-  --cv-ink:     #171B24;
-  --cv-ink-2:   #414A5C;
-  --cv-muted:   #6B7488;
-  --cv-line:    #C4CBD8;
-  --cv-line-2:  #AEB6C6;
-  --cv-accent:  #223FA6;
-  --cv-wire:    #97A1B5;
-  --cv-shadow:  0 1px 2px rgba(16,20,28,.10), 0 8px 24px -8px rgba(16,20,28,.18);
+  --cv-bg: #E8EBF0; --cv-grid: #D8DDE6; --cv-panel: #FFFFFF;
+  --cv-ink: #171B24; --cv-ink-2: #414A5C; --cv-muted: #6B7488;
+  --cv-line: #C4CBD8; --cv-line-2: #AEB6C6; --cv-accent: #223FA6; --cv-wire: #97A1B5;
+  --cv-shadow: 0 1px 2px rgba(16,20,28,.10), 0 8px 24px -8px rgba(16,20,28,.18);
 
-  /* product — constant across themes */
-  --p-paper:    #FBFBFC;
-  --p-surface:  #FFFFFF;
-  --p-ink:      #10141C;
-  --p-ink-2:    #394152;
-  --p-muted:    #6B7488;
-  --p-faint:    #949CAD;
-  --p-line:     #E4E7ED;
-  --p-line-2:   #C9CFDA;
-  --p-accent:   #223FA6;
-  --p-accent-w: #EBEFFB;
-  --p-perm:     #9E2B20;
-  --p-perm-w:   #FBEDEB;
-  --p-fix:      #A05A00;
-  --p-fix-w:    #FCF3E5;
-  --p-open:     #14654A;
-  --p-open-w:   #E8F3EE;
+  --p-paper: #FBFBFC; --p-surface: #FFFFFF;
+  --p-ink: #10141C; --p-ink-2: #394152; --p-muted: #6B7488; --p-faint: #949CAD;
+  --p-line: #E4E7ED; --p-line-2: #C9CFDA;
+  --p-accent: #223FA6; --p-accent-w: #EBEFFB;
+  --p-perm: #5A6273; --p-perm-w: #F0F2F5;
+  --p-fix: #A05A00; --p-fix-w: #FCF3E5;
+  --p-open: #14654A; --p-open-w: #E8F3EE;
 
   --font-display: "Iowan Old Style", Charter, Cambria, Georgia, "Times New Roman", serif;
   --font-ui: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --font-data: ui-monospace, "Cascadia Mono", "SF Mono", "Roboto Mono", Consolas, "Liberation Mono", monospace;
 
-  --frame-w: 344px;
-  --frame-h: 704px;
+  --frame-w: 344px; --frame-h: 704px; --wide-w: 940px; --wide-h: 640px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --cv-bg:     #131720;
-    --cv-grid:   #1B2029;
-    --cv-panel:  #1A1F29;
-    --cv-ink:    #E7EAF1;
-    --cv-ink-2:  #B4BCCC;
-    --cv-muted:  #858FA3;
-    --cv-line:   #2B3242;
-    --cv-line-2: #3A4356;
-    --cv-accent: #8AA0EC;
-    --cv-wire:   #4C5670;
+    --cv-bg: #131720; --cv-grid: #1B2029; --cv-panel: #1A1F29;
+    --cv-ink: #E7EAF1; --cv-ink-2: #B4BCCC; --cv-muted: #858FA3;
+    --cv-line: #2B3242; --cv-line-2: #3A4356; --cv-accent: #8AA0EC; --cv-wire: #4C5670;
     --cv-shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 34px -10px rgba(0,0,0,.7);
   }
 }
 :root[data-theme="dark"] {
-  --cv-bg:     #131720;
-  --cv-grid:   #1B2029;
-  --cv-panel:  #1A1F29;
-  --cv-ink:    #E7EAF1;
-  --cv-ink-2:  #B4BCCC;
-  --cv-muted:  #858FA3;
-  --cv-line:   #2B3242;
-  --cv-line-2: #3A4356;
-  --cv-accent: #8AA0EC;
-  --cv-wire:   #4C5670;
+  --cv-bg: #131720; --cv-grid: #1B2029; --cv-panel: #1A1F29;
+  --cv-ink: #E7EAF1; --cv-ink-2: #B4BCCC; --cv-muted: #858FA3;
+  --cv-line: #2B3242; --cv-line-2: #3A4356; --cv-accent: #8AA0EC; --cv-wire: #4C5670;
   --cv-shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 34px -10px rgba(0,0,0,.7);
 }
 :root[data-theme="light"] {
-  --cv-bg:     #E8EBF0;
-  --cv-grid:   #D8DDE6;
-  --cv-panel:  #FFFFFF;
-  --cv-ink:    #171B24;
-  --cv-ink-2:  #414A5C;
-  --cv-muted:  #6B7488;
-  --cv-line:   #C4CBD8;
-  --cv-line-2: #AEB6C6;
-  --cv-accent: #223FA6;
-  --cv-wire:   #97A1B5;
+  --cv-bg: #E8EBF0; --cv-grid: #D8DDE6; --cv-panel: #FFFFFF;
+  --cv-ink: #171B24; --cv-ink-2: #414A5C; --cv-muted: #6B7488;
+  --cv-line: #C4CBD8; --cv-line-2: #AEB6C6; --cv-accent: #223FA6; --cv-wire: #97A1B5;
   --cv-shadow: 0 1px 2px rgba(16,20,28,.10), 0 8px 24px -8px rgba(16,20,28,.18);
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
-  margin: 0;
-  background: var(--cv-bg);
-  color: var(--cv-ink);
-  font-family: var(--font-ui);
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
+  margin: 0; background: var(--cv-bg); color: var(--cv-ink);
+  font-family: var(--font-ui); -webkit-font-smoothing: antialiased; overflow: hidden;
 }
 button { font: inherit; color: inherit; }
-:where(button, a, [tabindex]):focus-visible {
-  outline: 2px solid var(--cv-accent);
-  outline-offset: 2px;
-  border-radius: 3px;
-}
+:where(button, a, [tabindex]):focus-visible { outline: 2px solid var(--cv-accent); outline-offset: 2px; border-radius: 3px; }
 
 /* ---------------- top bar ---------------- */
 #bar {
-  position: fixed; inset: 0 0 auto 0; z-index: 60;
-  height: 54px;
-  display: flex; align-items: center; gap: 18px;
-  padding: 0 16px;
+  position: fixed; inset: 0 0 auto 0; z-index: 60; height: 54px;
+  display: flex; align-items: center; gap: 18px; padding: 0 16px;
   background: color-mix(in srgb, var(--cv-panel) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--cv-line);
+  backdrop-filter: blur(10px); border-bottom: 1px solid var(--cv-line);
 }
 .brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
-.brand b {
-  font-family: var(--font-display);
-  font-size: 17px; font-weight: 600; letter-spacing: -.01em;
-}
+.brand b { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
 .brand span {
-  font-family: var(--font-data);
-  font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--cv-muted);
-  white-space: nowrap;
+  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--cv-muted); white-space: nowrap;
 }
 .bar-sp { flex: 1; }
-
 .seg { display: flex; border: 1px solid var(--cv-line); border-radius: 6px; overflow: hidden; }
 .seg button {
-  appearance: none; border: 0; background: transparent; cursor: pointer;
-  padding: 6px 13px;
-  font-family: var(--font-data); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--cv-muted);
+  appearance: none; border: 0; background: transparent; cursor: pointer; padding: 6px 13px;
+  font-family: var(--font-data); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--cv-muted);
 }
 .seg button + button { border-left: 1px solid var(--cv-line); }
 .seg button[aria-pressed="true"] { background: var(--cv-accent); color: #fff; }
-
 .zoom { display: flex; align-items: center; gap: 2px; }
 .zoom button {
   appearance: none; border: 1px solid var(--cv-line); background: transparent; cursor: pointer;
-  width: 28px; height: 28px; border-radius: 6px;
-  font-family: var(--font-data); font-size: 14px; line-height: 1;
-  color: var(--cv-ink-2);
+  width: 28px; height: 28px; border-radius: 6px; font-family: var(--font-data); font-size: 14px; line-height: 1; color: var(--cv-ink-2);
 }
 .zoom button:hover { border-color: var(--cv-line-2); }
 .zoom output {
   font-family: var(--font-data); font-size: 11px; color: var(--cv-muted);
   width: 44px; text-align: center; font-variant-numeric: tabular-nums;
 }
-
 .qbtn {
-  appearance: none; cursor: pointer;
-  border: 1px solid var(--cv-line); background: transparent;
-  border-radius: 6px; padding: 6px 11px;
-  font-family: var(--font-data); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
-  color: var(--cv-ink-2);
-  display: flex; align-items: center; gap: 7px;
+  appearance: none; cursor: pointer; border: 1px solid var(--cv-line); background: transparent;
+  border-radius: 6px; padding: 6px 11px; font-family: var(--font-data); font-size: 11px;
+  letter-spacing: .05em; text-transform: uppercase; color: var(--cv-ink-2); display: flex; align-items: center; gap: 7px;
 }
 .qbtn:hover { border-color: var(--cv-line-2); }
 .qbtn i { font-style: normal; color: var(--p-fix); }
 .qbtn[aria-expanded="true"] { background: var(--cv-accent); color: #fff; border-color: var(--cv-accent); }
 .qbtn[aria-expanded="true"] i { color: #fff; }
-
-@media (max-width: 900px) { .brand span, .zoom output { display: none; } #bar { gap: 10px; } }
+@media (max-width: 980px) { .brand span, .zoom output { display: none; } #bar { gap: 10px; } }
 
 /* ---------------- canvas ---------------- */
 #viewport {
-  position: fixed; inset: 54px 0 0 0;
-  overflow: auto;
-  background-color: var(--cv-bg);
-  background-image:
-    linear-gradient(var(--cv-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--cv-grid) 1px, transparent 1px);
-  background-size: 32px 32px;
-  cursor: grab;
+  position: fixed; inset: 54px 0 0 0; overflow: auto; background-color: var(--cv-bg);
+  background-image: linear-gradient(var(--cv-grid) 1px, transparent 1px), linear-gradient(90deg, var(--cv-grid) 1px, transparent 1px);
+  background-size: 32px 32px; cursor: grab;
 }
 #viewport.dragging { cursor: grabbing; }
-#stage {
-  position: relative;
-  transform-origin: 0 0;
-  padding: 48px 96px 96px;
-  width: max-content;
-}
+#stage { position: relative; transform-origin: 0 0; padding: 48px 96px 96px; width: max-content; }
 #wires { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; overflow: visible; }
 #labels { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; }
 .wlabel {
-  position: absolute; transform: translate(-50%, -50%);
-  font-family: var(--font-data); font-size: 10px; letter-spacing: .02em;
-  color: var(--cv-ink-2);
-  background: var(--cv-bg);
-  padding: 2px 7px; border-radius: 999px;
-  border: 1px solid var(--cv-line);
-  white-space: nowrap;
+  position: absolute; transform: translate(-50%, -50%); font-family: var(--font-data); font-size: 10px;
+  color: var(--cv-ink-2); background: var(--cv-bg); padding: 2px 7px; border-radius: 999px;
+  border: 1px solid var(--cv-line); white-space: nowrap;
 }
 #lanes { position: relative; z-index: 2; display: flex; align-items: flex-start; gap: 128px; }
-
 .lane { display: flex; flex-direction: column; gap: 56px; width: var(--frame-w); }
-.lane-head { padding-bottom: 4px; }
+.lane--wide { width: var(--wide-w); }
 .lane-n {
   font-family: var(--font-data); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
   color: var(--cv-accent); display: block; margin-bottom: 7px;
 }
-.lane-t {
-  font-family: var(--font-display); font-size: 25px; font-weight: 600; letter-spacing: -.015em;
-  line-height: 1.15; margin: 0 0 7px; text-wrap: balance;
-}
-.lane-d { font-size: 12.5px; line-height: 1.5; color: var(--cv-muted); margin: 0; max-width: 30ch; }
+.lane-t { font-family: var(--font-display); font-size: 25px; font-weight: 600; line-height: 1.15; margin: 0 0 7px; text-wrap: balance; }
+.lane-d { font-size: 12.5px; line-height: 1.5; color: var(--cv-muted); margin: 0; max-width: 34ch; }
 
 /* ---------------- frame ---------------- */
 .fr { display: flex; flex-direction: column; gap: 9px; }
 .fr-head { display: flex; align-items: flex-start; gap: 9px; }
-.fr-id {
-  font-family: var(--font-data); font-size: 10px; letter-spacing: .06em;
-  color: var(--cv-muted); padding-top: 2px; width: 20px; flex: none;
-}
+.fr-id { font-family: var(--font-data); font-size: 10px; color: var(--cv-muted); padding-top: 2px; width: 22px; flex: none; }
 .fr-meta { min-width: 0; flex: 1; }
-.fr-route {
-  font-family: var(--font-data); font-size: 12px; color: var(--cv-accent);
-  display: block; letter-spacing: -.01em;
-}
+.fr-route { font-family: var(--font-data); font-size: 12px; color: var(--cv-accent); display: block; }
 .fr-name { font-size: 12.5px; color: var(--cv-ink-2); display: block; margin-top: 1px; }
-.fr-tags { display: flex; gap: 5px; flex: none; padding-top: 1px; }
+.fr-tags { display: flex; gap: 5px; flex: none; padding-top: 1px; flex-wrap: wrap; justify-content: flex-end; }
 .tag {
   font-family: var(--font-data); font-size: 9px; letter-spacing: .09em; text-transform: uppercase;
-  padding: 3px 6px; border-radius: 3px; border: 1px solid var(--cv-line); color: var(--cv-muted);
-  white-space: nowrap;
+  padding: 3px 6px; border-radius: 3px; border: 1px solid var(--cv-line); color: var(--cv-muted); white-space: nowrap;
 }
-.tag--free  { color: var(--p-open); border-color: color-mix(in srgb, var(--p-open) 40%, transparent); }
-.tag--paid  { color: var(--p-fix);  border-color: color-mix(in srgb, var(--p-fix) 45%, transparent); }
-.tag--spine { color: #fff; background: var(--p-perm); border-color: var(--p-perm); }
-.tag--flag  { color: #fff; background: var(--p-fix); border-color: var(--p-fix); }
+.tag--free { color: var(--p-open); border-color: color-mix(in srgb, var(--p-open) 40%, transparent); }
+.tag--paid { color: var(--p-fix); border-color: color-mix(in srgb, var(--p-fix) 45%, transparent); }
+.tag--spine { color: #fff; background: var(--p-open); border-color: var(--p-open); }
+.tag--flag { color: #fff; background: var(--p-fix); border-color: var(--p-fix); }
+.tag--new { color: #fff; background: var(--cv-accent); border-color: var(--cv-accent); }
 
 .device {
-  position: relative;
-  width: var(--frame-w); height: var(--frame-h);
-  border-radius: 18px;
-  border: 1px solid var(--cv-line-2);
-  background: var(--p-paper);
-  box-shadow: var(--cv-shadow);
-  overflow: hidden;
-  cursor: pointer;
-  transition: box-shadow .18s ease, transform .18s ease;
+  position: relative; width: var(--frame-w); height: var(--frame-h); border-radius: 18px;
+  border: 1px solid var(--cv-line-2); background: var(--p-paper); box-shadow: var(--cv-shadow);
+  overflow: hidden; cursor: pointer; transition: box-shadow .18s ease;
 }
+.device--wide { width: var(--wide-w); height: var(--wide-h); border-radius: 12px; }
 .device:hover { box-shadow: var(--cv-shadow), 0 0 0 3px color-mix(in srgb, var(--cv-accent) 38%, transparent); }
-.device.spine { border-color: var(--p-perm); }
+.device.spine { border-color: var(--p-open); }
 .device::after {
-  content: "Open prototype";
-  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%) translateY(6px);
+  content: "Open prototype"; position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%) translateY(6px);
   font-family: var(--font-data); font-size: 10px; letter-spacing: .07em; text-transform: uppercase;
   background: var(--p-ink); color: #fff; padding: 5px 11px; border-radius: 999px;
   opacity: 0; transition: opacity .18s ease, transform .18s ease; pointer-events: none;
 }
 .device:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-@media (prefers-reduced-motion: reduce) {
-  .device, .device::after { transition: none; }
-}
+@media (prefers-reduced-motion: reduce) { .device, .device::after { transition: none; } }
 
 /* ============================================================
-   PRODUCT UI — the actual design
+   PRODUCT UI
    ============================================================ */
 .s {
-  height: 100%; display: flex; flex-direction: column;
-  background: var(--p-paper); color: var(--p-ink);
-  font-family: var(--font-ui); font-size: 14px; line-height: 1.5;
-  letter-spacing: -.005em;
+  height: 100%; display: flex; flex-direction: column; background: var(--p-paper); color: var(--p-ink);
+  font-family: var(--font-ui); font-size: 14px; line-height: 1.5; letter-spacing: -.005em;
 }
 .s-top {
-  flex: none; display: flex; align-items: center; gap: 10px;
-  padding: 13px 18px 11px; border-bottom: 1px solid var(--p-line);
-  background: var(--p-surface);
+  flex: none; display: flex; align-items: center; gap: 10px; padding: 13px 18px 11px;
+  border-bottom: 1px solid var(--p-line); background: var(--p-surface);
 }
-.s-top .wm {
-  font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: .01em;
-}
+.s-top .wm { font-family: var(--font-display); font-size: 14px; font-weight: 600; }
 .s-top .wm::before {
   content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%;
   background: var(--p-accent); margin-right: 7px; vertical-align: 2px;
 }
 .s-top .sp { flex: 1; }
-.s-top .tr {
-  font-family: var(--font-data); font-size: 10px; letter-spacing: .07em; text-transform: uppercase;
-  color: var(--p-faint);
-}
+.s-top .tr { font-family: var(--font-data); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--p-faint); }
 .s-body { flex: 1; overflow: auto; padding: 20px 18px 24px; }
 .board-mode .s-body { overflow: hidden; }
 .s-body::-webkit-scrollbar { width: 0; }
 .s-foot {
   flex: none; padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--p-line); background: var(--p-surface);
-  display: flex; gap: 9px;
+  border-top: 1px solid var(--p-line); background: var(--p-surface); display: flex; gap: 9px;
 }
-
 .eyebrow {
   font-family: var(--font-data); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
   color: var(--p-muted); display: block;
 }
-.verdict {
-  font-family: var(--font-display); font-weight: 500; letter-spacing: -.018em;
-  line-height: 1.16; margin: 0; text-wrap: balance; color: var(--p-ink);
-}
-.v-xl { font-size: 30px; }
-.v-lg { font-size: 24px; }
-.v-md { font-size: 19px; }
+.verdict { font-family: var(--font-display); font-weight: 500; letter-spacing: -.018em; line-height: 1.16; margin: 0; text-wrap: balance; }
+.v-xl { font-size: 30px; } .v-lg { font-size: 24px; } .v-md { font-size: 19px; }
 .lede { color: var(--p-ink-2); margin: 10px 0 0; font-size: 14px; line-height: 1.55; }
 .tiny { font-size: 12px; color: var(--p-muted); line-height: 1.5; }
 .mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
 .hr { border: 0; border-top: 1px solid var(--p-line); margin: 18px 0; }
 .stack { display: flex; flex-direction: column; }
-.g6  { gap: 6px; }  .g10 { gap: 10px; } .g14 { gap: 14px; } .g18 { gap: 18px; } .g24 { gap: 24px; }
+.g6 { gap: 6px; } .g10 { gap: 10px; } .g14 { gap: 14px; } .g18 { gap: 18px; } .g24 { gap: 24px; }
 
-/* — the big count — */
 .count { display: flex; align-items: baseline; gap: 10px; font-family: var(--font-data); font-variant-numeric: tabular-nums; }
-.count b { font-size: 52px; font-weight: 600; letter-spacing: -.04em; line-height: .9; color: var(--p-ink); }
-.count s { font-size: 25px; text-decoration: none; color: var(--p-faint); letter-spacing: -.03em; }
-.count em { font-style: normal; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--p-muted); margin-left: 2px; }
+.count b { font-size: 52px; font-weight: 600; letter-spacing: -.04em; line-height: .9; color: var(--p-open); }
+.count s { font-size: 25px; text-decoration: none; color: var(--p-faint); }
+.count em { font-style: normal; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--p-muted); }
 
-/* segmented 23-tick counter — literal, one tick per company */
 .ticks { display: flex; gap: 3px; margin-top: 14px; }
 .ticks i { flex: 1; height: 22px; border-radius: 1px; background: var(--p-line-2); }
-.ticks i.on   { background: var(--p-open); }
-.ticks i.fix  { background: var(--p-fix); opacity: .5; }
-.ticks i.perm { background: var(--p-perm); }
+.ticks i.on { background: var(--p-open); }
+.ticks i.fix { background: var(--p-fix); opacity: .5; }
+.ticks i.perm { background: var(--p-perm); opacity: .35; }
 
-/* — section header with count, marksheet style — */
 .sect { display: flex; align-items: center; gap: 10px; margin: 0 0 11px; }
 .sect h3 {
   font-family: var(--font-data); font-size: 10px; letter-spacing: .13em; text-transform: uppercase;
@@ -336,65 +217,59 @@ button { font: inherit; color: inherit; }
 .sect .ln { flex: 1; height: 1px; background: var(--p-line-2); }
 .sect .n { font-family: var(--font-data); font-size: 10px; color: var(--p-muted); font-variant-numeric: tabular-nums; }
 .sect--perm h3 { color: var(--p-perm); }
-.sect--fix  h3 { color: var(--p-fix); }
+.sect--fix h3 { color: var(--p-fix); }
 .sect--open h3 { color: var(--p-open); }
 
-/* — a ledger row — */
 .row { padding: 12px 0; border-bottom: 1px solid var(--p-line); }
 .row:last-child { border-bottom: 0; }
 .row-t { display: flex; align-items: baseline; gap: 10px; }
-.row-t b { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; letter-spacing: -.01em; flex: 1; }
+.row-t b { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; flex: 1; }
 .stamp {
   font-family: var(--font-data); font-size: 9px; letter-spacing: .11em; text-transform: uppercase;
   padding: 3px 7px; border-radius: 2px; flex: none; font-weight: 500;
 }
 .stamp--perm { color: var(--p-perm); background: var(--p-perm-w); }
-.stamp--fix  { color: var(--p-fix);  background: var(--p-fix-w); }
+.stamp--fix { color: var(--p-fix); background: var(--p-fix-w); }
 .stamp--open { color: var(--p-open); background: var(--p-open-w); }
 .arith {
   font-family: var(--font-data); font-size: 11.5px; font-variant-numeric: tabular-nums;
   color: var(--p-muted); margin-top: 6px; line-height: 1.6;
 }
 .arith b { color: var(--p-ink); font-weight: 500; }
-.arith .bad  { color: var(--p-perm); font-weight: 600; }
-.arith .warn { color: var(--p-fix);  font-weight: 600; }
-.arith .ok   { color: var(--p-open); font-weight: 600; }
+.arith .bad { color: var(--p-perm); font-weight: 600; }
+.arith .warn { color: var(--p-fix); font-weight: 600; }
+.arith .ok { color: var(--p-open); font-weight: 600; }
 .prov {
-  display: inline-block; margin-top: 7px;
-  font-family: var(--font-data); font-size: 9.5px; color: var(--p-faint);
-  border-left: 2px solid var(--p-line-2); padding-left: 6px;
+  display: inline-block; margin-top: 7px; font-family: var(--font-data); font-size: 9.5px;
+  color: var(--p-faint); border-left: 2px solid var(--p-line-2); padding-left: 6px;
 }
+.fixline { margin-top: 8px; font-size: 12.5px; color: var(--p-ink-2); line-height: 1.45; border-left: 2px solid var(--p-open); padding-left: 9px; }
+.fixline b { color: var(--p-open); font-weight: 600; }
 
-/* — buttons — */
 .btn {
-  appearance: none; cursor: pointer; border: 1px solid transparent;
-  border-radius: 7px; padding: 13px 16px; flex: 1;
-  font-family: var(--font-ui); font-size: 14px; font-weight: 500; letter-spacing: -.005em;
-  text-align: center; white-space: nowrap;
+  appearance: none; cursor: pointer; border: 1px solid transparent; border-radius: 7px; padding: 13px 16px;
+  flex: 1; font-family: var(--font-ui); font-size: 14px; font-weight: 500; text-align: center; white-space: nowrap;
 }
 .btn--p { background: var(--p-ink); color: #fff; }
 .btn--a { background: var(--p-accent); color: #fff; }
+.btn--o { background: var(--p-open); color: #fff; }
 .btn--g { background: var(--p-surface); color: var(--p-ink); border-color: var(--p-line-2); }
 .btn--sm { padding: 9px 13px; font-size: 12.5px; flex: none; }
-.btn:disabled { opacity: .4; cursor: not-allowed; }
-.btn-note {
-  font-family: var(--font-data); font-size: 10px; letter-spacing: .04em;
-  color: var(--p-faint); text-align: center; margin-top: 9px;
-}
+.btn--danger { background: var(--p-surface); color: #9E2B20; border-color: color-mix(in srgb, #9E2B20 35%, transparent); }
+.btn-note { font-family: var(--font-data); font-size: 10px; color: var(--p-faint); text-align: center; margin-top: 9px; }
 
-/* — form controls — */
 .field { display: block; }
 .field > span {
   font-family: var(--font-data); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--p-muted); display: block; margin-bottom: 7px;
 }
 .inp {
-  width: 100%; padding: 13px 14px; border-radius: 7px;
-  border: 1px solid var(--p-line-2); background: var(--p-surface); color: var(--p-ink);
-  font-family: var(--font-ui); font-size: 15px;
+  width: 100%; padding: 13px 14px; border-radius: 7px; border: 1px solid var(--p-line-2);
+  background: var(--p-surface); color: var(--p-ink); font-family: var(--font-ui); font-size: 15px;
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
 .inp.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.inp.ta { align-items: flex-start; min-height: 76px; font-size: 14px; line-height: 1.5; }
 .inp .ph { color: var(--p-faint); }
 .inp .cv { color: var(--p-faint); font-family: var(--font-data); font-size: 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -404,76 +279,53 @@ button { font: inherit; color: inherit; }
 }
 .chip.on { background: var(--p-ink); border-color: var(--p-ink); color: #fff; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
 .steps { display: flex; gap: 4px; margin-bottom: 20px; }
 .steps i { flex: 1; height: 2px; background: var(--p-line-2); border-radius: 2px; }
 .steps i.on { background: var(--p-ink); }
 
-/* — cards / callouts — */
-.card {
-  background: var(--p-surface); border: 1px solid var(--p-line);
-  border-radius: 9px; padding: 15px;
-}
+.card { background: var(--p-surface); border: 1px solid var(--p-line); border-radius: 9px; padding: 15px; }
 .card--accent { border-color: color-mix(in srgb, var(--p-accent) 30%, transparent); background: var(--p-accent-w); }
-.card--fix    { border-color: color-mix(in srgb, var(--p-fix) 32%, transparent); background: var(--p-fix-w); }
-.card--open   { border-color: color-mix(in srgb, var(--p-open) 30%, transparent); background: var(--p-open-w); }
-.card--perm   { border-color: color-mix(in srgb, var(--p-perm) 30%, transparent); background: var(--p-perm-w); }
+.card--fix { border-color: color-mix(in srgb, var(--p-fix) 32%, transparent); background: var(--p-fix-w); }
+.card--open { border-color: color-mix(in srgb, var(--p-open) 30%, transparent); background: var(--p-open-w); }
 
-/* — countdown loading state — */
 .cd { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 26px; padding: 0 26px; }
 .cd-item { border-left: 2px solid var(--p-line-2); padding-left: 15px; }
-.cd-item.live { border-left-color: var(--p-accent); }
+.cd-item.live { border-left-color: var(--p-open); }
 .cd-n {
-  font-family: var(--font-data); font-variant-numeric: tabular-nums;
-  font-size: 40px; font-weight: 600; letter-spacing: -.04em; line-height: 1; color: var(--p-ink);
-  display: block;
+  font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 40px; font-weight: 600;
+  letter-spacing: -.04em; line-height: 1; color: var(--p-ink); display: block;
 }
 .cd-l { font-size: 13px; color: var(--p-muted); margin-top: 6px; display: block; }
 .cd-bar { height: 2px; background: var(--p-line-2); border-radius: 2px; overflow: hidden; }
-.cd-bar i { display: block; height: 100%; width: 68%; background: var(--p-accent); }
+.cd-bar i { display: block; height: 100%; width: 68%; background: var(--p-open); }
 
-/* — readiness meter — */
 .ready { display: flex; align-items: flex-end; gap: 12px; }
-.ready b {
-  font-family: var(--font-data); font-variant-numeric: tabular-nums;
-  font-size: 44px; font-weight: 600; letter-spacing: -.04em; line-height: .9;
-}
+.ready b { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 44px; font-weight: 600; letter-spacing: -.04em; line-height: .9; }
 .ready .d { font-family: var(--font-data); font-size: 12px; color: var(--p-open); padding-bottom: 5px; }
 .scale { height: 6px; background: var(--p-line-2); border-radius: 3px; position: relative; margin-top: 12px; }
-.scale i { position: absolute; inset: 0 auto 0 0; background: var(--p-accent); border-radius: 3px; }
-.scale u {
-  position: absolute; top: -4px; width: 2px; height: 14px; background: var(--p-ink);
-  text-decoration: none;
-}
+.scale i { position: absolute; inset: 0 auto 0 0; background: var(--p-open); border-radius: 3px; }
+.scale u { position: absolute; top: -4px; width: 2px; height: 14px; background: var(--p-ink); text-decoration: none; }
 .scale-l {
-  display: flex; justify-content: space-between; margin-top: 7px;
-  font-family: var(--font-data); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--p-faint);
+  display: flex; justify-content: space-between; margin-top: 7px; font-family: var(--font-data);
+  font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--p-faint);
 }
 
-/* — task list — */
 .task { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--p-line); }
 .task:last-child { border-bottom: 0; }
-.task .bx {
-  width: 19px; height: 19px; border-radius: 4px; border: 1.5px solid var(--p-line-2);
-  flex: none; margin-top: 2px;
-}
+.task .bx { width: 19px; height: 19px; border-radius: 4px; border: 1.5px solid var(--p-line-2); flex: none; margin-top: 2px; }
 .task .bx.done { background: var(--p-open); border-color: var(--p-open); position: relative; }
 .task .bx.done::after {
   content: ""; position: absolute; left: 5px; top: 2px; width: 5px; height: 10px;
   border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
 }
 .task-b { min-width: 0; flex: 1; }
-.task-b b { font-size: 14.5px; font-weight: 600; display: block; letter-spacing: -.01em; }
-.task-m {
-  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .04em; color: var(--p-muted);
-  margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px 10px;
-}
+.task-b b { font-size: 14.5px; font-weight: 600; display: block; }
+.task-m { font-family: var(--font-data); font-size: 10.5px; color: var(--p-muted); margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px 10px; }
 .cat {
   font-family: var(--font-data); font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--p-accent); background: var(--p-accent-w); padding: 2px 6px; border-radius: 2px;
 }
 
-/* — roadmap timeline — */
 .tl { position: relative; padding-left: 17px; }
 .tl::before { content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: var(--p-line-2); }
 .tl-g { position: relative; padding-bottom: 18px; }
@@ -481,8 +333,8 @@ button { font: inherit; color: inherit; }
   content: ""; position: absolute; left: -17px; top: 5px; width: 9px; height: 9px;
   border-radius: 50%; background: var(--p-surface); border: 2px solid var(--p-line-2);
 }
-.tl-g.now::before { background: var(--p-accent); border-color: var(--p-accent); }
-.tl-g.block::before { background: var(--p-perm); border-color: var(--p-perm); }
+.tl-g.now::before { background: var(--p-open); border-color: var(--p-open); }
+.tl-g.block::before { background: var(--p-fix); border-color: var(--p-fix); }
 .tl-h {
   font-family: var(--font-data); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--p-muted); display: flex; gap: 8px; align-items: center;
@@ -490,12 +342,10 @@ button { font: inherit; color: inherit; }
 .tl-h b { color: var(--p-ink-2); font-weight: 500; }
 .tl-i { font-size: 13.5px; color: var(--p-ink-2); margin-top: 5px; line-height: 1.45; }
 .exam {
-  background: var(--p-perm-w); border-left: 2px solid var(--p-perm);
-  padding: 8px 11px; border-radius: 0 4px 4px 0; margin-top: 7px;
-  font-family: var(--font-data); font-size: 10.5px; color: var(--p-perm); letter-spacing: .03em;
+  background: var(--p-fix-w); border-left: 2px solid var(--p-fix); padding: 8px 11px;
+  border-radius: 0 4px 4px 0; margin-top: 7px; font-family: var(--font-data); font-size: 10.5px; color: var(--p-fix);
 }
 
-/* — lock / paywall — */
 .lockbox {
   border: 1px solid var(--p-line-2); border-radius: 9px; padding: 16px;
   background: repeating-linear-gradient(135deg, var(--p-surface) 0 9px, #F5F6F8 9px 18px);
@@ -503,145 +353,154 @@ button { font: inherit; color: inherit; }
 .flip { display: flex; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--p-line); }
 .flip:last-child { border-bottom: 0; }
 .flip b { font-family: var(--font-display); font-size: 15px; font-weight: 600; flex: 1; }
-.flip .from { font-family: var(--font-data); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--p-perm); text-decoration: line-through; }
+.flip .from {
+  font-family: var(--font-data); font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--p-faint); text-decoration: line-through;
+}
 .flip .ar { color: var(--p-faint); font-size: 11px; }
 .flip .to { font-family: var(--font-data); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--p-open); font-weight: 600; }
 
-/* — share card — */
-.og {
-  border: 1px solid var(--p-line-2); border-radius: 9px; overflow: hidden; background: var(--p-surface);
-}
+.og { border: 1px solid var(--p-line-2); border-radius: 9px; overflow: hidden; background: var(--p-surface); }
 .og-img { padding: 20px 18px; border-bottom: 1px solid var(--p-line); }
 .og-meta { padding: 11px 14px; background: #F6F7F9; }
-.og-meta .u { font-family: var(--font-data); font-size: 9.5px; letter-spacing: .06em; color: var(--p-faint); text-transform: uppercase; }
+.og-meta .u { font-family: var(--font-data); font-size: 9.5px; color: var(--p-faint); text-transform: uppercase; }
 .og-meta .t { font-size: 13px; font-weight: 600; margin-top: 3px; }
 .og-meta .d { font-size: 11.5px; color: var(--p-muted); margin-top: 2px; }
+.wa { background: #E7F3E4; border-radius: 9px 9px 9px 2px; padding: 9px; max-width: 260px; border: 1px solid #D3E6CE; }
 
-.wa {
-  background: #E7F3E4; border-radius: 9px 9px 9px 2px; padding: 9px; max-width: 260px;
-  border: 1px solid #D3E6CE;
-}
-
-/* — audit call-outs — */
 .hit { padding: 13px 0; border-bottom: 1px solid var(--p-line); }
 .hit:last-child { border-bottom: 0; }
 .hit-t { display: flex; gap: 9px; align-items: baseline; }
-.hit-t b { font-size: 14px; font-weight: 600; flex: 1; letter-spacing: -.01em; }
-.hit-v {
-  font-family: var(--font-data); font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
-  padding: 2px 6px; border-radius: 2px; flex: none;
-}
-.hit-v.z { background: var(--p-perm-w); color: var(--p-perm); }
-.hit-v.l { background: var(--p-fix-w); color: var(--p-fix); }
+.hit-t b { font-size: 14px; font-weight: 600; flex: 1; }
+.hit-v { font-family: var(--font-data); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; flex: none; }
+.hit-v.z { background: var(--p-fix-w); color: var(--p-fix); }
+.hit-v.l { background: var(--p-accent-w); color: var(--p-accent); }
 .hit-v.k { background: var(--p-open-w); color: var(--p-open); }
 .hit-d { font-size: 13px; color: var(--p-ink-2); margin-top: 5px; line-height: 1.45; }
 
-/* — reach columns — */
 .band { border-top: 2px solid var(--p-line-2); padding-top: 10px; }
-.band--safe   { border-top-color: var(--p-open); }
-.band--str    { border-top-color: var(--p-fix); }
-.band--reach  { border-top-color: var(--p-accent); }
+.band--safe { border-top-color: var(--p-open); }
+.band--str { border-top-color: var(--p-fix); }
+.band--reach { border-top-color: var(--p-accent); }
 .band-h { display: flex; align-items: baseline; gap: 8px; }
 .band-h b { font-family: var(--font-data); font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
 .band-h .n { font-family: var(--font-data); font-size: 10px; color: var(--p-muted); margin-left: auto; }
 .band-l { font-size: 13px; color: var(--p-ink-2); margin-top: 7px; line-height: 1.5; }
 .band-r { font-family: var(--font-data); font-size: 10.5px; color: var(--p-muted); margin-top: 6px; }
 
-/* — intake routes — */
 .route {
-  display: flex; align-items: center; gap: 13px; padding: 15px;
-  border: 1px solid var(--p-line-2); border-radius: 9px; background: var(--p-surface); cursor: pointer;
-  text-align: left; width: 100%;
+  display: flex; align-items: center; gap: 13px; padding: 15px; border: 1px solid var(--p-line-2);
+  border-radius: 9px; background: var(--p-surface); cursor: pointer; text-align: left; width: 100%;
 }
 .route .ic {
-  width: 34px; height: 34px; border-radius: 7px; flex: none;
-  display: grid; place-items: center;
-  background: var(--p-accent-w); color: var(--p-accent);
-  font-family: var(--font-data); font-size: 13px; font-weight: 600;
+  width: 34px; height: 34px; border-radius: 7px; flex: none; display: grid; place-items: center;
+  background: var(--p-accent-w); color: var(--p-accent); font-family: var(--font-data); font-size: 13px; font-weight: 600;
 }
 .route .tx { flex: 1; min-width: 0; }
-.route .tx b { display: block; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
+.route .tx b { display: block; font-size: 14.5px; font-weight: 600; }
 .route .tx span { display: block; font-size: 12px; color: var(--p-muted); margin-top: 2px; line-height: 1.4; }
 .route .best {
   font-family: var(--font-data); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase;
   background: var(--p-open); color: #fff; padding: 2px 5px; border-radius: 2px;
 }
 
-.numlist { counter-reset: n; display: flex; flex-direction: column; gap: 13px; }
+.numlist { counter-reset: n; display: flex; flex-direction: column; gap: 13px; margin: 0; padding: 0; }
 .numlist li { list-style: none; display: flex; gap: 12px; counter-increment: n; }
 .numlist li::before {
-  content: counter(n); flex: none;
-  width: 21px; height: 21px; border-radius: 50%;
-  background: var(--p-ink); color: #fff;
-  font-family: var(--font-data); font-size: 11px; display: grid; place-items: center;
+  content: counter(n); flex: none; width: 21px; height: 21px; border-radius: 50%;
+  background: var(--p-ink); color: #fff; font-family: var(--font-data); font-size: 11px; display: grid; place-items: center;
 }
 .numlist p { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--p-ink-2); }
 
-/* — gate overlay — */
 .gate-bg { position: relative; height: 100%; }
 .gate-blur { filter: blur(3px) saturate(.7); opacity: .5; height: 100%; }
 .gate-sheet {
-  position: absolute; inset: auto 0 0 0;
-  background: var(--p-surface); border-top: 1px solid var(--p-line-2);
+  position: absolute; inset: auto 0 0 0; background: var(--p-surface); border-top: 1px solid var(--p-line-2);
   border-radius: 16px 16px 0 0; padding: 22px 18px calc(18px + env(safe-area-inset-bottom));
   box-shadow: 0 -14px 40px -14px rgba(16,20,28,.28);
 }
 .oauth {
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  padding: 13px; border-radius: 7px; border: 1px solid var(--p-line-2); background: var(--p-surface);
-  font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 9px; padding: 13px; border-radius: 7px;
+  border: 1px solid var(--p-line-2); background: var(--p-surface); font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
 }
 
-/* ---------------- open-questions panel ---------------- */
+.cvrow { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--p-line); }
+.cvrow:last-child { border-bottom: 0; }
+.cvrow .mk { font-family: var(--font-data); font-size: 13px; font-weight: 600; flex: none; width: 14px; line-height: 1.4; }
+.cvrow.add { background: var(--p-open-w); margin: 0 -8px; padding: 11px 8px; border-radius: 4px; border-bottom: 0; }
+.cvrow.add .mk { color: var(--p-open); }
+.cvrow.old .mk { color: var(--p-faint); }
+.cvrow.old .cvb { color: var(--p-faint); }
+.cvb { flex: 1; min-width: 0; font-size: 13px; line-height: 1.45; }
+.cvb b { display: block; font-weight: 600; font-size: 13.5px; }
+
+.srow { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--p-line); }
+.srow:last-child { border-bottom: 0; }
+.srow .sb { flex: 1; min-width: 0; }
+.srow .sb b { display: block; font-size: 14px; font-weight: 600; }
+.srow .sb span { display: block; font-size: 12px; color: var(--p-muted); margin-top: 2px; line-height: 1.4; }
+
+.legal h4 {
+  font-family: var(--font-data); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--p-muted); margin: 18px 0 7px; font-weight: 500;
+}
+.legal p { font-size: 13px; line-height: 1.55; color: var(--p-ink-2); margin: 0 0 9px; }
+
+.s--desk { flex-direction: row; }
+.s--desk .dk-rail {
+  width: 232px; flex: none; border-right: 1px solid var(--p-line); background: var(--p-surface);
+  padding: 20px 18px; display: flex; flex-direction: column; gap: 20px; overflow: auto;
+}
+.s--desk .dk-main { flex: 1; overflow: auto; padding: 26px 30px; }
+.s--desk .dk-aside {
+  width: 268px; flex: none; border-left: 1px solid var(--p-line); background: var(--p-surface); padding: 22px 18px; overflow: auto;
+}
+.dk-nav { display: flex; flex-direction: column; gap: 1px; }
+.dk-nav a { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 6px; font-size: 13.5px; color: var(--p-ink-2); text-decoration: none; }
+.dk-nav a.on { background: var(--p-ink); color: #fff; }
+.dk-nav a .rt { font-family: var(--font-data); font-size: 10px; color: var(--p-faint); margin-left: auto; }
+.dk-nav a.on .rt { color: rgba(255,255,255,.55); }
+.dk-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 34px; }
+
+/* ---------------- notes panel ---------------- */
 #qpanel {
-  position: fixed; top: 54px; right: 0; bottom: 0; width: 380px; max-width: 92vw; z-index: 55;
-  background: var(--cv-panel); border-left: 1px solid var(--cv-line);
-  overflow: auto; padding: 22px 22px 40px;
-  transform: translateX(100%); transition: transform .2s ease;
-  box-shadow: -12px 0 34px -18px rgba(0,0,0,.4);
+  position: fixed; top: 54px; right: 0; bottom: 0; width: 400px; max-width: 92vw; z-index: 55;
+  background: var(--cv-panel); border-left: 1px solid var(--cv-line); overflow: auto; padding: 22px 22px 40px;
+  transform: translateX(100%); transition: transform .2s ease; box-shadow: -12px 0 34px -18px rgba(0,0,0,.4);
 }
 #qpanel.open { transform: none; }
 @media (prefers-reduced-motion: reduce) { #qpanel { transition: none; } }
-#qpanel h2 { font-family: var(--font-display); font-size: 20px; margin: 0 0 6px; letter-spacing: -.015em; }
+#qpanel h2 { font-family: var(--font-display); font-size: 20px; margin: 0 0 6px; }
 #qpanel .sub { font-size: 12.5px; color: var(--cv-muted); margin: 0 0 20px; line-height: 1.5; }
 .q { border-top: 1px solid var(--cv-line); padding: 15px 0; }
 .q-h { display: flex; gap: 9px; align-items: baseline; }
-.q-n { font-family: var(--font-data); font-size: 10px; color: var(--p-fix); letter-spacing: .06em; }
-.q-h b { font-size: 13.5px; font-weight: 600; flex: 1; letter-spacing: -.01em; }
+.q-n { font-family: var(--font-data); font-size: 10px; color: var(--p-fix); }
+.q-h b { font-size: 13.5px; font-weight: 600; flex: 1; }
 .q-w { font-size: 12.5px; color: var(--cv-ink-2); line-height: 1.55; margin: 7px 0 0; }
-.q-m { font-family: var(--font-data); font-size: 10px; color: var(--cv-muted); margin-top: 8px; letter-spacing: .03em; }
+.q-m { font-family: var(--font-data); font-size: 10px; color: var(--cv-muted); margin-top: 8px; }
 
 /* ---------------- prototype ---------------- */
 #proto {
-  position: fixed; inset: 0; z-index: 80;
-  background: color-mix(in srgb, var(--cv-bg) 82%, #000);
-  backdrop-filter: blur(6px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-  padding: 18px;
+  position: fixed; inset: 0; z-index: 80; background: color-mix(in srgb, var(--cv-bg) 82%, #000);
+  backdrop-filter: blur(6px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 18px;
 }
 #proto[hidden] { display: none; }
 .p-bar { display: flex; align-items: center; gap: 12px; width: min(380px, 100%); }
+#proto.wide .p-bar { width: min(940px, 100%); }
 .p-bar .rt { font-family: var(--font-data); font-size: 12px; color: var(--cv-accent); flex: 1; }
 .p-bar button {
   appearance: none; cursor: pointer; background: transparent; border: 1px solid var(--cv-line-2);
-  color: var(--cv-ink-2); border-radius: 6px; padding: 5px 10px;
-  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--cv-ink-2); border-radius: 6px; padding: 5px 10px; font-family: var(--font-data);
+  font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase;
 }
 .p-bar button:hover { border-color: var(--cv-accent); color: var(--cv-accent); }
 #p-device {
-  width: 372px; max-width: 100%;
-  height: min(760px, calc(100vh - 130px));
-  border-radius: 22px; border: 1px solid var(--cv-line-2);
-  background: var(--p-paper); overflow: hidden;
-  box-shadow: 0 30px 70px -20px rgba(0,0,0,.6);
+  width: 372px; max-width: 100%; height: min(760px, calc(100vh - 130px)); border-radius: 22px;
+  border: 1px solid var(--cv-line-2); background: var(--p-paper); overflow: hidden; box-shadow: 0 30px 70px -20px rgba(0,0,0,.6);
 }
-.p-hint {
-  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .05em;
-  color: var(--cv-muted); text-align: center;
-}
+#proto.wide #p-device { width: 940px; height: min(640px, calc(100vh - 130px)); border-radius: 12px; }
+.p-hint { font-family: var(--font-data); font-size: 10.5px; color: var(--cv-muted); text-align: center; }
 .p-hint b { color: var(--cv-ink-2); font-weight: 500; }
-
-/* live buttons in prototype get a hover affordance */
 #p-device [data-goto] { transition: filter .12s ease; }
 #p-device [data-goto]:hover { filter: brightness(.93); }
 @media (prefers-reduced-motion: reduce) { #p-device [data-goto] { transition: none; } }
@@ -650,7 +509,7 @@ button { font: inherit; color: inherit; }
 <header id="bar">
   <div class="brand">
     <b>Polaris</b>
-    <span>Phase&nbsp;0 flow · 22 screens · v1</span>
+    <span>Phase&nbsp;0 flow · 35 screens · v2</span>
   </div>
   <div class="bar-sp"></div>
   <div class="seg" role="group" aria-label="View mode">
@@ -659,12 +518,12 @@ button { font: inherit; color: inherit; }
   </div>
   <div class="zoom">
     <button type="button" id="z-out" aria-label="Zoom out">−</button>
-    <output id="z-val">60%</output>
+    <output id="z-val">55%</output>
     <button type="button" id="z-in" aria-label="Zoom in">+</button>
     <button type="button" id="z-fit" aria-label="Fit to width" title="Fit to width">⤢</button>
   </div>
   <button type="button" class="qbtn" id="q-toggle" aria-expanded="false" aria-controls="qpanel">
-    <i>⚑</i> Open questions · 6
+    <i>⚑</i> Notes · 8
   </button>
 </header>
 
@@ -682,44 +541,80 @@ button { font: inherit; color: inherit; }
   </div>
 </div>
 
-<aside id="qpanel" aria-label="Open questions">
-  <h2>Decisions this design forces</h2>
-  <p class="sub">Six things the mockups had to assume. Each is either an open question already recorded in the docs, or a contradiction the design surfaced. Every one changes a screen.</p>
+<aside id="qpanel" aria-label="Notes">
+  <h2>Notes on v2</h2>
+  <p class="sub">What changed, and what's still open.</p>
 
   <div class="q">
-    <div class="q-h"><span class="q-n">01</span><b>Does the readiness score get a public name?</b></div>
-    <p class="q-w">It appears on <span class="mono">/today</span>, on the share card, and in every check-in — so it is positioning as much as product. Mocked as an unnamed number <b>31</b> on a 0–100 scale benchmarked against people who got the target role. A named score ("Polaris Score") is more shareable and much harder to walk back.</p>
-    <p class="q-m">platform.md §6 Q4 · affects C5, C6, A8</p>
+    <div class="q-h"><span class="q-n">v2</span><b>Copy leads with what's open.</b></div>
+    <p class="q-w">The ledger opens on "Nine doors are open," not "eligible for 9 of 23." No number, cutoff or citation changed — only the framing.</p>
+    <p class="q-m">product.md §9.2.1 — despair produces churn</p>
   </div>
 
   <div class="q">
-    <div class="q-h"><span class="q-n">02</span><b>How much student data goes on a public URL?</b></div>
-    <p class="q-w">Mocked at the doc's default: college + branch + year + counts. No name, no exact CGPA. That makes the card safe under DPDP but noticeably less personal — and personal is what gets forwarded. The tension is real and unresolved.</p>
-    <p class="q-m">platform.md §6 Q5 · affects A8</p>
+    <div class="q-h"><span class="q-n">v2</span><b>"Permanent" became "Settled".</b></div>
+    <p class="q-w">Infosys is still closed and the screen still says so. What changed is the instruction attached: not "this will not change" but "nothing to fix here." Its colour moved from red to grey so the eye lands on the amber and green rows first.</p>
+    <p class="q-m">affects A7, A9, B1, D2</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">v2</span><b>Every audit finding carries its fix.</b></div>
+    <p class="q-w">Each one now ends with a green fix line, sized in hours. "Zero signal" became "Very common." The specifics — 200,000 CVs, 4 commits in one day, 90% easy — are unchanged.</p>
+    <p class="q-m">affects B7</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">v2</span><b>Prose cut roughly in half.</b></div>
+    <p class="q-w">Headlines are under seven words. Explainer cards are one sentence or gone. Hedges — "genuinely", "actually", "precisely" — removed throughout.</p>
+    <p class="q-m">affects every screen</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">01</span><b>Does the readiness score get a name?</b></div>
+    <p class="q-w">It appears on <span class="mono">/today</span>, the share card and every check-in. Mocked as an unnamed <b>31</b> on a 0–100 scale.</p>
+    <p class="q-m">platform.md §6 Q4 · affects C6, C7</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">02</span><b>How much data on a public URL?</b></div>
+    <p class="q-w">Mocked at the doc's default — tier, branch, year, counts. No name, no exact CGPA. Safe under DPDP, less personal, and personal is what gets forwarded.</p>
+    <p class="q-m">platform.md §6 Q5 · affects A9</p>
   </div>
 
   <div class="q">
     <div class="q-h"><span class="q-n">03</span><b>Google only, or Google + LinkedIn?</b></div>
-    <p class="q-w">The gate is the single highest-stakes screen in the funnel, so the number of buttons on it matters. Mocked with both, LinkedIn secondary. Note product.md §10.5: LinkedIn is worth having as auth, never as a data source — the design must not imply it will import anything.</p>
+    <p class="q-w">Mocked with both. Per §10.5 the design must never imply LinkedIn imports anything — it's auth, not a data source.</p>
     <p class="q-m">platform.md §6 Q2 · affects B1</p>
   </div>
 
   <div class="q">
     <div class="q-h"><span class="q-n">04</span><b>UPI one-time, or card subscription?</b></div>
-    <p class="q-w">product.md §7 leans one-time (₹999–4,999 for 12 months), which favours UPI. Mocked as UPI-first with card secondary, single payment. A subscription needs a different screen entirely — recurring mandate consent, not a one-tap UPI intent.</p>
-    <p class="q-m">platform.md §6 Q3 · affects D3</p>
+    <p class="q-w">Mocked UPI-first, ₹1,499 once for 12 months. A subscription needs a different screen — recurring mandate consent, not a one-tap intent.</p>
+    <p class="q-m">platform.md §6 Q3 · affects D3, D4</p>
   </div>
 
   <div class="q">
-    <div class="q-h"><span class="q-n">05</span><b>TCS backlog policy contradicts itself in the docs.</b></div>
-    <p class="q-w">research.md §4's table says TCS NQT allows <b>max 1</b> active backlog. The prose immediately under it says a student with two backlogs is "fine for TCS, dead for Wipro." Both cannot hold. Mocked per the table, which produces a better product anyway: clearing <b>one</b> backlog opens TCS and Virtusa, clearing <b>both</b> opens all seven. Graduated leverage is more motivating than a single cliff — but the underlying fact needs hand-verifying.</p>
-    <p class="q-m">research.md §4 · affects A6, D2</p>
+    <div class="q-h"><span class="q-n">05</span><b>TCS backlog policy contradicts itself.</b></div>
+    <p class="q-w">research.md §4's table says max 1 active backlog; the prose beneath says two is fine. Mocked per the table — which also gives graduated leverage. Needs hand-verifying.</p>
+    <p class="q-m">research.md §4 · affects A7, D1</p>
   </div>
 
   <div class="q">
-    <div class="q-h"><span class="q-n">06</span><b>The 31-week countdown doesn't fit the graduation year.</b></div>
-    <p class="q-w">A 3rd-year in August 2026 graduates in 2028, and §2.2's own timeline (summer internship at month 5, season tracker at month 14) confirms it. But "placement registration closes in 31 weeks" lands in March 2027 — too early for a 2028 batch. Mocked with grad year 2028 and the countdown relabelled to the <b>summer internship</b> window, which is what a 3rd-year is actually racing. If the 31 weeks is meant literally, the avatar is a final-year and the whole eligibility-repair thesis weakens.</p>
-    <p class="q-m">product.md §2.2 vs platform.md §3.1 · affects A5</p>
+    <div class="q-h"><span class="q-n">06</span><b>31 weeks doesn't fit a 2028 graduation.</b></div>
+    <p class="q-w">A 3rd-year in Aug 2026 graduates 2028, but 31 weeks lands in March 2027. Mocked as the summer internship window.</p>
+    <p class="q-m">product.md §2.2 vs platform.md §3.1 · affects A6</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">07</span><b>Dropdown vs non-VTU students.</b></div>
+    <p class="q-w">§3.5 says never free text; §6 says don't hard-block non-VTU. A3 resolves it with an explicit escape that degrades to manual exam dates.</p>
+    <p class="q-m">product.md §6 vs platform.md §3.5 · affects A3</p>
+  </div>
+
+  <div class="q">
+    <div class="q-h"><span class="q-n">08</span><b>What if there's no shock?</b></div>
+    <p class="q-w">§10.3 requires one permanent loss and one fixable win. E1 covers the strong student with neither, E2 the thin record where the screen has to carry belief, E3 a missing proof record. All three occur in a 300-person room.</p>
+    <p class="q-m">product.md §9.2.1, §10.3 · affects E1, E2, E3</p>
   </div>
 </aside>
 
@@ -731,7 +626,7 @@ button { font: inherit; color: inherit; }
     <button type="button" id="p-close">Close ✕</button>
   </div>
   <div id="p-device"></div>
-  <p class="p-hint">Buttons are live. <b id="p-hint-n">0</b> steps from the start of the funnel.</p>
+  <p class="p-hint">Buttons are live. <b id="p-hint-n">0</b> steps from the start.</p>
 </div>
 
 <!-- ============================================================
@@ -743,8 +638,8 @@ button { font: inherit; color: inherit; }
     <div class="s-body" style="display:flex;flex-direction:column;justify-content:center;gap:22px">
       <div>
         <span class="eyebrow" style="margin-bottom:14px">For VTU 3rd-years · Bengaluru</span>
-        <h1 class="verdict v-xl">Find out which companies have already rejected you.</h1>
-        <p class="lede">Seven questions. No signup, no resume, no upload. About forty-five seconds.</p>
+        <h1 class="verdict v-xl">See which companies you can walk into today.</h1>
+        <p class="lede">Seven questions. 45 seconds. No signup.</p>
       </div>
 
       <label class="field">
@@ -752,17 +647,16 @@ button { font: inherit; color: inherit; }
         <div class="inp"><span class="ph">Search VTU colleges…</span><span class="cv">▾</span></div>
       </label>
 
-      <button type="button" class="btn btn--p" data-goto="check1" style="width:100%">Start</button>
+      <button type="button" class="btn btn--o" data-goto="check1" style="width:100%">Start</button>
 
       <hr class="hr" style="margin:4px 0">
 
       <p class="tiny" style="margin:0">
-        Built on the actual eligibility criteria of the 23 companies that recruited at colleges like
-        yours last year — not general advice. Every number below comes from a published cutoff we can cite.
+        Checked against the real cutoffs of 23 companies that recruited at colleges like yours. Every number
+        traces to a published source.
       </p>
-      <div class="mono" style="font-size:11px;color:var(--p-faint);letter-spacing:.04em">
-        23 companies · 4 VTU colleges · updated 2 Aug 2026
-      </div>
+      <div class="mono" style="font-size:11px;color:var(--p-faint)">23 companies · 4 colleges · updated 2 Aug 2026</div>
+      <p class="tiny mono" style="margin:0">Been here before? <span style="color:var(--p-accent)" data-goto="login">Sign in</span></p>
     </div>
   </div>
 </template>
@@ -773,13 +667,16 @@ button { font: inherit; color: inherit; }
     <div class="s-body">
       <div class="steps"><i class="on"></i><i></i><i></i></div>
       <h2 class="verdict v-lg">Where are you studying?</h2>
-      <p class="lede" style="margin-bottom:22px">College comes from a list, never free text — the exam calendar and recruiter roster join on it.</p>
+      <p class="lede" style="margin-bottom:22px">Picking from the list pulls in your exam calendar and recruiter roster.</p>
 
       <div class="stack g18">
         <label class="field">
           <span>College</span>
           <div class="inp"><span>MVJ College of Engineering</span><span class="cv">▾</span></div>
         </label>
+        <p class="tiny mono" style="margin:-8px 0 0">
+          Not listed? <span style="color:var(--p-accent)" data-goto="notlisted">That's fine →</span>
+        </p>
 
         <div class="field">
           <span>Branch</span>
@@ -791,20 +688,59 @@ button { font: inherit; color: inherit; }
 
         <div class="field">
           <span>Graduating in</span>
-          <div class="chips">
-            <span class="chip">2027</span><span class="chip on">2028</span><span class="chip">2029</span>
-          </div>
+          <div class="chips"><span class="chip">2027</span><span class="chip on">2028</span><span class="chip">2029</span></div>
         </div>
       </div>
 
-      <div class="card card--accent" style="margin-top:22px">
+      <div class="card card--open" style="margin-top:22px">
         <p class="tiny" style="margin:0;color:var(--p-ink-2)">
-          ECE, EEE and Mech students targeting software are <b>not</b> filtered out here. A large share of
-          them chase IT roles, and they are the least served.
+          On ECE, EEE or Mech and aiming at software? Same scoring, no penalty.
         </p>
       </div>
     </div>
     <div class="s-foot"><button type="button" class="btn btn--p" data-goto="check2">Next</button></div>
+  </div>
+</template>
+
+<template id="t-notlisted">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">College</span></div>
+    <div class="s-body">
+      <h2 class="verdict v-lg">Not listed? Still works.</h2>
+      <p class="lede" style="margin-bottom:20px">We've mapped VTU's calendar so far. Everything else is identical for you.</p>
+
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Works unchanged</span>
+        <div class="stack g6" style="margin-top:9px">
+          <div class="task" style="padding:6px 0;border:0"><span class="bx done"></span><div class="task-b"><b>Eligibility ledger</b></div></div>
+          <div class="task" style="padding:6px 0;border:0"><span class="bx done"></span><div class="task-b"><b>Signal audit</b></div></div>
+          <div class="task" style="padding:6px 0;border:0"><span class="bx done"></span><div class="task-b"><b>Safe / stretch / reach</b></div></div>
+          <div class="task" style="padding:6px 0;border:0"><span class="bx done"></span><div class="task-b"><b>Full roadmap</b></div></div>
+        </div>
+      </div>
+
+      <div class="card card--fix" style="margin-top:14px">
+        <span class="eyebrow" style="color:var(--p-fix)">One thing we'll ask</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">Your exam dates. Two fields, once a semester.</p>
+      </div>
+
+      <hr class="hr">
+
+      <div class="stack g18">
+        <label class="field"><span>University</span><div class="inp"><span class="ph">Anna University</span><span class="cv">▾</span></div></label>
+        <label class="field"><span>College name</span><div class="inp"><span class="ph">Type it in</span></div></label>
+        <div class="grid2">
+          <label class="field"><span>Next exam starts</span><div class="inp num"><span class="ph">DD/MM</span></div></label>
+          <label class="field"><span>Ends</span><div class="inp num"><span class="ph">DD/MM</span></div></label>
+        </div>
+      </div>
+
+      <p class="prov" style="margin-top:16px">Anna University and AKTU next</p>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g btn--sm" data-goto="check1">Back</button>
+      <button type="button" class="btn btn--p" data-goto="check2">Continue</button>
+    </div>
   </div>
 </template>
 
@@ -814,7 +750,7 @@ button { font: inherit; color: inherit; }
     <div class="s-body">
       <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
       <h2 class="verdict v-lg">Four numbers you know by heart.</h2>
-      <p class="lede" style="margin-bottom:22px">No marksheet needed. You can correct these later.</p>
+      <p class="lede" style="margin-bottom:22px">Rough is fine. Correct them any time.</p>
 
       <div class="stack g18">
         <div class="grid2">
@@ -829,17 +765,15 @@ button { font: inherit; color: inherit; }
 
       <hr class="hr">
 
-      <span class="eyebrow">Why we ask for 10th and 12th</span>
+      <span class="eyebrow">Why school marks</span>
       <p class="tiny" style="margin-top:8px">
-        Most students assume school marks stopped mattering. Infosys gates at <b class="mono">65%</b> across
-        10th, 12th <em>and</em> degree. TCS gates at <b class="mono">60%</b> across all three. These two fields
-        decide more doors than your CGPA does.
+        A few companies still check them — Infosys at <b class="mono">65%</b> across all three levels, TCS at
+        <b class="mono">60%</b>. Better to know now than in final year.
       </p>
 
-      <div class="card card--fix" style="margin-top:16px">
-        <p class="tiny" style="margin:0;color:var(--p-fix)">
-          <b>Active</b> backlogs only — subjects you have not yet cleared. Already-cleared backlogs are counted
-          separately and hurt far less.
+      <div class="card card--open" style="margin-top:16px">
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          Only <b>active</b> backlogs count. Cleared ones barely matter.
         </p>
       </div>
     </div>
@@ -856,19 +790,19 @@ button { font: inherit; color: inherit; }
     <div class="s-body">
       <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
       <h2 class="verdict v-lg">What are you aiming at?</h2>
-      <p class="lede" style="margin-bottom:22px">Sector is enough. Not knowing is a legitimate answer and does not weaken the result.</p>
+      <p class="lede" style="margin-bottom:22px">A rough direction is plenty.</p>
 
       <div class="stack g10">
-        <button type="button" class="route"><span class="ic">PS</span><span class="tx"><b>Product engineering</b><span>Product companies and GCCs · ₹8–18 LPA band</span></span></button>
-        <button type="button" class="route" style="border-color:var(--p-ink);box-shadow:0 0 0 1px var(--p-ink)"><span class="ic" style="background:var(--p-ink);color:#fff">IT</span><span class="tx"><b>IT services</b><span>TCS, Infosys, Wipro, Accenture · ₹3.5–7 LPA band</span></span></button>
+        <button type="button" class="route"><span class="ic">PS</span><span class="tx"><b>Product engineering</b><span>Product companies and GCCs · ₹8–18 LPA</span></span></button>
+        <button type="button" class="route" style="border-color:var(--p-ink);box-shadow:0 0 0 1px var(--p-ink)"><span class="ic" style="background:var(--p-ink);color:#fff">IT</span><span class="tx"><b>IT services</b><span>TCS, Infosys, Wipro, Accenture · ₹3.5–7 LPA</span></span></button>
         <button type="button" class="route"><span class="ic">DA</span><span class="tx"><b>Data / analytics</b><span>Analyst, data engineering, ML-adjacent</span></span></button>
         <button type="button" class="route"><span class="ic">CO</span><span class="tx"><b>Core / embedded</b><span>Bosch, Continental, semiconductor</span></span></button>
-        <button type="button" class="route"><span class="ic">??</span><span class="tx"><b>Not sure yet</b><span>We'll show you what's reachable and let you decide after</span></span></button>
+        <button type="button" class="route"><span class="ic">??</span><span class="tx"><b>Not sure yet</b><span>We'll show what's in reach and you decide after</span></span></button>
       </div>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g btn--sm" data-goto="check2">Back</button>
-      <button type="button" class="btn btn--p" data-goto="countdown">Show me the ledger</button>
+      <button type="button" class="btn btn--o" data-goto="countdown">Show my companies</button>
     </div>
   </div>
 </template>
@@ -877,31 +811,18 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-body" style="padding:0">
       <div class="cd">
-        <span class="eyebrow">Checking 23 companies against your record</span>
-
-        <div class="cd-item">
-          <span class="cd-n">31</span>
-          <span class="cd-l">weeks until summer internship registration closes</span>
-        </div>
-        <div class="cd-item">
-          <span class="cd-n">2</span>
-          <span class="cd-l">semester exam windows in between</span>
-        </div>
-        <div class="cd-item live">
-          <span class="cd-n">~340</span>
-          <span class="cd-l">hours of usable preparation time, after class, exams and travel</span>
-        </div>
-
+        <span class="eyebrow">Checking 23 companies</span>
+        <div class="cd-item"><span class="cd-n">31</span><span class="cd-l">weeks before internship registration</span></div>
+        <div class="cd-item"><span class="cd-n">2</span><span class="cd-l">exam windows, already mapped</span></div>
+        <div class="cd-item live"><span class="cd-n">~340</span><span class="cd-l">usable hours. More than it sounds.</span></div>
         <div>
           <div class="cd-bar"><i></i></div>
-          <p class="tiny mono" style="margin-top:10px;letter-spacing:.04em">
-            Matching MVJ · CSE · 2028 against the recruiter roster…
-          </p>
+          <p class="tiny mono" style="margin-top:10px">MVJ · CSE · 2028</p>
         </div>
       </div>
     </div>
     <div class="s-foot" style="justify-content:center">
-      <button type="button" class="btn btn--p" data-goto="ledger">Continue</button>
+      <button type="button" class="btn btn--o" data-goto="ledger">Continue</button>
     </div>
   </div>
 </template>
@@ -910,11 +831,10 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Your ledger</span></div>
     <div class="s-body">
-      <span class="eyebrow">Companies that recruited at colleges like yours last year</span>
+      <span class="eyebrow">Recruited at colleges like yours last year</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Nine doors are open.</h2>
 
-      <div class="count" style="margin-top:12px">
-        <b>9</b><s>/ 23</s><em>eligible today</em>
-      </div>
+      <div class="count" style="margin-top:16px"><b>9</b><s>/ 23</s><em>open now</em></div>
       <div class="ticks" aria-hidden="true">
         <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
         <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
@@ -922,73 +842,214 @@ button { font: inherit; color: inherit; }
         <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
         <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="perm"></i>
       </div>
-
-      <hr class="hr">
-
-      <div class="sect sect--perm"><h3>Permanently closed</h3><span class="ln"></span><span class="n">1</span></div>
-      <div class="row">
-        <div class="row-t"><b>Infosys</b><span class="stamp stamp--perm">Permanent</span></div>
-        <div class="arith">
-          12th standard · requires <b>65.0%</b> · you have <span class="bad">63.8%</span><br>
-          Short by <span class="bad">1.2 points</span>. Your 12th marks cannot change.
-        </div>
-        <span class="prov">Infosys 2026 criteria · verified 2 Aug 2026</span>
-      </div>
-
-      <hr class="hr">
-
-      <div class="sect sect--fix"><h3>Fixable</h3><span class="ln"></span><span class="n">13</span></div>
-
-      <div class="row">
-        <div class="row-t"><b>TCS NQT</b> <span class="stamp stamp--fix">Clear 1</span></div>
-        <div class="arith">
-          Active backlogs · allows <b>max 1</b> · you have <span class="warn">2</span><br>
-          Clearing <b>one</b> backlog opens this and Virtusa.
-        </div>
-        <span class="prov">TCS NQT 2027 criteria</span>
-      </div>
-
-      <div class="row">
-        <div class="row-t"><b>Wipro <span style="font-weight:400;color:var(--p-muted)">+ 4 others</span></b><span class="stamp stamp--fix">Clear both</span></div>
-        <div class="arith">
-          Active backlogs · requires <b>0</b> · you have <span class="warn">2</span><br>
-          Also HCLTech, IBM India, Bosch Global, Deloitte USI.
-        </div>
-        <span class="prov">Wipro 2026 criteria · zero backlogs at application</span>
-      </div>
-
-      <div class="row">
-        <div class="row-t"><b>6 companies</b><span class="stamp stamp--fix">CGPA</span></div>
-        <div class="arith">
-          Degree CGPA · requires <b>7.00</b> · you have <span class="warn">6.40</span><br>
-          Needs an average of <b>7.90</b> across your remaining <b>3</b> semesters.
-        </div>
-        <span class="prov">Société Générale GSC, ANZ, Continental, Philips, Wells Fargo, Target India</span>
-      </div>
+      <p class="tiny" style="margin-top:12px">13 more within reach this year.</p>
 
       <hr class="hr">
 
       <div class="sect sect--open"><h3>Open now</h3><span class="ln"></span><span class="n">9</span></div>
       <div class="row">
-        <div class="arith" style="margin-top:0">
-          Accenture · Cognizant · Capgemini · LTIMindtree · Tech Mahindra · Mphasis · Hexaware · Zoho · Sonata Software
+        <div class="arith" style="margin-top:0;color:var(--p-ink-2)">
+          Accenture · Cognizant · Capgemini · LTIMindtree · Tech Mahindra · Mphasis · Hexaware · Zoho · Sonata
         </div>
-        <div class="arith" style="color:var(--p-ink-2)">
-          All nine clear on <span class="ok">6.0 CGPA</span> and <span class="ok">60%</span> in 10th and 12th.
+        <div class="arith">All clear on <span class="ok">6.0 CGPA</span> and <span class="ok">60%</span> in 10th and 12th.</div>
+      </div>
+
+      <hr class="hr">
+
+      <div class="sect sect--fix"><h3>Within reach</h3><span class="ln"></span><span class="n">13</span></div>
+
+      <div class="row">
+        <div class="row-t"><b>TCS NQT</b><span class="stamp stamp--fix">1 exam</span></div>
+        <div class="arith">Backlogs · allows <b>max 1</b> · you have <span class="warn">2</span></div>
+        <p class="fixline"><b>Fix:</b> clear one in January. Opens TCS and Virtusa.</p>
+        <span class="prov">TCS NQT 2027 criteria</span>
+      </div>
+
+      <div class="row">
+        <div class="row-t"><b>Wipro <span style="font-weight:400;color:var(--p-muted)">+4</span></b><span class="stamp stamp--fix">2 exams</span></div>
+        <div class="arith">
+          Backlogs · requires <b>0</b> · you have <span class="warn">2</span><br>
+          HCLTech, IBM, Bosch Global, Deloitte USI
+        </div>
+        <p class="fixline"><b>Fix:</b> clear both in January. Seven companies at once.</p>
+        <span class="prov">Wipro 2026 criteria · zero at application</span>
+      </div>
+
+      <div class="row">
+        <div class="row-t"><b>6 companies</b><span class="stamp stamp--fix">3 semesters</span></div>
+        <div class="arith">CGPA · requires <b>7.00</b> · you have <span class="warn">6.40</span></div>
+        <p class="fixline"><b>Fix:</b> average <b>7.90</b> over three semesters. These are the ₹8–14 LPA roles.</p>
+        <span class="prov">Société Générale, ANZ, Continental, Philips, Wells Fargo, Target</span>
+      </div>
+
+      <hr class="hr">
+
+      <div class="sect sect--perm"><h3>Settled</h3><span class="ln"></span><span class="n">1</span></div>
+      <div class="row">
+        <div class="row-t"><b>Infosys</b><span class="stamp stamp--perm">Settled</span></div>
+        <div class="arith">12th · requires <b>65.0%</b> · you have <span class="bad">63.8%</span></div>
+        <p class="fixline" style="border-left-color:var(--p-line-2)">Nothing to fix. Off your list for good.</p>
+        <span class="prov">Infosys 2026 criteria · verified 2 Aug 2026</span>
+      </div>
+
+      <hr class="hr">
+
+      <button type="button" class="card card--open" data-goto="proof" style="width:100%;text-align:left;cursor:pointer;font:inherit">
+        <span class="eyebrow" style="color:var(--p-open)">Someone like you</span>
+        <p class="verdict v-md" style="margin:8px 0 0">6.2 CGPA, one cleared backlog, VTU. Got into Bosch Global.</p>
+        <p class="tiny mono" style="margin:9px 0 0;color:var(--p-open)">Round-by-round →</p>
+      </button>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g" data-goto="share">Share</button>
+      <button type="button" class="btn btn--o" data-goto="gate">Save my ledger</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-edgeclear">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Your ledger</span></div>
+    <div class="s-body">
+      <span class="eyebrow">8.4 CGPA · 0 backlogs · 10th 91% · 12th 88%</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Every door is already open.</h2>
+
+      <div class="count" style="margin-top:16px"><b>23</b><s>/ 23</s><em>all open</em></div>
+      <div class="ticks" aria-hidden="true">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+      </div>
+      <p class="tiny" style="margin-top:12px">Eligibility isn't your constraint. So here's the real question.</p>
+
+      <hr class="hr">
+
+      <div class="stack g24">
+        <div class="band band--safe">
+          <div class="band-h"><b style="color:var(--p-open)">Comfortable</b><span class="n">17</span></div>
+          <p class="band-l">Clear on paper today.</p>
+          <p class="band-r">₹3.5–7 LPA · no prep needed · slowest-growing tier</p>
+        </div>
+        <div class="band band--reach">
+          <div class="band-h"><b style="color:var(--p-accent)">Worth aiming at</b><span class="n">6</span></div>
+          <p class="band-l">Société Générale, ANZ, Continental, Philips, Wells Fargo, Target.</p>
+          <p class="band-r">₹8–14 LPA · 3–4× the package · decided on projects, not grades</p>
         </div>
       </div>
 
       <hr class="hr">
 
-      <button type="button" class="card card--open" data-goto="proof" style="width:100%;text-align:left;cursor:pointer;border-width:1px;border-style:solid;font:inherit">
-        <span class="eyebrow" style="color:var(--p-open)">Someone like you</span>
-        <p class="verdict v-md" style="margin:8px 0 0">A VTU student with 6.2 CGPA and one cleared backlog got into Bosch Global.</p>
-        <p class="tiny mono" style="margin:9px 0 0;color:var(--p-open)">Read the round-by-round →</p>
-      </button>
+      <div class="card card--accent">
+        <span class="eyebrow" style="color:var(--p-accent)">What moves for you</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          Nothing on this page. With grades handled, your outcome comes down to what you can show and defend.
+        </p>
+      </div>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g" data-goto="share">Share</button>
-      <button type="button" class="btn btn--p" data-goto="gate">Save my ledger</button>
+      <button type="button" class="btn btn--o" data-goto="gate">Go to the audit</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-edgehard">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Your ledger</span></div>
+    <div class="s-body">
+      <span class="eyebrow">5.8 CGPA · 5 backlogs · 10th 58% · 12th 54%</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Three doors are open. They're real.</h2>
+
+      <div class="count" style="margin-top:16px"><b>3</b><s>/ 23</s><em>open now</em></div>
+      <div class="ticks" aria-hidden="true">
+        <i class="on"></i><i class="on"></i><i class="on"></i>
+        <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
+        <i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i>
+        <i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i><i class="perm"></i>
+      </div>
+
+      <div class="card card--open" style="margin-top:16px">
+        <p class="verdict v-md" style="margin:0">You only need one of them to say yes.</p>
+      </div>
+
+      <hr class="hr">
+
+      <div class="sect sect--open"><h3>Open now</h3><span class="ln"></span><span class="n">3</span></div>
+      <div class="row">
+        <div class="arith" style="margin-top:0;color:var(--p-ink-2)">Zoho · Sonata Software · Hexaware</div>
+        <div class="arith">None gate on 10th or 12th. Zoho doesn't look at CGPA at all — written test and a build round.</div>
+        <p class="fixline"><b>Start here:</b> Zoho's process rewards prep you can do from scratch in 31 weeks.</p>
+      </div>
+
+      <hr class="hr">
+
+      <div class="sect sect--fix"><h3>Within reach</h3><span class="ln"></span><span class="n">7</span></div>
+      <div class="row">
+        <div class="arith" style="margin-top:0">
+          Clear <b>3 of 5</b> backlogs → <span class="ok">6 open</span><br>
+          Clear all 5 and reach <b>6.0 CGPA</b> → <span class="ok">10 open</span>
+        </div>
+        <p class="fixline"><b>Fix:</b> two supplementary windows before you graduate. The highest-value thing you can do this year.</p>
+      </div>
+
+      <hr class="hr">
+
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Someone like you</span>
+        <p class="verdict v-md" style="margin:8px 0 0">5.9 CGPA, four cleared backlogs. Got into Zoho.</p>
+        <p class="tiny mono" style="margin:9px 0 0;color:var(--p-open)">Round-by-round →</p>
+      </div>
+
+      <p class="tiny" style="margin-top:14px">Thirteen gate on school marks and won't change. Moved out of your way.</p>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g" data-goto="share">Share</button>
+      <button type="button" class="btn btn--o" data-goto="gate">Save my ledger</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-noproof">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Proof record</span></div>
+    <div class="s-body">
+      <span class="eyebrow">Matching on tier · CGPA band · branch</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">No exact match yet.</h2>
+      <p class="lede">We only show these when the record really resembles you. A story from a different tier would be worse than none.</p>
+
+      <hr class="hr">
+
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Closest we have</span>
+        <p class="verdict v-md" style="margin:8px 0 0">6.8 CGPA, no backlogs, ISE. Selected at Mphasis.</p>
+        <div class="arith" style="line-height:1.8;margin-top:11px">
+          <b>Matches</b> &nbsp;tier, branch family, campus route<br>
+          <b>Differs</b> &nbsp;&nbsp;CGPA band, backlog history
+        </div>
+        <p class="tiny mono" style="margin:11px 0 0;color:var(--p-open)">Read it anyway →</p>
+      </div>
+
+      <hr class="hr">
+
+      <div class="card">
+        <span class="eyebrow">Why it's thin</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          <b class="mono">340</b> records, growing weekly. Your band — Tier-3 VTU, 6.0–6.5, cleared backlogs —
+          is one we're filling now. We'll tell you when a match lands.
+        </p>
+      </div>
+
+      <div class="card card--accent" style="margin-top:14px">
+        <span class="eyebrow" style="color:var(--p-accent)">You can add one</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          Sat an interview? Twenty minutes makes the next person's ledger better. Rejections help most.
+        </p>
+      </div>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g btn--sm" data-goto="ledger">Back</button>
+      <button type="button" class="btn btn--o" data-goto="gate">Save my ledger</button>
     </div>
   </div>
 </template>
@@ -998,15 +1059,15 @@ button { font: inherit; color: inherit; }
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Proof record</span></div>
     <div class="s-body">
       <span class="eyebrow" style="color:var(--p-open)">Matched on tier · CGPA band · branch</span>
-      <h2 class="verdict v-lg" style="margin-top:11px">They were behind where you are now.</h2>
+      <h2 class="verdict v-lg" style="margin-top:11px">They started behind where you are.</h2>
 
       <div class="card card--open" style="margin-top:18px">
         <div class="arith" style="margin-top:0;line-height:1.9">
-          <b>College</b> &nbsp;VTU-affiliated, Bengaluru · Tier 3<br>
-          <b>CGPA</b> &nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">6.2</span> at time of application<br>
+          <b>College</b> &nbsp;VTU, Bengaluru · Tier 3<br>
+          <b>CGPA</b> &nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">6.2</span> at application<br>
           <b>Backlogs</b>&nbsp;1, cleared before the drive<br>
           <b>Branch</b> &nbsp;&nbsp;CSE · 2025 batch<br>
-          <b>Outcome</b> <span class="ok">Selected</span> · Bosch Global Software Technologies
+          <b>Outcome</b> <span class="ok">Selected</span> · Bosch Global
         </div>
       </div>
 
@@ -1014,26 +1075,25 @@ button { font: inherit; color: inherit; }
 
       <div class="sect"><h3>Round by round</h3><span class="ln"></span><span class="n">4</span></div>
       <ol class="numlist">
-        <li><p><b>Online aptitude + technical MCQ</b> — 90 minutes. Quant, logical reasoning, C and OOP fundamentals. Roughly half the shortlist was cut here.</p></li>
-        <li><p><b>Coding round</b> — 2 problems, arrays and strings, medium difficulty. Partial marks awarded.</p></li>
-        <li><p><b>Technical interview</b> — 45 minutes. DBMS normalisation, OS scheduling, and a deep dive on one project. Was asked to defend design choices, not just describe features.</p></li>
-        <li><p><b>HR</b> — 15 minutes. Relocation, bond terms, why Bosch.</p></li>
+        <li><p><b>Aptitude + technical MCQ</b> — 90 min. Quant, logical reasoning, C and OOP.</p></li>
+        <li><p><b>Coding</b> — 2 problems, arrays and strings, medium. Partial marks.</p></li>
+        <li><p><b>Technical interview</b> — 45 min. DBMS, OS scheduling, one project in depth. Asked to defend design choices, not describe features.</p></li>
+        <li><p><b>HR</b> — 15 min. Relocation, bond, why Bosch.</p></li>
       </ol>
 
-      <div class="card card--fix" style="margin-top:20px">
-        <span class="eyebrow" style="color:var(--p-fix)">What it took that you don't have yet</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          One project they could defend for twenty minutes. Aptitude practice, which is the round that
-          eliminates most people and is pure repetition. And the backlog cleared <em>before</em> the drive,
-          not during it.
+      <div class="card card--accent" style="margin-top:20px">
+        <span class="eyebrow" style="color:var(--p-accent)">What got them there</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          One project they could talk about for twenty minutes. Steady aptitude practice. The backlog cleared
+          before the drive, not during. All three are on your roadmap.
         </p>
       </div>
 
-      <p class="prov" style="margin-top:16px">Interview experience corpus · GeeksforGeeks · March 2025 · 1 of 12 matching records</p>
+      <p class="prov" style="margin-top:16px">GeeksforGeeks corpus · Mar 2025 · 1 of 12 matches</p>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g btn--sm" data-goto="ledger">Back</button>
-      <button type="button" class="btn btn--p" data-goto="gate">Save my ledger</button>
+      <button type="button" class="btn btn--o" data-goto="gate">Save my ledger</button>
     </div>
   </div>
 </template>
@@ -1042,15 +1102,13 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">polaris.in/r/8xk2</span></div>
     <div class="s-body">
-      <span class="eyebrow">What your friends see in the group chat</span>
+      <span class="eyebrow">What the group chat sees</span>
 
       <div class="wa" style="margin:14px 0 22px">
         <div class="og">
           <div class="og-img">
             <div class="count"><b>9</b><s>/ 23</s></div>
-            <p class="tiny mono" style="margin:9px 0 0;letter-spacing:.03em">
-              CSE · 2028 · VTU college, Bengaluru
-            </p>
+            <p class="tiny mono" style="margin:9px 0 0">CSE · 2028 · VTU, Bengaluru</p>
             <div class="ticks" style="margin-top:12px" aria-hidden="true">
               <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
               <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
@@ -1058,14 +1116,14 @@ button { font: inherit; color: inherit; }
               <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
               <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="perm"></i>
             </div>
-            <p class="mono" style="font-size:10px;margin:12px 0 0;color:var(--p-perm);letter-spacing:.06em;text-transform:uppercase">
-              1 permanently closed · 13 fixable
+            <p class="mono" style="font-size:10px;margin:12px 0 0;color:var(--p-open);letter-spacing:.06em;text-transform:uppercase">
+              9 open · 13 within reach
             </p>
           </div>
           <div class="og-meta">
             <div class="u">polaris.in</div>
-            <div class="t">Eligible for 9 of 23. Locked out of 13 — but only 1 permanently.</div>
-            <div class="d">Check your own in 45 seconds. No signup.</div>
+            <div class="t">9 companies open now. 13 more within reach.</div>
+            <div class="d">Check yours in 45 seconds. No signup.</div>
           </div>
         </div>
       </div>
@@ -1074,16 +1132,14 @@ button { font: inherit; color: inherit; }
 
       <span class="eyebrow">On this public page</span>
       <div class="arith" style="line-height:1.9">
-        <b>Shown</b>&nbsp;&nbsp;&nbsp;branch, graduation year, college tier, counts<br>
-        <b>Hidden</b>&nbsp;&nbsp;name, exact CGPA, exact percentages, company names
+        <b>Shown</b>&nbsp;&nbsp;&nbsp;branch, year, college tier, counts<br>
+        <b>Hidden</b>&nbsp;&nbsp;name, exact CGPA, percentages, company names
       </div>
-      <p class="tiny" style="margin-top:10px">
-        Static page, edge-cached. Has to survive a group chat opening it two hundred times.
-      </p>
+      <p class="tiny" style="margin-top:10px">Static, edge-cached. Built for 200 opens from one chat.</p>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g btn--sm" data-goto="ledger">Back</button>
-      <button type="button" class="btn btn--a" data-goto="landing">Check your own eligibility</button>
+      <button type="button" class="btn btn--a" data-goto="landing">Check your own</button>
     </div>
   </div>
 </template>
@@ -1093,8 +1149,9 @@ button { font: inherit; color: inherit; }
     <div class="gate-bg">
       <div class="gate-blur">
         <div class="s-body">
-          <span class="eyebrow">Companies that recruited at colleges like yours</span>
-          <div class="count" style="margin-top:12px"><b>9</b><s>/ 23</s><em>eligible today</em></div>
+          <span class="eyebrow">Recruited at colleges like yours</span>
+          <h2 class="verdict v-lg" style="margin-top:11px">Nine doors are open.</h2>
+          <div class="count" style="margin-top:16px"><b>9</b><s>/ 23</s><em>open now</em></div>
           <div class="ticks" aria-hidden="true">
             <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
             <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
@@ -1102,23 +1159,51 @@ button { font: inherit; color: inherit; }
             <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
             <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="perm"></i>
           </div>
-          <hr class="hr">
-          <div class="sect sect--perm"><h3>Permanently closed</h3><span class="ln"></span><span class="n">1</span></div>
-          <div class="row"><div class="row-t"><b>Infosys</b><span class="stamp stamp--perm">Permanent</span></div></div>
         </div>
       </div>
 
       <div class="gate-sheet">
-        <h2 class="verdict v-lg">Nine doors are open. Eligible isn't hired.</h2>
-        <p class="lede">Show me your profile and I'll tell you why you won't convert at any of them.</p>
+        <h2 class="verdict v-lg">Nine are open. Let's convert one.</h2>
+        <p class="lede">Show me your profile and I'll tell you what stands between you and an offer.</p>
 
         <div class="stack g10" style="margin-top:20px">
           <button type="button" class="oauth" data-goto="intake">Continue with Google</button>
           <button type="button" class="oauth" data-goto="intake">Continue with LinkedIn</button>
         </div>
 
-        <p class="btn-note">Your ledger is saved to this account. Free forever.</p>
+        <p class="btn-note">Ledger saved to this account. Free forever.</p>
       </div>
+    </div>
+  </div>
+</template>
+
+<template id="t-login">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Sign in</span></div>
+    <div class="s-body" style="display:flex;flex-direction:column;justify-content:center;gap:22px">
+      <div>
+        <h2 class="verdict v-lg">Welcome back.</h2>
+        <p class="lede">Everything's where you left it.</p>
+      </div>
+
+      <div class="stack g10">
+        <button type="button" class="oauth" data-goto="today">Continue with Google</button>
+        <button type="button" class="oauth" data-goto="today">Continue with LinkedIn</button>
+      </div>
+
+      <hr class="hr" style="margin:4px 0">
+
+      <div class="card card--open">
+        <div class="arith" style="margin-top:0;line-height:1.9">
+          <b>Last seen</b> &nbsp;3 days ago<br>
+          <b>Waiting</b> &nbsp;&nbsp;&nbsp;2 tasks<br>
+          <b>Readiness</b> <span class="ok">34</span>, up 3
+        </div>
+      </div>
+
+      <p class="tiny mono" style="margin:0;text-align:center">
+        New? <span style="color:var(--p-accent)" data-goto="landing">Check your eligibility first</span>
+      </p>
     </div>
   </div>
 </template>
@@ -1128,66 +1213,132 @@ button { font: inherit; color: inherit; }
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Signal audit</span></div>
     <div class="s-body">
       <h2 class="verdict v-lg">How should I read your profile?</h2>
-      <p class="lede" style="margin-bottom:20px">Any of these works. No route gives a worse audit than another.</p>
+      <p class="lede" style="margin-bottom:20px">Whichever is easiest. Same quality of audit either way.</p>
 
       <div class="stack g10">
         <button type="button" class="route" data-goto="audit">
           <span class="ic">GH</span>
-          <span class="tx"><b>Connect GitHub</b><span>Repos, languages, commit history, README text</span></span>
-          <span class="best">Best signal</span>
+          <span class="tx"><b>Connect GitHub</b><span>Repos, languages, commits, READMEs</span></span>
+          <span class="best">Best</span>
         </button>
         <button type="button" class="route" data-goto="audit">
           <span class="ic">PDF</span>
-          <span class="tx"><b>Upload your CV</b><span>PDF or DOCX · we keep the original file</span></span>
+          <span class="tx"><b>Upload your CV</b><span>PDF or DOCX · original kept</span></span>
         </button>
         <button type="button" class="route" data-goto="linkedin">
           <span class="ic">in</span>
-          <span class="tx"><b>Import from LinkedIn</b><span>Three taps in the LinkedIn app</span></span>
+          <span class="tx"><b>Import from LinkedIn</b><span>Three taps in the app</span></span>
         </button>
-        <button type="button" class="route" data-goto="audit">
+        <button type="button" class="route" data-goto="six1">
           <span class="ic">6</span>
-          <span class="tx"><b>Answer 6 questions</b><span>No file needed. Often better data than a LinkedIn profile.</span></span>
+          <span class="tx"><b>Answer 6 questions</b><span>No file · about two minutes</span></span>
         </button>
       </div>
 
-      <div class="card card--accent" style="margin-top:20px">
+      <div class="card card--open" style="margin-top:20px">
         <p class="tiny" style="margin:0;color:var(--p-ink-2)">
-          <b>No resume on your phone right now?</b> Take the six questions. Most of a workshop room has no PDF
-          to hand, and this is the single biggest drop-off in the funnel — so this route is built to be as good
-          as the others, not a fallback.
+          <b>No resume on your phone?</b> Take the six questions. Often sharper, because we ask what a CV leaves out.
         </p>
       </div>
     </div>
   </div>
 </template>
 
+<template id="t-six1">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">1 of 6</span></div>
+    <div class="s-body">
+      <div class="steps"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+      <h2 class="verdict v-lg">What have you built?</h2>
+      <p class="lede" style="margin-bottom:20px">Coursework counts. Half-finished counts. Rough notes are fine.</p>
+
+      <div class="stack g14">
+        <label class="field">
+          <span>Project 1</span>
+          <div class="inp ta"><span>Food delivery app — React and Node, followed a YouTube series</span></div>
+        </label>
+        <label class="field">
+          <span>Project 2</span>
+          <div class="inp ta"><span class="ph">Name it, say what it does</span></div>
+        </label>
+        <button type="button" class="btn btn--g btn--sm" style="align-self:flex-start">+ Add another</button>
+      </div>
+
+      <div class="card card--open" style="margin-top:20px">
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          Don't polish these. Unedited gives us a truer read than a rewritten CV.
+        </p>
+      </div>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g btn--sm" data-goto="intake">Back</button>
+      <button type="button" class="btn btn--p" data-goto="six2">Next</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-six2">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">5 of 6</span></div>
+    <div class="s-body">
+      <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+      <h2 class="verdict v-lg">Where does your practice time go?</h2>
+      <p class="lede" style="margin-bottom:20px">Honest answers make the plan fit. Nobody else sees this.</p>
+
+      <div class="stack g18">
+        <div class="field">
+          <span>Coding practice</span>
+          <div class="chips">
+            <span class="chip">Never started</span><span class="chip on">On and off</span>
+            <span class="chip">Daily</span><span class="chip">Contests</span>
+          </div>
+        </div>
+        <label class="field">
+          <span>LeetCode username <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
+          <div class="inp"><span>meera_k</span><span class="cv">✓ 120 solved</span></div>
+        </label>
+        <div class="field">
+          <span>Aptitude practice</span>
+          <div class="chips"><span class="chip on">Not yet</span><span class="chip">Some</span><span class="chip">Regularly</span></div>
+        </div>
+        <div class="field">
+          <span>Shipped anything someone else used?</span>
+          <div class="chips"><span class="chip">Yes</span><span class="chip on">Not yet</span></div>
+        </div>
+      </div>
+
+      <div class="card card--open" style="margin-top:20px">
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          "Not yet" is the most common answer here — and the easiest to change in a month.
+        </p>
+      </div>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g btn--sm" data-goto="six1">Back</button>
+      <button type="button" class="btn btn--o" data-goto="audit">Finish</button>
+    </div>
+  </div>
+</template>
+
 <template id="t-linkedin">
   <div class="s">
-    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">LinkedIn import</span></div>
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">LinkedIn</span></div>
     <div class="s-body">
       <h2 class="verdict v-lg">Three taps in the LinkedIn app.</h2>
-      <p class="lede" style="margin-bottom:22px">LinkedIn exports your own profile as a PDF. Our parser reads it directly.</p>
+      <p class="lede" style="margin-bottom:22px">LinkedIn exports your profile as a PDF. Our parser reads it.</p>
 
       <ol class="numlist">
-        <li><p>Open your <b>profile</b> in the LinkedIn app.</p></li>
+        <li><p>Open your <b>profile</b> in the app.</p></li>
         <li><p>Tap <b>More</b> under your headline.</p></li>
-        <li><p>Tap <b>Save to PDF</b>. The file lands in your downloads.</p></li>
+        <li><p>Tap <b>Save to PDF</b>.</p></li>
       </ol>
 
       <hr class="hr">
 
-      <div class="card">
-        <span class="eyebrow">Then</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          Come back and upload it below. It takes about twenty seconds.
-        </p>
-      </div>
-
-      <div class="card card--fix" style="margin-top:14px">
-        <span class="eyebrow" style="color:var(--p-fix)">Worth knowing</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          A third-year's LinkedIn is usually a headline and a few endorsed skills. If you have a GitHub,
-          that route will produce a sharper audit than this one.
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Quicker</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          Got GitHub? One tap, and more to work with — most third-year LinkedIn profiles are a headline and a few skills.
         </p>
       </div>
     </div>
@@ -1202,99 +1353,98 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Signal audit</span></div>
     <div class="s-body">
-      <span class="eyebrow">Read against 23 recruiter profiles and 340 interview records</span>
-      <h2 class="verdict v-xl" style="margin-top:12px">Your differentiating signal is: none.</h2>
-      <p class="lede">This is not a comment on you. It is a description of what a recruiter sees in the eleven seconds they spend on your CV.</p>
+      <span class="eyebrow">Against 23 recruiter profiles and 340 interview records</span>
+      <h2 class="verdict v-xl" style="margin-top:12px">You're 80 hours from standing out.</h2>
+      <p class="lede">What a recruiter sees in eleven seconds. Every line has a fix.</p>
 
       <hr class="hr">
 
       <div class="sect"><h3>Projects</h3><span class="ln"></span><span class="n">3</span></div>
       <div class="hit">
-        <div class="hit-t"><b>Food delivery clone</b><span class="hit-v z">Zero signal</span></div>
-        <p class="hit-d">Appears on an estimated 200,000+ Indian fresher CVs. A recruiter reads this as "followed a tutorial."</p>
+        <div class="hit-t"><b>Food delivery clone</b><span class="hit-v z">Very common</span></div>
+        <p class="hit-d">On an estimated 200,000+ Indian fresher CVs. The skills transfer; the project doesn't distinguish you.</p>
       </div>
       <div class="hit">
-        <div class="hit-t"><b>Library management system</b><span class="hit-v z">Zero signal</span></div>
-        <p class="hit-d">The default academic mini-project. Assumed to be coursework unless proven otherwise.</p>
+        <div class="hit-t"><b>Library management system</b><span class="hit-v z">Very common</span></div>
+        <p class="hit-d">Reads as coursework. Keep it on the CV, don't build an interview around it.</p>
       </div>
       <div class="hit">
-        <div class="hit-t"><b>Portfolio site</b><span class="hit-v l">Low signal</span></div>
-        <p class="hit-d">Counts as artefact hygiene, not as a project. Fine to have, worth nothing as evidence.</p>
+        <div class="hit-t"><b>Portfolio site</b><span class="hit-v l">Counts differently</span></div>
+        <p class="hit-d">Artefact hygiene, not a project. Useful, filed elsewhere.</p>
       </div>
+      <p class="fixline" style="margin-top:14px"><b>Fix:</b> one project a stranger can use. ~80 hours over 18 weeks, and it replaces all three.</p>
 
       <hr class="hr">
 
       <div class="sect"><h3>Evidence</h3><span class="ln"></span><span class="n">3</span></div>
       <div class="hit">
-        <div class="hit-t"><b>GitHub</b><span class="hit-v z">Contradicts the CV</span></div>
-        <p class="hit-d"><span class="mono">4 commits, all pushed on one day.</span> Three projects on the CV, one day of history. Any technical interviewer checks this, and it reads worse than an empty profile.</p>
+        <div class="hit-t"><b>GitHub</b><span class="hit-v z">Easiest win</span></div>
+        <p class="hit-d"><span class="mono">4 commits, one day.</span> Interviewers check this, and it undersells what you've done.</p>
+        <p class="fixline"><b>Fix:</b> commit as you work, from this week.</p>
       </div>
       <div class="hit">
-        <div class="hit-t"><b>LeetCode</b><span class="hit-v l">Below the bar</span></div>
-        <p class="hit-d"><span class="mono">120 solved · 90% easy.</span> The nine companies you're eligible for test at medium. Volume is not the problem; difficulty distribution is.</p>
+        <div class="hit-t"><b>LeetCode</b><span class="hit-v l">Half-way</span></div>
+        <p class="hit-d"><span class="mono">120 solved · 90% easy.</span> Volume is good — you've built the habit. The mix needs shifting.</p>
+        <p class="fixline"><b>Fix:</b> move to mediums. Your nine open companies test there.</p>
       </div>
       <div class="hit">
-        <div class="hit-t"><b>Udemy full-stack course</b><span class="hit-v z">Not evidence</span></div>
-        <p class="hit-d"><span class="mono">40% complete, nothing shipped.</span> Recruiters hire portfolios, not certificates. This will not appear on your CV.</p>
+        <div class="hit-t"><b>Udemy course</b><span class="hit-v k">Keep going, differently</span></div>
+        <p class="hit-d"><span class="mono">40% complete.</span> Courses teach well but prove nothing on their own.</p>
+        <p class="fixline"><b>Fix:</b> finish it by building, not watching. Same hours, something to show.</p>
       </div>
 
       <hr class="hr">
 
-      <div class="card card--accent">
-        <span class="eyebrow" style="color:var(--p-accent)">What to build instead</span>
-        <p class="verdict v-md" style="margin:9px 0 0">One project a stranger can use, that you can defend for twenty minutes.</p>
-        <p class="tiny" style="margin:10px 0 0;color:var(--p-ink-2)">
-          Sized to the <b class="mono">~340 hours</b> you actually have. We'll pick it with you on the next screen.
-        </p>
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Where this lands</span>
+        <p class="verdict v-md" style="margin:8px 0 0">One project you can defend for twenty minutes, with commits proving you built it.</p>
+        <p class="tiny" style="margin:9px 0 0;color:var(--p-ink-2)">Fits in your <b class="mono">~340 hours</b> with room spare.</p>
       </div>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g">Share</button>
-      <button type="button" class="btn btn--p" data-goto="reach">What's actually reachable?</button>
+      <button type="button" class="btn btn--o" data-goto="reach">What's in reach?</button>
     </div>
   </div>
 </template>
 
 <template id="t-reach">
   <div class="s">
-    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Reachable</span></div>
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">In reach</span></div>
     <div class="s-body">
-      <h2 class="verdict v-lg">Not aspiration. Reachability.</h2>
-      <p class="lede" style="margin-bottom:22px">Given your tier, CGPA and the time left — with the fixable gates closed.</p>
+      <h2 class="verdict v-lg">Your actual range.</h2>
+      <p class="lede" style="margin-bottom:22px">With the fixable gates closed.</p>
 
       <div class="stack g24">
         <div class="band band--safe">
-          <div class="band-h"><b style="color:var(--p-open)">Safe</b><span class="n">9 companies</span></div>
-          <p class="band-l">Accenture, Cognizant, Capgemini, LTIMindtree, Tech Mahindra and 4 more.</p>
-          <p class="band-r">₹3.5–4.5 LPA · you are eligible today · this is the shrinking tier</p>
+          <div class="band-h"><b style="color:var(--p-open)">Safe</b><span class="n">9</span></div>
+          <p class="band-l">Accenture, Cognizant, Capgemini, LTIMindtree, Tech Mahindra +4.</p>
+          <p class="band-r">₹3.5–4.5 LPA · open today · a floor to stand on</p>
         </div>
-
         <div class="band band--str">
-          <div class="band-h"><b style="color:var(--p-fix)">Stretch</b><span class="n">7 companies</span></div>
-          <p class="band-l">TCS NQT, Wipro, HCLTech, IBM India, Bosch Global, Deloitte USI, Virtusa.</p>
-          <p class="band-r">₹4.5–7 LPA · requires: both backlogs cleared by the January supplementary</p>
+          <div class="band-h"><b style="color:var(--p-fix)">Stretch</b><span class="n">7</span></div>
+          <p class="band-l">TCS NQT, Wipro, HCLTech, IBM, Bosch Global, Deloitte USI, Virtusa.</p>
+          <p class="band-r">₹4.5–7 LPA · one exam window away</p>
         </div>
-
         <div class="band band--reach">
-          <div class="band-h"><b style="color:var(--p-accent)">Reach</b><span class="n">6 companies</span></div>
-          <p class="band-l">Société Générale GSC, ANZ, Continental, Philips Innovation, Wells Fargo, Target India.</p>
-          <p class="band-r">₹8–14 LPA · requires: CGPA 7.0 (avg 7.9 × 3 sems) + one defensible project</p>
+          <div class="band-h"><b style="color:var(--p-accent)">Reach</b><span class="n">6</span></div>
+          <p class="band-l">Société Générale, ANZ, Continental, Philips, Wells Fargo, Target.</p>
+          <p class="band-r">₹8–14 LPA · CGPA 7.0 plus one project you can defend</p>
         </div>
       </div>
 
       <hr class="hr">
 
-      <div class="card card--perm">
-        <span class="eyebrow" style="color:var(--p-perm)">The thing worth saying out loud</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          Your safe set is the part of the market that is contracting — entry-level openings fell ~44% year on
-          year, and it is exactly this tier of work that automation compresses. The reach set is where hiring
-          is growing. Bangalore has 880+ GCCs. <b>The goal is not "get placed." It's "don't get placed into
-          the shrinking part."</b>
+      <div class="card card--accent">
+        <span class="eyebrow" style="color:var(--p-accent)">Aim higher than feels natural</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          Bangalore has <b class="mono">880+</b> GCCs — a third of India's GCC talent — and they're growing
+          fresher hiring while bulk intake shrinks. They hire on what you've built, not where you studied.
+          <b>Your reach set is three fixes away.</b>
         </p>
       </div>
     </div>
-    <div class="s-foot"><button type="button" class="btn btn--p" data-goto="constraints">Build my plan</button></div>
+    <div class="s-foot"><button type="button" class="btn btn--o" data-goto="constraints">Build my plan</button></div>
   </div>
 </template>
 
@@ -1302,45 +1452,37 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Constraints</span></div>
     <div class="s-body">
-      <h2 class="verdict v-lg">What can you actually give this?</h2>
-      <p class="lede" style="margin-bottom:22px">The plan is built against your real hours, not an ideal week. Be honest — the schedule breaks otherwise.</p>
+      <h2 class="verdict v-lg">How much time can you protect?</h2>
+      <p class="lede" style="margin-bottom:22px">Your real week, not your ideal one.</p>
 
       <div class="stack g18">
         <div class="field">
-          <span>Hours per week you can protect</span>
-          <div class="chips">
-            <span class="chip">3–5</span><span class="chip on">6–10</span><span class="chip">11–15</span><span class="chip">16+</span>
-          </div>
+          <span>Hours per week</span>
+          <div class="chips"><span class="chip">3–5</span><span class="chip on">6–10</span><span class="chip">11–15</span><span class="chip">16+</span></div>
         </div>
-
         <div class="field">
-          <span>Will you relocate for a role?</span>
-          <div class="chips">
-            <span class="chip on">Bengaluru only</span><span class="chip">Anywhere in India</span><span class="chip">Depends on package</span>
-          </div>
+          <span>Relocate for a role?</span>
+          <div class="chips"><span class="chip on">Bengaluru only</span><span class="chip">Anywhere</span><span class="chip">Depends</span></div>
         </div>
-
         <label class="field">
-          <span>Minimum package you'd accept (LPA)</span>
+          <span>Minimum package (LPA)</span>
           <div class="inp num"><span>4.0</span><span class="cv">lakh / year</span></div>
         </label>
       </div>
 
       <hr class="hr">
 
-      <div class="card card--fix">
-        <span class="eyebrow" style="color:var(--p-fix)">Fixed for you, not asked</span>
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">Already handled</span>
         <div class="arith" style="line-height:1.9;margin-top:8px">
-          <b>Exam windows</b> &nbsp;Dec 2026 · May 2027 <span style="color:var(--p-faint)">— VTU calendar</span><br>
-          <b>Supplementary</b> &nbsp;Jan 2027 <span style="color:var(--p-faint)">— your backlog deadline</span><br>
-          <b>Summer</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jun–Jul 2027 <span style="color:var(--p-faint)">— internship window</span>
+          <b>Exams</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dec 2026 · May 2027<br>
+          <b>Supplementary</b> Jan 2027<br>
+          <b>Summer</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jun–Jul 2027
         </div>
-        <p class="tiny" style="margin-top:10px;color:var(--p-ink-2)">
-          Pulled from the VTU academic calendar for MVJ. Nothing is scheduled inside an exam window.
-        </p>
+        <p class="tiny" style="margin-top:9px;color:var(--p-ink-2)">From MVJ's VTU calendar. Nothing scheduled on an exam window.</p>
       </div>
     </div>
-    <div class="s-foot"><button type="button" class="btn btn--p" data-goto="roadmap">Generate my roadmap</button></div>
+    <div class="s-foot"><button type="button" class="btn btn--o" data-goto="roadmap">Generate roadmap</button></div>
   </div>
 </template>
 
@@ -1348,55 +1490,47 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Free forever</span></div>
     <div class="s-body">
-      <span class="eyebrow">31 weeks · ~340 usable hours · 6–10 hrs/week</span>
-      <h2 class="verdict v-lg" style="margin-top:11px">The whole plan.</h2>
-      <p class="lede" style="margin-bottom:20px">Every task, every deadline. Nothing here is hidden behind payment.</p>
+      <span class="eyebrow">31 weeks · ~340 hours · 6–10 hrs/week</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Your whole plan.</h2>
+      <p class="lede" style="margin-bottom:20px">Every task, every deadline. None of it behind payment.</p>
 
       <div class="tl">
         <div class="tl-g now">
-          <div class="tl-h"><b>Aug — Sep</b> · Weeks 1–6 · Eligibility repair</div>
-          <p class="tl-i">Backlog registration and revision for DBMS and Microprocessors. Nothing else matters until these two are cleared — they gate 7 companies.</p>
+          <div class="tl-h"><b>Aug — Sep</b> · Weeks 1–6</div>
+          <p class="tl-i"><b>Eligibility repair.</b> DBMS and Microprocessors. Your highest-value six weeks — it opens seven companies.</p>
         </div>
-
         <div class="tl-g block">
-          <div class="tl-h"><b>Dec 2026</b> · Locked</div>
-          <div class="exam">VTU semester exams · no tasks scheduled · 3 weeks</div>
+          <div class="tl-h"><b>Dec 2026</b> · Protected</div>
+          <div class="exam">VTU exams · nothing scheduled · 3 weeks clear</div>
         </div>
-
         <div class="tl-g">
-          <div class="tl-h"><b>Jan 2027</b> · Week 21 · Hard deadline</div>
-          <p class="tl-i">Supplementary exams. Both backlogs cleared here, or the stretch set stays closed for the year.</p>
+          <div class="tl-h"><b>Jan 2027</b> · Week 21</div>
+          <p class="tl-i"><b>Supplementary.</b> Clear both and the stretch set opens for the year.</p>
         </div>
-
         <div class="tl-g">
-          <div class="tl-h"><b>Oct — Feb</b> · Weeks 8–26 · Aptitude + DSA</div>
-          <p class="tl-i">Aptitude first — it eliminates more candidates than DSA does and is pure repetition. Then medium-difficulty patterns against the bar your target companies actually test at.</p>
+          <div class="tl-h"><b>Oct — Feb</b> · Weeks 8–26</div>
+          <p class="tl-i"><b>Aptitude + DSA.</b> Aptitude first — it decides more outcomes and rewards repetition. Then mediums.</p>
         </div>
-
         <div class="tl-g">
-          <div class="tl-h"><b>Nov — Mar</b> · Weeks 12–30 · One differentiated project</div>
-          <p class="tl-i">Shipped, deployed, and used by someone who isn't you. Sized to ~80 hours across 18 weeks.</p>
+          <div class="tl-h"><b>Nov — Mar</b> · Weeks 12–30</div>
+          <p class="tl-i"><b>Your project.</b> Shipped, deployed, used by someone else. ~80 hours, four a week.</p>
         </div>
-
         <div class="tl-g">
-          <div class="tl-h"><b>Mar 2027</b> · Week 31 · Deadline</div>
-          <p class="tl-i">Summer internship applications. The PPO route — the highest-leverage move available to you this year.</p>
+          <div class="tl-h"><b>Mar 2027</b> · Week 31</div>
+          <p class="tl-i"><b>Summer internships.</b> The PPO route — your highest-leverage move this year.</p>
         </div>
-
         <div class="tl-g">
-          <div class="tl-h"><b>Apr — May</b> · Core CS + artefact hygiene</div>
-          <p class="tl-i">OS, DBMS and networks for interviews. GitHub, LinkedIn and CV cleaned up last, once there is something real to put on them.</p>
+          <div class="tl-h"><b>Apr — May</b></div>
+          <p class="tl-i"><b>Core CS + hygiene.</b> OS, DBMS, networks. CV and GitHub polished last, once there's something real on them.</p>
         </div>
       </div>
 
       <hr class="hr">
-      <p class="tiny">
-        <b>28 items in total.</b> You'll only ever see three at a time — a 28-item list is how plans get abandoned.
-      </p>
+      <p class="tiny"><b>28 items.</b> You'll see three at a time. The rest stays here.</p>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g" data-goto="task">Open week 1</button>
-      <button type="button" class="btn btn--p" data-goto="today">This week</button>
+      <button type="button" class="btn btn--o" data-goto="today">This week</button>
     </div>
   </div>
 </template>
@@ -1411,38 +1545,80 @@ button { font: inherit; color: inherit; }
       <div class="arith" style="line-height:1.9;margin-top:14px">
         <b>Effort</b> &nbsp;&nbsp;&nbsp;&nbsp;40 minutes<br>
         <b>Due</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sunday 9 Aug<br>
-        <b>Unlocks</b> &nbsp;the differentiated project track<br>
-        <b>Readiness</b> <span class="ok">31 → 34</span> when verified
+        <b>Unlocks</b> &nbsp;the project track<br>
+        <b>Readiness</b> <span class="ok">31 → 34</span>
       </div>
 
       <hr class="hr">
 
-      <div class="sect"><h3>Why this first</h3><span class="ln"></span></div>
+      <div class="sect"><h3>Why first</h3><span class="ln"></span></div>
       <p class="tiny" style="color:var(--p-ink-2)">
-        Your GitHub currently shows 4 commits on one day, which actively damages you in a technical screen.
-        The fastest repair is not a new project — it is a real commit history starting today. Forty minutes
-        now is worth more than a weekend in March.
+        Cheapest meaningful win on the list. Forty minutes starts a real commit history, and every week after
+        compounds.
       </p>
 
       <hr class="hr">
 
       <div class="sect"><h3>Done means</h3><span class="ln"></span></div>
       <div class="stack g10">
-        <div class="task"><span class="bx done"></span><div class="task-b"><b>Repo created and public</b><div class="task-m">Verified via GitHub</div></div></div>
-        <div class="task"><span class="bx"></span><div class="task-b"><b>Schema file committed</b><div class="task-m">Verified via GitHub · any of .sql / .prisma / migrations/</div></div></div>
-        <div class="task"><span class="bx"></span><div class="task-b"><b>README states the problem in 3 lines</b><div class="task-m">Read by the audit · not just "a project"</div></div></div>
+        <div class="task"><span class="bx done"></span><div class="task-b"><b>Repo created and public</b><div class="task-m">Via GitHub</div></div></div>
+        <div class="task"><span class="bx"></span><div class="task-b"><b>Schema file committed</b><div class="task-m">Via GitHub · .sql / .prisma / migrations/</div></div></div>
+        <div class="task"><span class="bx"></span><div class="task-b"><b>README states the problem in 3 lines</b><div class="task-m">Read by the audit</div></div></div>
       </div>
 
       <div class="card card--open" style="margin-top:20px">
-        <span class="eyebrow" style="color:var(--p-open)">No checkbox to tick</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          This one verifies itself from your GitHub. Your CV updates on its own when it passes.
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          Nothing to tick — this verifies from GitHub, and your CV updates itself when it passes.
         </p>
       </div>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g btn--sm" data-goto="roadmap">Plan</button>
-      <button type="button" class="btn btn--p" data-goto="reshock">Mark backlog cleared</button>
+      <button type="button" class="btn btn--o" data-goto="cvupdate">Mark done</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-cvupdate">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">CV updated</span></div>
+    <div class="s-body">
+      <span class="eyebrow" style="color:var(--p-open)">Verified via GitHub · 4 Aug</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Your CV just improved itself.</h2>
+      <p class="lede">Forty minutes of work. Here's what changed.</p>
+
+      <div class="ready" style="margin-top:20px"><b>34</b><span class="d">▲ 3</span></div>
+      <div class="scale"><i style="width:34%"></i><u style="left:62%"></u></div>
+      <div class="scale-l"><span>You · 34</span><span>Converts at 62</span></div>
+
+      <hr class="hr">
+
+      <div class="sect sect--open"><h3>Projects</h3><span class="ln"></span></div>
+      <div class="cvrow add">
+        <span class="mk">+</span>
+        <span class="cvb"><b>Campus mess-menu tracker</b>Postgres schema, 3 tables. Public repo, 6 commits over 4 days.</span>
+      </div>
+      <div class="cvrow old"><span class="mk">·</span><span class="cvb"><b>Food delivery clone</b>React, Node.</span></div>
+      <div class="cvrow old"><span class="mk">·</span><span class="cvb"><b>Library management system</b>Java, MySQL.</span></div>
+
+      <hr class="hr">
+
+      <div class="sect sect--open"><h3>Skills</h3><span class="ln"></span></div>
+      <div class="cvrow add"><span class="mk">+</span><span class="cvb">PostgreSQL · schema design</span></div>
+
+      <hr class="hr">
+
+      <div class="card card--open">
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          Happens every time you finish something. By March you'll have a CV built from things you actually did.
+        </p>
+      </div>
+
+      <p class="tiny mono" style="margin-top:14px">Version 4 · history kept · export any time</p>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g btn--sm">View CV</button>
+      <button type="button" class="btn btn--o" data-goto="today">Next task</button>
     </div>
   </div>
 </template>
@@ -1451,14 +1627,9 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Week 3</span></div>
     <div class="s-body">
-      <span class="eyebrow">Readiness · benchmarked against people who got the target role</span>
-      <div class="ready" style="margin-top:12px">
-        <b>34</b><span class="d">▲ 3 this week</span>
-      </div>
-      <div class="scale">
-        <i style="width:34%"></i>
-        <u style="left:62%"></u>
-      </div>
+      <span class="eyebrow">Readiness · vs people who got the role</span>
+      <div class="ready" style="margin-top:12px"><b>34</b><span class="d">▲ 3 this week</span></div>
+      <div class="scale"><i style="width:34%"></i><u style="left:62%"></u></div>
       <div class="scale-l"><span>You · 34</span><span>Converts at 62</span></div>
 
       <hr class="hr">
@@ -1467,42 +1638,33 @@ button { font: inherit; color: inherit; }
 
       <div class="task">
         <span class="bx done"></span>
-        <div class="task-b">
-          <b>Push the schema and first commit</b>
-          <div class="task-m"><span>40 min</span><span>Verified 4 Aug via GitHub</span></div>
-        </div>
+        <div class="task-b"><b>Push the schema and first commit</b><div class="task-m"><span>40 min</span><span>Verified 4 Aug</span></div></div>
       </div>
       <div class="task">
         <span class="bx"></span>
-        <div class="task-b">
-          <b>Register for the January supplementary</b>
-          <div class="task-m"><span class="cat">Eligibility repair</span><span>Closes 12 Aug</span><span>Opens 7 companies</span></div>
-        </div>
+        <div class="task-b"><b>Register for the January supplementary</b><div class="task-m"><span class="cat">Eligibility</span><span>Closes 12 Aug</span><span>Opens 7</span></div></div>
       </div>
       <div class="task">
         <span class="bx"></span>
-        <div class="task-b">
-          <b>60 quantitative aptitude questions, timed</b>
-          <div class="task-m"><span>3 hrs</span><span>Due Sunday</span></div>
-        </div>
+        <div class="task-b"><b>60 aptitude questions, timed</b><div class="task-m"><span>3 hrs</span><span>Sunday</span></div></div>
       </div>
 
       <hr class="hr">
 
-      <div class="card card--fix">
+      <div class="card card--open">
         <div class="arith" style="margin-top:0">
-          <b>31 weeks</b> to summer internship registration<br>
-          <b>21 weeks</b> to the supplementary — your only backlog window
+          <b>31 weeks</b> to internship registration<br>
+          <b>21 weeks</b> to the supplementary
         </div>
       </div>
 
-      <p class="tiny mono" style="margin-top:16px;letter-spacing:.04em;color:var(--p-faint)">
-        Free access ends in 25 days. The plan stays; the loop locks.
+      <p class="tiny mono" style="margin-top:16px;color:var(--p-faint)">
+        Free access: 25 days left. Your plan stays either way.
       </p>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g btn--sm" data-goto="connections">Connections</button>
-      <button type="button" class="btn btn--p" data-goto="checkin">Weekly check-in</button>
+      <button type="button" class="btn btn--o" data-goto="checkin">Check in</button>
     </div>
   </div>
 </template>
@@ -1511,31 +1673,28 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">~25 seconds</span></div>
     <div class="s-body" style="display:flex;flex-direction:column;justify-content:center">
-      <span class="eyebrow">Week 3 check-in</span>
-      <h2 class="verdict v-lg" style="margin-top:11px">Did the aptitude set happen?</h2>
+      <span class="eyebrow">Week 3</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">How did the aptitude set go?</h2>
 
       <div class="stack g10" style="margin-top:22px">
-        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">Yes, all 60</button>
-        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">Partly</button>
-        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">No — ran out of time</button>
-        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">No — got stuck</button>
+        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">All 60 done</button>
+        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">Got part-way</button>
+        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">Ran out of time</button>
+        <button type="button" class="btn btn--g" style="flex:none;text-align:left;padding:15px">Got stuck</button>
       </div>
 
       <hr class="hr">
 
-      <div class="card card--accent">
-        <span class="eyebrow" style="color:var(--p-accent)">What your answer changes</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          "Ran out of time" re-sizes next week down and pushes the project start by a week.
-          "Got stuck" swaps the task for a narrower one. Nothing you tell us here only benefits us.
+      <div class="card card--open">
+        <span class="eyebrow" style="color:var(--p-open)">The plan adjusts either way</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          "Ran out of time" lightens next week. "Got stuck" swaps in a narrower task. A bad week costs you nothing.
         </p>
       </div>
 
-      <p class="tiny mono" style="margin-top:16px;letter-spacing:.04em;color:var(--p-faint)">
-        Opened from a push notification · answerable without loading the app
-      </p>
+      <p class="tiny mono" style="margin-top:16px;color:var(--p-faint)">From a notification · no app load needed</p>
     </div>
-    <div class="s-foot"><button type="button" class="btn btn--p" data-goto="today">Submit</button></div>
+    <div class="s-foot"><button type="button" class="btn btn--o" data-goto="today">Submit</button></div>
   </div>
 </template>
 
@@ -1543,43 +1702,84 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Connections</span></div>
     <div class="s-body">
-      <h2 class="verdict v-lg">Verify your work, not your intentions.</h2>
-      <p class="lede" style="margin-bottom:20px">Connected accounts mean you never tick a box for the tasks that matter most.</p>
+      <h2 class="verdict v-lg">Let your work speak.</h2>
+      <p class="lede" style="margin-bottom:20px">Connected accounts mean no boxes to tick.</p>
 
       <div class="stack g10">
         <div class="route" style="cursor:default">
           <span class="ic" style="background:var(--p-open-w);color:var(--p-open)">GH</span>
-          <span class="tx"><b>GitHub</b><span class="mono" style="font-size:11px">meera-k · connected 2 Aug · 11 commits since</span></span>
+          <span class="tx"><b>GitHub</b><span class="mono" style="font-size:11px">meera-k · 11 commits since 2 Aug</span></span>
           <span class="stamp stamp--open">Live</span>
         </div>
         <div class="route" style="cursor:default">
           <span class="ic">LC</span>
-          <span class="tx"><b>LeetCode</b><span class="mono" style="font-size:11px">Username only · 120 solved · 4 medium this week</span></span>
+          <span class="tx"><b>LeetCode</b><span class="mono" style="font-size:11px">120 solved · 4 mediums this week</span></span>
           <span class="stamp stamp--open">Live</span>
         </div>
-        <div class="route">
+        <button type="button" class="route" data-goto="marksheet">
           <span class="ic">📄</span>
-          <span class="tx"><b>Semester marksheet</b><span>Upload when results are out · updates CGPA and backlogs</span></span>
+          <span class="tx"><b>Semester marksheet</b><span>Updates CGPA and backlogs</span></span>
           <span class="stamp stamp--fix">Due Jan</span>
-        </div>
+        </button>
         <div class="route">
           <span class="ic">🏅</span>
-          <span class="tx"><b>Certifications</b><span>AWS / Azure / GCP / NPTEL · credential ID or badge URL</span></span>
+          <span class="tx"><b>Certifications</b><span>AWS / Azure / GCP / NPTEL · credential ID</span></span>
         </div>
       </div>
 
       <hr class="hr">
 
       <div class="card">
-        <span class="eyebrow">Not tracked, on purpose</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          Udemy and Coursera progress. Course completion is trivially gameable and recruiters hire portfolios,
-          not certificates. We'll recommend a course where it's the right means — but we score the artefact
-          it produces, never the percentage watched.
+        <span class="eyebrow">Deliberately not tracked</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          Udemy and Coursera progress. We score what you build, never the percentage watched.
         </p>
       </div>
     </div>
-    <div class="s-foot"><button type="button" class="btn btn--g" data-goto="today">Back to this week</button></div>
+    <div class="s-foot"><button type="button" class="btn btn--g" data-goto="today">Back</button></div>
+  </div>
+</template>
+
+<template id="t-marksheet">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Results</span></div>
+    <div class="s-body">
+      <span class="eyebrow" style="color:var(--p-open)">Semester 6 · read 12 Jan</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Read it. Here's what moved.</h2>
+
+      <div class="card card--open" style="margin-top:18px">
+        <div class="arith" style="margin-top:0;line-height:2">
+          <b>CGPA</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.40 → <span class="ok">6.71</span><br>
+          <b>Backlogs</b> &nbsp;2 → <span class="ok">0</span><br>
+          <b>SGPA</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">7.80</span> · near your 7.90 pace
+        </div>
+      </div>
+
+      <hr class="hr">
+
+      <div class="sect"><h3>Subjects</h3><span class="ln"></span><span class="n">6</span></div>
+      <div class="arith" style="line-height:2;margin-top:0">
+        <b>DBMS</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">Cleared</span> · 61<br>
+        <b>Microprocessors</b> <span class="ok">Cleared</span> · 58<br>
+        <b>Software Eng</b> &nbsp;&nbsp;&nbsp;&nbsp;72<br>
+        <b>Networks</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;68<br>
+        <b>Web Tech</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;81<br>
+        <b>Elective</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;77
+      </div>
+
+      <hr class="hr">
+
+      <div class="card card--open">
+        <p class="verdict v-md" style="margin:0">Both backlogs cleared.</p>
+        <p class="tiny" style="margin:8px 0 0;color:var(--p-ink-2)">All 23 companies re-checked against your new record.</p>
+      </div>
+
+      <p class="prov" style="margin-top:16px">Original stored · corrections any time</p>
+    </div>
+    <div class="s-foot">
+      <button type="button" class="btn btn--g btn--sm" data-goto="connections">Back</button>
+      <button type="button" class="btn btn--o" data-goto="reshock">See my new ledger</button>
+    </div>
   </div>
 </template>
 
@@ -1587,27 +1787,22 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Week 6</span></div>
     <div class="s-body">
-      <span class="eyebrow" style="color:var(--p-open)">Marksheet verified · 2 backlogs cleared</span>
+      <span class="eyebrow" style="color:var(--p-open)">2 backlogs cleared</span>
       <h2 class="verdict v-xl" style="margin-top:12px">Seven doors just opened.</h2>
 
-      <div class="count" style="margin-top:20px">
-        <b>16</b><s>/ 23</s><em>eligible now</em>
-      </div>
+      <div class="count" style="margin-top:20px"><b>16</b><s>/ 23</s><em>open now</em></div>
       <div class="ticks" aria-hidden="true">
         <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
-        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
         <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
-        <i class="on"></i><i class="on"></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
         <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
         <i class="perm"></i>
       </div>
-      <p class="tiny mono" style="margin-top:10px;color:var(--p-open);letter-spacing:.04em">
-        9 → 16 · the largest single move available to you
-      </p>
+      <p class="tiny mono" style="margin-top:10px;color:var(--p-open)">9 → 16 · your biggest single move, made</p>
 
       <hr class="hr">
 
-      <div class="sect sect--open"><h3>Flipped</h3><span class="ln"></span><span class="n">7</span></div>
+      <div class="sect sect--open"><h3>Just opened</h3><span class="ln"></span><span class="n">7</span></div>
       <div class="flip"><b>TCS NQT</b><span class="from">Locked</span><span class="ar">→</span><span class="to">Open</span></div>
       <div class="flip"><b>Wipro</b><span class="from">Locked</span><span class="ar">→</span><span class="to">Open</span></div>
       <div class="flip"><b>HCLTech</b><span class="from">Locked</span><span class="ar">→</span><span class="to">Open</span></div>
@@ -1619,24 +1814,20 @@ button { font: inherit; color: inherit; }
       <hr class="hr">
 
       <div class="card card--accent">
-        <span class="eyebrow" style="color:var(--p-accent)">What's left</span>
-        <p class="tiny" style="margin-top:8px;color:var(--p-ink-2)">
-          Six companies still need CGPA <b class="mono">7.00</b> — an average of <b class="mono">7.90</b> across three
-          semesters, starting with December's. Infosys stays closed permanently. The plan has already re-sequenced
-          around your new set.
+        <span class="eyebrow" style="color:var(--p-accent)">Next</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">
+          Six more at CGPA <b class="mono">7.00</b>. You're at 6.71 — closer than in August. Plan already re-sequenced.
         </p>
       </div>
 
-      <div class="card card--fix" style="margin-top:14px">
-        <p class="verdict v-md" style="margin:0">You just did that in six weeks. There are 25 left.</p>
-        <p class="tiny" style="margin:9px 0 0;color:var(--p-ink-2)">
-          Free access ends in 8 days. Keep the check-in, the verification and the re-planning.
-        </p>
+      <div class="card card--open" style="margin-top:14px">
+        <p class="verdict v-md" style="margin:0">Six weeks, seven doors. 25 weeks left.</p>
+        <p class="tiny" style="margin:8px 0 0;color:var(--p-ink-2)">Free access: 8 days. Keep what got you here.</p>
       </div>
     </div>
     <div class="s-foot">
-      <button type="button" class="btn btn--g" data-goto="share">Share this</button>
-      <button type="button" class="btn btn--a" data-goto="checkout">Keep the loop · ₹1,499</button>
+      <button type="button" class="btn btn--g" data-goto="share">Share</button>
+      <button type="button" class="btn btn--o" data-goto="checkout">Keep going · ₹1,499</button>
     </div>
   </div>
 </template>
@@ -1645,45 +1836,40 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Day 28</span></div>
     <div class="s-body">
-      <span class="eyebrow">Your free window has closed</span>
-      <h2 class="verdict v-lg" style="margin-top:11px">The plan stays. The mechanism doesn't.</h2>
+      <span class="eyebrow">Your free month is up</span>
+      <h2 class="verdict v-lg" style="margin-top:11px">Your plan stays yours.</h2>
 
       <hr class="hr">
 
-      <div class="sect sect--open"><h3>Still yours, free, forever</h3><span class="ln"></span></div>
+      <div class="sect sect--open"><h3>Free forever</h3><span class="ln"></span></div>
       <div class="stack g6" style="margin-top:4px">
-        <div class="task" style="padding:9px 0"><span class="bx done"></span><div class="task-b"><b>The eligibility ledger</b></div></div>
-        <div class="task" style="padding:9px 0"><span class="bx done"></span><div class="task-b"><b>The signal audit</b></div></div>
-        <div class="task" style="padding:9px 0"><span class="bx done"></span><div class="task-b"><b>Safe / stretch / reach</b></div></div>
-        <div class="task" style="padding:9px 0"><span class="bx done"></span><div class="task-b"><b>All 28 roadmap items, every deadline</b></div></div>
+        <div class="task" style="padding:8px 0"><span class="bx done"></span><div class="task-b"><b>Eligibility ledger</b></div></div>
+        <div class="task" style="padding:8px 0"><span class="bx done"></span><div class="task-b"><b>Signal audit</b></div></div>
+        <div class="task" style="padding:8px 0"><span class="bx done"></span><div class="task-b"><b>Safe / stretch / reach</b></div></div>
+        <div class="task" style="padding:8px 0"><span class="bx done"></span><div class="task-b"><b>All 28 items, every deadline</b></div></div>
       </div>
 
       <hr class="hr">
 
-      <div class="sect sect--fix"><h3>Locked</h3><span class="ln"></span></div>
+      <div class="sect sect--fix"><h3>What you'd keep</h3><span class="ln"></span></div>
       <div class="lockbox" style="margin-top:4px">
-        <div class="stack g10">
-          <div class="arith" style="margin-top:0;line-height:1.9;color:var(--p-ink-2)">
-            <b>Weekly check-in</b> and re-planning as reality diverges<br>
-            <b>GitHub / LeetCode</b> verification<br>
-            <b>Auto-updating CV</b> and ATS-safe export<br>
-            <b>"People like you"</b> records per company<br>
-            <b>Placement season tracker</b>
-          </div>
+        <div class="arith" style="margin-top:0;line-height:1.9;color:var(--p-ink-2)">
+          <b>Weekly check-in</b> and re-planning<br>
+          <b>GitHub / LeetCode</b> verification<br>
+          <b>Auto-updating CV</b> and export<br>
+          <b>"People like you"</b> per company<br>
+          <b>Season tracker</b>
         </div>
       </div>
 
-      <div class="card" style="margin-top:18px">
-        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
-          In 28 days you completed <b class="mono">4</b> tasks, cleared <b class="mono">2</b> backlogs and moved
-          readiness <b class="mono">31 → 38</b>. You've already abandoned a plan before. The part you'd be paying
-          for is the part that stops that happening again.
-        </p>
+      <div class="card card--open" style="margin-top:18px">
+        <p class="verdict v-md" style="margin:0">28 days: 2 backlogs cleared, readiness 31 → 38.</p>
+        <p class="tiny" style="margin:8px 0 0;color:var(--p-ink-2)">You've shown you do the work. This keeps it going when weeks get busy.</p>
       </div>
     </div>
     <div class="s-foot">
       <button type="button" class="btn btn--g btn--sm" data-goto="roadmap">View plan</button>
-      <button type="button" class="btn btn--a" data-goto="checkout">Unlock · ₹1,499</button>
+      <button type="button" class="btn btn--a" data-goto="checkout">Keep going · ₹1,499</button>
     </div>
   </div>
 </template>
@@ -1692,14 +1878,14 @@ button { font: inherit; color: inherit; }
   <div class="s">
     <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Checkout</span></div>
     <div class="s-body">
-      <span class="eyebrow">One payment · no subscription · no auto-renewal</span>
+      <span class="eyebrow">One payment · no subscription</span>
       <h2 class="verdict v-lg" style="margin-top:11px">₹1,499 for twelve months.</h2>
-      <p class="lede">Covers the whole run to placement season — this year's internship applications and next year's drives.</p>
+      <p class="lede">This year's internships and next year's placement season.</p>
 
       <div class="card" style="margin-top:20px">
         <div class="arith" style="margin-top:0;line-height:2">
           <b>Access until</b> &nbsp;2 August 2027<br>
-          <b>Charged</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Once. Nothing recurring.<br>
+          <b>Charged</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Once<br>
           <b>Refund</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Full, within 14 days
         </div>
       </div>
@@ -1707,17 +1893,232 @@ button { font: inherit; color: inherit; }
       <hr class="hr">
 
       <div class="stack g10">
-        <button type="button" class="btn btn--a" style="flex:none">Pay by UPI</button>
-        <button type="button" class="btn btn--g" style="flex:none">Card / net banking</button>
+        <button type="button" class="btn btn--a" style="flex:none" data-goto="paid">Pay by UPI</button>
+        <button type="button" class="btn btn--g" style="flex:none" data-goto="paid">Card / net banking</button>
       </div>
       <p class="btn-note">GPay · PhonePe · Paytm · any UPI app</p>
 
       <hr class="hr">
 
       <p class="tiny">
-        No course affiliate links, ever. Nothing in your roadmap is there because someone paid us to put it
-        there — which is only true because you're the one paying.
+        No affiliate links, ever. Nothing in your roadmap is there because someone paid for it — which stays
+        true because you're the one paying.
       </p>
+    </div>
+  </div>
+</template>
+
+<template id="t-paid">
+  <div class="s">
+    <div class="s-body" style="display:flex;flex-direction:column;justify-content:center;gap:22px">
+      <div>
+        <span class="eyebrow" style="color:var(--p-open)">Payment received · ₹1,499</span>
+        <h2 class="verdict v-xl" style="margin-top:12px">Set until August 2027.</h2>
+        <p class="lede">Check-in is back on for Sunday.</p>
+      </div>
+
+      <div class="card card--open">
+        <div class="arith" style="margin-top:0;line-height:2">
+          <b>Receipt</b> &nbsp;&nbsp;meera@example.com<br>
+          <b>Access</b> &nbsp;&nbsp;&nbsp;until 2 Aug 2027<br>
+          <b>Renewal</b> &nbsp;none — we'll ask next August<br>
+          <b>Refund</b> &nbsp;&nbsp;&nbsp;until 16 Aug
+        </div>
+      </div>
+
+      <div class="card card--accent">
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          <b class="mono">16 of 23</b> open · readiness <b class="mono">38</b> · 25 weeks to internship applications.
+        </p>
+      </div>
+
+      <button type="button" class="btn btn--o" data-goto="today" style="width:100%">Back to this week</button>
+    </div>
+  </div>
+</template>
+
+<template id="t-settings">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Settings</span></div>
+    <div class="s-body">
+      <h2 class="verdict v-lg">Your account</h2>
+
+      <hr class="hr">
+
+      <div class="sect"><h3>Your record</h3><span class="ln"></span></div>
+      <div class="srow"><div class="sb"><b>MVJ College of Engineering</b><span>CSE · 2028</span></div><span class="stamp stamp--open">Edit</span></div>
+      <div class="srow"><div class="sb"><b>CGPA 6.71 · 0 backlogs</b><span>From your Sem 6 marksheet, 12 Jan</span></div><span class="stamp stamp--open">Edit</span></div>
+      <div class="srow"><div class="sb"><b>10th 72% · 12th 63.8%</b><span>Used for eligibility</span></div><span class="stamp stamp--open">Edit</span></div>
+
+      <hr class="hr">
+
+      <div class="sect"><h3>Notifications</h3><span class="ln"></span></div>
+      <div class="srow"><div class="sb"><b>Weekly check-in</b><span>Sundays, 6pm</span></div><span class="stamp stamp--open">On</span></div>
+      <div class="srow"><div class="sb"><b>When a door opens</b><span>The moment your ledger changes</span></div><span class="stamp stamp--open">On</span></div>
+      <div class="srow"><div class="sb"><b>Deadlines</b><span>Registration and exam windows</span></div><span class="stamp stamp--open">On</span></div>
+
+      <hr class="hr">
+
+      <div class="sect"><h3>Your data</h3><span class="ln"></span></div>
+      <div class="srow"><div class="sb"><b>Download everything</b><span>Record, CV versions, roadmap, check-ins, original files · JSON and PDF</span></div></div>
+      <div class="srow"><div class="sb"><b>What we hold</b><span>7 files · 4 CV versions · 12 check-ins · 1 marksheet</span></div></div>
+
+      <div class="card" style="margin-top:14px">
+        <p class="tiny" style="margin:0;color:var(--p-ink-2)">
+          Take it out or delete it whenever. Deletion completes in 30 days, backups included.
+        </p>
+      </div>
+
+      <div class="stack g10" style="margin-top:18px">
+        <button type="button" class="btn btn--g" style="flex:none">Download my data</button>
+        <button type="button" class="btn btn--danger" style="flex:none">Delete my account</button>
+      </div>
+
+      <p class="tiny mono" style="margin-top:16px;color:var(--p-faint)">
+        <span data-goto="privacy" style="color:var(--p-accent)">Privacy</span> ·
+        <span data-goto="privacy" style="color:var(--p-accent)">Terms</span> · DPDP Act 2023
+      </p>
+    </div>
+  </div>
+</template>
+
+<template id="t-privacy">
+  <div class="s">
+    <div class="s-top"><span class="wm">Polaris</span><span class="sp"></span><span class="tr">Privacy</span></div>
+    <div class="s-body legal">
+      <h2 class="verdict v-lg">What we hold, and why.</h2>
+      <p class="lede" style="margin-bottom:4px">Written to be read. Formal version linked below.</p>
+
+      <h4>What we collect</h4>
+      <p>College, branch, graduation year, CGPA, backlogs, 10th and 12th percentages — eligibility is arithmetic and needs them. Then whatever you give us for the audit, and your check-ins as you go.</p>
+
+      <h4>Why we keep your original files</h4>
+      <p>If we stored only our parsed version and the parser had a bug, your data would be gone. Keeping the original means we can always re-read it.</p>
+
+      <h4>What we never do</h4>
+      <p>We don't sell your data, share it with employers, or take affiliate money from course platforms.</p>
+
+      <h4>Your college</h4>
+      <p>Partner colleges see cohort patterns — how many students sit near a CGPA threshold. Not your individual record, unless you turn that on.</p>
+
+      <h4>Your rights (DPDP Act 2023)</h4>
+      <p>See everything we hold, correct it, download it, delete it. Deletion completes in 30 days including backups. All in Settings — no email, no retention offers.</p>
+
+      <h4>Contact</h4>
+      <p>privacy@polaris.in · we reply within 7 days.</p>
+
+      <hr class="hr">
+      <p class="tiny mono">Updated 2 Aug 2026 · <span style="color:var(--p-accent)">Full text</span> · <span style="color:var(--p-accent)">Terms</span></p>
+    </div>
+    <div class="s-foot"><button type="button" class="btn btn--g" data-goto="settings">Back to settings</button></div>
+  </div>
+</template>
+
+<template id="t-deskroadmap">
+  <div class="s s--desk">
+    <div class="dk-rail">
+      <div><span class="wm" style="font-family:var(--font-display);font-size:15px;font-weight:600">Polaris</span></div>
+      <div class="dk-nav">
+        <a href="#" data-goto="today">This week <span class="rt">/today</span></a>
+        <a href="#" class="on">Roadmap <span class="rt">/roadmap</span></a>
+        <a href="#" data-goto="ledger">Ledger <span class="rt">/ledger</span></a>
+        <a href="#" data-goto="audit">Audit <span class="rt">/audit</span></a>
+        <a href="#" data-goto="reach">In reach <span class="rt">/reach</span></a>
+        <a href="#" data-goto="connections">Connections <span class="rt">/connections</span></a>
+        <a href="#" data-goto="settings">Settings <span class="rt">/settings</span></a>
+      </div>
+
+      <hr class="hr" style="margin:2px 0">
+
+      <div>
+        <span class="eyebrow">Readiness</span>
+        <div class="ready" style="margin-top:8px"><b style="font-size:34px">34</b><span class="d">▲ 3</span></div>
+        <div class="scale"><i style="width:34%"></i><u style="left:62%"></u></div>
+        <div class="scale-l"><span>34</span><span>62</span></div>
+      </div>
+
+      <div class="card card--open" style="padding:12px">
+        <div class="arith" style="margin-top:0;font-size:10.5px;line-height:1.7">
+          <b>31 wks</b> to internships<br><b>21 wks</b> to supplementary
+        </div>
+      </div>
+    </div>
+
+    <div class="dk-main">
+      <span class="eyebrow">31 weeks · ~340 hours · 6–10 hrs/week</span>
+      <h2 class="verdict v-xl" style="margin:11px 0 6px">Your whole plan.</h2>
+      <p class="lede" style="margin-bottom:22px;max-width:60ch">
+        Every task and deadline, sequenced around your exam calendar. None of it behind payment.
+      </p>
+
+      <div class="dk-cols">
+        <div class="tl">
+          <div class="tl-g now">
+            <div class="tl-h"><b>Aug — Sep</b> · Weeks 1–6</div>
+            <p class="tl-i"><b>Eligibility repair.</b> DBMS and Microprocessors. Your highest-value six weeks — it opens seven companies.</p>
+          </div>
+          <div class="tl-g block">
+            <div class="tl-h"><b>Dec 2026</b> · Protected</div>
+            <div class="exam">VTU exams · nothing scheduled · 3 weeks clear</div>
+          </div>
+          <div class="tl-g">
+            <div class="tl-h"><b>Jan 2027</b> · Week 21</div>
+            <p class="tl-i"><b>Supplementary.</b> Clear both and the stretch set opens for the year.</p>
+          </div>
+          <div class="tl-g">
+            <div class="tl-h"><b>Oct — Feb</b> · Weeks 8–26</div>
+            <p class="tl-i"><b>Aptitude + DSA.</b> Aptitude first — it decides more outcomes and rewards repetition. Then mediums.</p>
+          </div>
+        </div>
+
+        <div class="tl">
+          <div class="tl-g">
+            <div class="tl-h"><b>Nov — Mar</b> · Weeks 12–30</div>
+            <p class="tl-i"><b>Your project.</b> Shipped, deployed, used by someone else. ~80 hours, four a week.</p>
+          </div>
+          <div class="tl-g">
+            <div class="tl-h"><b>Mar 2027</b> · Week 31</div>
+            <p class="tl-i"><b>Summer internships.</b> The PPO route — your highest-leverage move this year.</p>
+          </div>
+          <div class="tl-g">
+            <div class="tl-h"><b>Apr — May</b> · Weeks 32–40</div>
+            <p class="tl-i"><b>Core CS + hygiene.</b> OS, DBMS, networks. CV and GitHub polished last.</p>
+          </div>
+          <div class="tl-g">
+            <div class="tl-h"><b>Jun 2027</b> · Onward</div>
+            <p class="tl-i"><b>Placement season.</b> Company-by-company tracking as drives are announced.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dk-aside">
+      <span class="eyebrow">This week</span>
+      <div class="task" style="padding:12px 0">
+        <span class="bx done"></span>
+        <div class="task-b"><b style="font-size:13.5px">Push the schema and first commit</b><div class="task-m"><span>Verified 4 Aug</span></div></div>
+      </div>
+      <div class="task" style="padding:12px 0">
+        <span class="bx"></span>
+        <div class="task-b"><b style="font-size:13.5px">Register for the January supplementary</b><div class="task-m"><span>Closes 12 Aug</span></div></div>
+      </div>
+      <div class="task" style="padding:12px 0">
+        <span class="bx"></span>
+        <div class="task-b"><b style="font-size:13.5px">60 aptitude questions, timed</b><div class="task-m"><span>3 hrs · Sunday</span></div></div>
+      </div>
+
+      <hr class="hr">
+
+      <div class="card card--open" style="padding:13px">
+        <span class="eyebrow" style="color:var(--p-open)">Ledger</span>
+        <div class="count" style="margin-top:7px"><b style="font-size:32px">9</b><s style="font-size:17px">/ 23</s></div>
+        <p class="tiny" style="margin:7px 0 0">13 more within reach.</p>
+      </div>
+
+      <div class="card" style="margin-top:12px;padding:13px">
+        <span class="eyebrow">Next milestone</span>
+        <p class="tiny" style="margin-top:7px;color:var(--p-ink-2)">Clearing both backlogs opens <b>7 companies</b>.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -1726,61 +2127,95 @@ button { font: inherit; color: inherit; }
 (() => {
   "use strict";
 
-  /* ---------- the flow graph ---------- */
   const LANES = [
     {
       n: "Stage 01", t: "Anonymous",
-      d: "No account, no upload, ~45 seconds. Every field asked before the shock lands is conversion tax.",
+      d: "No account, no upload, ~45 seconds. Every field asked before the value lands is conversion tax.",
       frames: [
-        { id: "landing",   route: "/",            name: "Landing — the tool itself",  tags: ["free"] },
-        { id: "check1",    route: "/check",       name: "Identity · 1 of 3",          tags: ["free"] },
-        { id: "check2",    route: "/check",       name: "Record · 2 of 3",            tags: ["free"] },
-        { id: "check3",    route: "/check",       name: "Target · 3 of 3",            tags: ["free"] },
-        { id: "countdown", route: "/check",       name: "Countdown — loading state",  tags: ["free"], flag: 6 },
-        { id: "ledger",    route: "/ledger",      name: "The eligibility ledger",     tags: ["free"], spine: true, flag: 5 },
-        { id: "proof",     route: "/ledger",      name: "Someone like you",           tags: ["free"] },
-        { id: "share",     route: "/r/[slug]",    name: "Share card + OG preview",    tags: ["free"], flag: 2 }
+        { id: "landing",   route: "/",         name: "Landing — the tool itself", tags: ["free"] },
+        { id: "check1",    route: "/check",    name: "Identity · 1 of 3",         tags: ["free"] },
+        { id: "notlisted", route: "/check",    name: "College not listed",        tags: ["free"], isNew: true, flag: 7 },
+        { id: "check2",    route: "/check",    name: "Record · 2 of 3",           tags: ["free"] },
+        { id: "check3",    route: "/check",    name: "Target · 3 of 3",           tags: ["free"] },
+        { id: "countdown", route: "/check",    name: "Countdown — loading state", tags: ["free"], flag: 6 },
+        { id: "ledger",    route: "/ledger",   name: "The eligibility ledger",    tags: ["free"], spine: true, flag: 5 },
+        { id: "proof",     route: "/ledger",   name: "Someone like you",          tags: ["free"] },
+        { id: "share",     route: "/r/[slug]", name: "Share card + OG preview",   tags: ["free"], flag: 2 }
       ]
     },
     {
       n: "Stage 02", t: "The gate",
       d: "Placed at maximum emotional charge, not at zero. The account is created here and nowhere earlier.",
       frames: [
-        { id: "gate",     route: "—",             name: "The gate — account created", tags: ["gate"], flag: 3 },
-        { id: "intake",   route: "/intake",       name: "Four first-class routes",    tags: ["free"] },
-        { id: "linkedin", route: "/intake",       name: "LinkedIn — Save to PDF",     tags: ["free"] },
-        { id: "audit",    route: "/audit",        name: "The signal audit",           tags: ["free"], spine: true }
+        { id: "gate",     route: "—",       name: "The gate — account created", tags: ["gate"], flag: 3 },
+        { id: "login",    route: "/login",  name: "Returning user",             tags: ["free"], isNew: true },
+        { id: "intake",   route: "/intake", name: "Four first-class routes",    tags: ["free"] },
+        { id: "six1",     route: "/intake", name: "Six questions · 1 of 6",     tags: ["free"], isNew: true },
+        { id: "six2",     route: "/intake", name: "Six questions · 5 of 6",     tags: ["free"], isNew: true },
+        { id: "linkedin", route: "/intake", name: "LinkedIn — Save to PDF",     tags: ["free"] },
+        { id: "audit",    route: "/audit",  name: "The signal audit",           tags: ["free"], spine: true }
       ]
     },
     {
       n: "Stage 03", t: "The plan",
       d: "The whole roadmap stays free and visible. Only the mechanism that makes it happen is ever gated.",
       frames: [
-        { id: "reach",       route: "/reach",         name: "Safe / stretch / reach", tags: ["free"] },
-        { id: "constraints", route: "/roadmap/new",   name: "Constraints",            tags: ["free"] },
-        { id: "roadmap",     route: "/roadmap",       name: "The whole plan",         tags: ["free"] },
-        { id: "task",        route: "/roadmap/[task]",name: "Task detail",            tags: ["paid"] },
-        { id: "today",       route: "/today",         name: "Home — max 3 items",     tags: ["paid"], flag: 1 },
-        { id: "checkin",     route: "/check-in",      name: "Weekly check-in",        tags: ["paid"] },
-        { id: "connections", route: "/connections",   name: "Verification",           tags: ["paid"] }
+        { id: "reach",       route: "/reach",          name: "Safe / stretch / reach", tags: ["free"] },
+        { id: "constraints", route: "/roadmap/new",    name: "Constraints",            tags: ["free"] },
+        { id: "roadmap",     route: "/roadmap",        name: "The whole plan",         tags: ["free"] },
+        { id: "task",        route: "/roadmap/[task]", name: "Task detail",            tags: ["paid"] },
+        { id: "cvupdate",    route: "/cv",             name: "CV updates itself",      tags: ["paid"], isNew: true, spine: true },
+        { id: "today",       route: "/today",          name: "Home — max 3 items",     tags: ["paid"], flag: 1 },
+        { id: "checkin",     route: "/check-in",       name: "Weekly check-in",        tags: ["paid"] },
+        { id: "connections", route: "/connections",    name: "Verification",           tags: ["paid"] },
+        { id: "marksheet",   route: "/connections",    name: "Marksheet → recompute",  tags: ["paid"], isNew: true }
       ]
     },
     {
       n: "Stage 04", t: "Conversion",
       d: "Peak willingness to pay is the re-shock, not day 28. If the re-shock lands inside the free window, the prompt goes there.",
       frames: [
-        { id: "reshock",  route: "/ledger",   name: "The re-shock — 7 flip open", tags: ["paid"], spine: true, flag: 5 },
-        { id: "lock",     route: "/today",    name: "Day 28 — mechanism locks",   tags: ["paid"] },
-        { id: "checkout", route: "/upgrade",  name: "Checkout",                   tags: ["paid"], flag: 4 }
+        { id: "reshock",  route: "/ledger",  name: "The re-shock — 7 open up", tags: ["paid"], spine: true, flag: 5 },
+        { id: "lock",     route: "/today",   name: "Day 28 — mechanism locks", tags: ["paid"] },
+        { id: "checkout", route: "/upgrade", name: "Checkout",                 tags: ["paid"], flag: 4 },
+        { id: "paid",     route: "/upgrade", name: "Payment received",         tags: ["paid"], isNew: true }
+      ]
+    },
+    {
+      n: "Stage 05", t: "Edge cases",
+      d: "Records that break the standard shock. All three occur in any 300-person room and all three were previously undesigned.",
+      frames: [
+        { id: "edgeclear", route: "/ledger", name: "Nothing to fix — strong record", tags: ["free"], isNew: true, flag: 8 },
+        { id: "edgehard",  route: "/ledger", name: "Mostly settled — thin record",   tags: ["free"], isNew: true, flag: 8 },
+        { id: "noproof",   route: "/ledger", name: "No matching proof record",       tags: ["free"], isNew: true, flag: 8 }
+      ]
+    },
+    {
+      n: "Stage 06", t: "Account & compliance",
+      d: "Phase 0 in the spec and legally required — DPDP Act 2023 applies from the first student record.",
+      frames: [
+        { id: "settings", route: "/settings", name: "Account · export · deletion", tags: ["free"], isNew: true },
+        { id: "privacy",  route: "/privacy",  name: "Privacy, in plain words",     tags: ["free"], isNew: true }
+      ]
+    },
+    {
+      n: "Stage 07", t: "Desktop",
+      d: "§1.5 makes desktop first-class for /roadmap and /cv. Deep work is not a phone task.",
+      wide: true,
+      frames: [
+        { id: "deskroadmap", route: "/roadmap", name: "Roadmap — desktop, 1280px", tags: ["free"], isNew: true, wide: true }
       ]
     }
   ];
 
   const EDGES = [
     ["landing","check1","Start"],
+    ["landing","login","Sign in"],
+    ["check1","notlisted","Not listed"],
+    ["notlisted","check2","Continue"],
     ["check1","check2","Next"],
     ["check2","check3","Next"],
-    ["check3","countdown","Show me the ledger"],
+    ["check3","countdown","Show my companies"],
     ["countdown","ledger","resolves"],
     ["ledger","proof","Someone like you"],
     ["ledger","share","Share"],
@@ -1788,68 +2223,67 @@ button { font: inherit; color: inherit; }
     ["ledger","gate","Save my ledger"],
     ["share","landing","Check your own — the viral loop"],
     ["gate","intake","Account created"],
+    ["login","today","Welcome back"],
+    ["intake","six1","Answer 6 questions"],
+    ["six1","six2","Next"],
+    ["six2","audit","Finish"],
     ["intake","linkedin","Import from LinkedIn"],
-    ["intake","audit","Upload · GitHub · 6 questions"],
+    ["intake","audit","Upload · GitHub"],
     ["linkedin","audit","Upload the PDF"],
-    ["audit","reach","What's reachable?"],
+    ["audit","reach","What's in reach?"],
     ["reach","constraints","Build my plan"],
     ["constraints","roadmap","Generate"],
     ["roadmap","task","Open week 1"],
     ["roadmap","today","This week"],
-    ["today","checkin","Weekly check-in"],
+    ["task","cvupdate","Mark done"],
+    ["cvupdate","today","Next task"],
+    ["today","checkin","Check in"],
     ["today","connections","Verify"],
+    ["connections","marksheet","Upload marksheet"],
     ["checkin","today","Submit"],
-    ["task","reshock","Backlog cleared"],
+    ["marksheet","reshock","See my new ledger"],
     ["today","lock","Day 28"],
-    ["reshock","checkout","Keep the loop"],
-    ["lock","checkout","Unlock"]
+    ["reshock","checkout","Keep going"],
+    ["lock","checkout","Keep going"],
+    ["checkout","paid","Pay by UPI"],
+    ["paid","today","Back to this week"],
+    ["settings","privacy","Privacy"],
+    ["privacy","settings","Back"],
+    ["deskroadmap","today","This week"]
   ];
 
-  const TAG = {
-    free: ["FREE", "tag--free"],
-    paid: ["PAID · 28d", "tag--paid"],
-    gate: ["ACCOUNT", ""]
-  };
+  const TAG = { free: ["FREE", "tag--free"], paid: ["PAID · 28d", "tag--paid"], gate: ["ACCOUNT", ""] };
 
   const $  = (s, r = document) => r.querySelector(s);
   const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; };
 
-  const stage    = $("#stage");
-  const lanesEl  = $("#lanes");
-  const wires    = $("#wires");
-  const labelsEl = $("#labels");
-  const viewport = $("#viewport");
-  const byId     = new Map();
+  const stage = $("#stage"), lanesEl = $("#lanes"), wires = $("#wires");
+  const labelsEl = $("#labels"), viewport = $("#viewport");
+  const byId = new Map(), meta = new Map();
 
-  /* ---------- build the board ---------- */
   LANES.forEach(lane => {
-    const L = el("section", "lane");
+    const L = el("section", "lane" + (lane.wide ? " lane--wide" : ""));
     const head = el("div", "lane-head");
-    head.append(
-      el("span", "lane-n", lane.n),
-      el("h2", "lane-t", lane.t),
-      el("p", "lane-d", lane.d)
-    );
+    head.append(el("span", "lane-n", lane.n), el("h2", "lane-t", lane.t), el("p", "lane-d", lane.d));
     L.append(head);
 
     lane.frames.forEach(f => {
+      meta.set(f.id, f);
       const fr = el("div", "fr");
       fr.id = "fr-" + f.id;
 
-      const tags = f.tags.map(t => `<span class="tag ${TAG[t][1]}">${TAG[t][0]}</span>`).join("");
+      const tags  = f.tags.map(t => `<span class="tag ${TAG[t][1]}">${TAG[t][0]}</span>`).join("");
       const spine = f.spine ? '<span class="tag tag--spine">Spine</span>' : "";
-      const flag  = f.flag ? `<span class="tag tag--flag" title="Open question ${f.flag}">⚑ ${f.flag}</span>` : "";
+      const isNew = f.isNew ? '<span class="tag tag--new">New</span>' : "";
+      const flag  = f.flag ? `<span class="tag tag--flag" title="Note ${f.flag}">⚑ ${f.flag}</span>` : "";
 
       fr.append(el("div", "fr-head", `
         <span class="fr-id">${f.id.slice(0,2).toUpperCase()}</span>
-        <span class="fr-meta">
-          <span class="fr-route">${f.route}</span>
-          <span class="fr-name">${f.name}</span>
-        </span>
-        <span class="fr-tags">${spine}${flag}${tags}</span>
+        <span class="fr-meta"><span class="fr-route">${f.route}</span><span class="fr-name">${f.name}</span></span>
+        <span class="fr-tags">${isNew}${spine}${flag}${tags}</span>
       `));
 
-      const dev = el("div", "device board-mode" + (f.spine ? " spine" : ""));
+      const dev = el("div", "device board-mode" + (f.spine ? " spine" : "") + (f.wide ? " device--wide" : ""));
       dev.tabIndex = 0;
       dev.dataset.open = f.id;
       dev.setAttribute("role", "button");
@@ -1864,24 +2298,16 @@ button { font: inherit; color: inherit; }
     lanesEl.append(L);
   });
 
-  /* ---------- wires ---------- */
-  let scale = 0.6;
+  let scale = 0.55;
 
   function box(node) {
-    const s = stage.getBoundingClientRect();
-    const r = node.getBoundingClientRect();
-    return {
-      x: (r.left - s.left) / scale,
-      y: (r.top  - s.top)  / scale,
-      w: r.width  / scale,
-      h: r.height / scale
-    };
+    const s = stage.getBoundingClientRect(), r = node.getBoundingClientRect();
+    return { x: (r.left - s.left) / scale, y: (r.top - s.top) / scale, w: r.width / scale, h: r.height / scale };
   }
 
   function drawWires() {
     [...wires.querySelectorAll("path")].forEach(p => p.remove());
     labelsEl.textContent = "";
-
     const W = stage.offsetWidth, H = stage.offsetHeight;
     wires.setAttribute("width", W);
     wires.setAttribute("height", H);
@@ -1891,36 +2317,27 @@ button { font: inherit; color: inherit; }
       const a = byId.get(from), b = byId.get(to);
       if (!a || !b) return;
       const A = box(a), B = box(b);
-
       let d, mx, my;
-      const forward = B.x > A.x + 20;
 
-      if (forward) {
-        const x1 = A.x + A.w, y1 = A.y + A.h * 0.5;
-        const x2 = B.x - 8,   y2 = B.y + B.h * 0.5;
-        const c  = Math.max(46, (x2 - x1) * 0.42);
-        d  = `M${x1},${y1} C${x1 + c},${y1} ${x2 - c},${y2} ${x2},${y2}`;
+      if (B.x > A.x + 20) {
+        const x1 = A.x + A.w, y1 = A.y + A.h * 0.5, x2 = B.x - 8, y2 = B.y + B.h * 0.5;
+        const c = Math.max(46, (x2 - x1) * 0.42);
+        d = `M${x1},${y1} C${x1 + c},${y1} ${x2 - c},${y2} ${x2},${y2}`;
         mx = (x1 + x2) / 2; my = (y1 + y2) / 2;
       } else if (Math.abs(B.x - A.x) < 20) {
-        /* same lane */
         if (B.y > A.y) {
-          const x1 = A.x + A.w * 0.5, y1 = A.y + A.h;
-          const x2 = B.x + B.w * 0.5, y2 = B.y - 8;
-          d  = `M${x1},${y1} L${x2},${y2}`;
+          const x1 = A.x + A.w * 0.5, y1 = A.y + A.h, x2 = B.x + B.w * 0.5, y2 = B.y - 8;
+          d = `M${x1},${y1} L${x2},${y2}`;
           mx = (x1 + x2) / 2; my = (y1 + y2) / 2;
         } else {
-          /* upward loop, routed outside the left edge */
-          const x1 = A.x, y1 = A.y + A.h * 0.5;
-          const x2 = B.x, y2 = B.y + B.h * 0.5;
-          const ox = A.x - 62;
-          d  = `M${x1},${y1} L${ox},${y1} L${ox},${y2} L${x2 - 8},${y2}`;
+          const x1 = A.x, y1 = A.y + A.h * 0.5, x2 = B.x, y2 = B.y + B.h * 0.5, ox = A.x - 62;
+          d = `M${x1},${y1} L${ox},${y1} L${ox},${y2} L${x2 - 8},${y2}`;
           mx = ox; my = (y1 + y2) / 2;
         }
       } else {
-        const x1 = A.x, y1 = A.y + A.h * 0.5;
-        const x2 = B.x + B.w, y2 = B.y + B.h * 0.5;
+        const x1 = A.x, y1 = A.y + A.h * 0.5, x2 = B.x + B.w, y2 = B.y + B.h * 0.5;
         const ox = Math.min(A.x, B.x) - 62;
-        d  = `M${x1},${y1} L${ox},${y1} L${ox},${y2} L${x2 + 8},${y2}`;
+        d = `M${x1},${y1} L${ox},${y1} L${ox},${y2} L${x2 + 8},${y2}`;
         mx = ox; my = (y1 + y2) / 2;
       }
 
@@ -1934,18 +2351,16 @@ button { font: inherit; color: inherit; }
 
       const lb = el("div", "wlabel", label);
       lb.style.left = mx + "px";
-      lb.style.top  = my + "px";
+      lb.style.top = my + "px";
       labelsEl.append(lb);
     });
   }
 
-  /* ---------- zoom ---------- */
   const zVal = $("#z-val");
   function applyZoom(z) {
-    scale = Math.min(1.4, Math.max(0.18, z));
+    scale = Math.min(1.4, Math.max(0.12, z));
     stage.style.transform = `scale(${scale})`;
     zVal.value = Math.round(scale * 100) + "%";
-    /* keep the scroll extent correct for the scaled content */
     stage.style.marginRight  = (stage.offsetWidth  * (scale - 1)) + "px";
     stage.style.marginBottom = (stage.offsetHeight * (scale - 1)) + "px";
     drawWires();
@@ -1960,7 +2375,6 @@ button { font: inherit; color: inherit; }
     applyZoom(scale - e.deltaY * 0.0016);
   }, { passive: false });
 
-  /* drag to pan */
   let drag = null;
   viewport.addEventListener("pointerdown", e => {
     if (e.target.closest(".device") || e.target.closest("#qpanel")) return;
@@ -1977,17 +2391,8 @@ button { font: inherit; color: inherit; }
   viewport.addEventListener("pointerup", endDrag);
   viewport.addEventListener("pointercancel", endDrag);
 
-  /* ---------- prototype ---------- */
-  const proto  = $("#proto");
-  const pDev   = $("#p-device");
-  const pRoute = $("#p-route");
-  const pHint  = $("#p-hint-n");
+  const proto = $("#proto"), pDev = $("#p-device"), pRoute = $("#p-route"), pHint = $("#p-hint-n");
   let stack = [];
-
-  const routeOf = id => {
-    for (const l of LANES) for (const f of l.frames) if (f.id === id) return f.route;
-    return "/";
-  };
 
   function render(id, push = true) {
     const tpl = $("#t-" + id);
@@ -1995,21 +2400,14 @@ button { font: inherit; color: inherit; }
     if (push) stack.push(id);
     pDev.textContent = "";
     pDev.append(document.importNode(tpl.content, true));
-    pRoute.textContent = routeOf(id);
+    const m = meta.get(id);
+    pRoute.textContent = m ? m.route : "/";
+    proto.classList.toggle("wide", !!(m && m.wide));
     pHint.textContent = Math.max(0, stack.length - 1);
     pDev.scrollTop = 0;
   }
-
-  function openProto(id) {
-    stack = [];
-    proto.hidden = false;
-    document.body.style.overflow = "hidden";
-    render(id);
-  }
-  function closeProto() {
-    proto.hidden = true;
-    document.body.style.overflow = "";
-  }
+  function openProto(id) { stack = []; proto.hidden = false; render(id); }
+  function closeProto() { proto.hidden = true; }
 
   document.addEventListener("click", e => {
     const dev = e.target.closest(".device");
@@ -2020,7 +2418,7 @@ button { font: inherit; color: inherit; }
     }
     if (proto.contains(e.target)) {
       const btn = e.target.closest("[data-goto]");
-      if (btn) render(btn.dataset.goto);
+      if (btn) { e.preventDefault(); render(btn.dataset.goto); }
     }
   });
 
@@ -2035,7 +2433,6 @@ button { font: inherit; color: inherit; }
   $("#p-close").onclick = closeProto;
   $("#p-back").onclick  = () => { if (stack.length > 1) { stack.pop(); render(stack[stack.length - 1], false); } };
   $("#p-reset").onclick = () => openProto("landing");
-
   $("#m-board").onclick = () => {
     $("#m-board").setAttribute("aria-pressed", "true");
     $("#m-proto").setAttribute("aria-pressed", "false");
@@ -2046,19 +2443,15 @@ button { font: inherit; color: inherit; }
     $("#m-proto").setAttribute("aria-pressed", "true");
     openProto("landing");
   };
-  proto.addEventListener("click", e => {
-    if (e.target === proto) closeProto();
-  });
+  proto.addEventListener("click", e => { if (e.target === proto) closeProto(); });
 
-  /* ---------- open questions ---------- */
   const qp = $("#qpanel"), qt = $("#q-toggle");
   qt.onclick = () => {
     const open = qp.classList.toggle("open");
     qt.setAttribute("aria-expanded", String(open));
   };
 
-  /* ---------- init ---------- */
-  applyZoom(0.6);
+  applyZoom(0.55);
   addEventListener("resize", drawWires);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawWires);
   requestAnimationFrame(drawWires);
