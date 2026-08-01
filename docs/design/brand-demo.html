@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polaris — Brand demo</title>
+
+<style>
+/* ============================================================
+   POLARIS — BRAND DEMO  ·  the Almanac aesthetic, built
+   Companion to docs/brand.md. Demonstrates §5 colour, §6 type,
+   §7 marks, §8 signature components, §9 screenshot rules.
+
+     --cv-*  the canvas. A viewing surface, not the product.
+     --p-*   the product. Fixed light, per brand.md §5.1.
+   ============================================================ */
+
+:root {
+  /* canvas */
+  --cv-bg: #E8EBF0; --cv-ink: #171B24; --cv-muted: #5D6678; --cv-line: #C4CBD8;
+
+  /* ---- product tokens · brand.md appendix ---- */
+  --p-paper:    #FBFBFC;
+  --p-surface:  #FFFFFF;
+
+  --p-ink:      #10141C;   /* 17.8:1 AAA */
+  --p-ink-2:    #394152;   /*  9.9:1 AAA */
+  --p-muted:    #666E85;   /*  4.9:1 AA  — corrected from #6B7488 */
+  --p-faint:    #949CAD;   /*  NON-TEXT ONLY */
+
+  --p-line:     #E4E7ED;
+  --p-line-2:   #C9CFDA;
+  --p-line-3:   #868FA4;   /*  3.1:1 — interactive borders, WCAG 1.4.11 */
+
+  --p-accent:   #223FA6;   /*  8.7:1 AAA — Meridian. Action only. */
+  --p-accent-w: #EBEFFB;
+
+  --p-open:     #14654A;  --p-open-w:    #E8F3EE;   /* 6.8:1 */
+  --p-fix:      #A05A00;  --p-fix-w:     #FCF3E5;   /* 5.1:1 */
+  --p-settled:  #5A6273;  --p-settled-w: #F0F2F5;   /* 5.9:1 */
+
+  /* Three voices · brand.md §6.1. No webfonts — §6.2. */
+  --font-display: "Iowan Old Style", Charter, Cambria, Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-data: ui-monospace, "Cascadia Mono", "SF Mono", "Roboto Mono", Consolas, "Liberation Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--cv-bg); color: var(--cv-ink);
+  font-family: var(--font-ui); -webkit-font-smoothing: antialiased;
+  padding: 28px 20px 64px;
+}
+:where(a, button):focus-visible { outline: 2px solid var(--p-accent); outline-offset: 2px; border-radius: 3px; }
+
+/* ============================================================
+   MARKS · brand.md §7
+   ============================================================ */
+.mark { display: block; }
+
+/* ============================================================
+   PAGE FURNITURE (canvas, not product)
+   ============================================================ */
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.topbar { display: flex; align-items: baseline; gap: 11px; margin-bottom: 6px; }
+.topbar .lockup { display: flex; align-items: center; gap: 9px; color: var(--cv-ink); }
+.topbar b { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -.018em; }
+.eyebrow {
+  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--cv-muted);
+}
+
+.demo-note {
+  font-size: 12px; color: var(--cv-muted); line-height: 1.5;
+  border-left: 2px solid var(--cv-line); padding-left: 11px; margin: 18px 0 26px; max-width: 62ch;
+}
+.demo-note b { color: var(--cv-ink); font-weight: 600; }
+
+.cols { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
+
+.caption {
+  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--cv-muted); margin: 0 0 10px;
+}
+
+/* ============================================================
+   THE PRODUCT SURFACE — fixed light
+   ============================================================ */
+.screen {
+  width: 380px; max-width: 100%;
+  background: var(--p-paper);
+  border: 1px solid var(--p-line-2);
+  border-radius: 10px;
+  overflow: hidden;
+  color: var(--p-ink);
+  box-shadow: 0 1px 2px rgba(16,20,28,.08), 0 14px 34px -16px rgba(16,20,28,.28);
+}
+
+/* wordmark in frame on every shareable surface · §9.3 */
+.s-top {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 18px; border-bottom: 1px solid var(--p-line);
+  background: var(--p-surface);
+}
+.s-top .wm { font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: -.018em; }
+.s-top .sp { flex: 1; }
+.s-top .tr { font-family: var(--font-data); font-size: 12px; color: var(--p-muted); }
+
+.s-body { padding: 20px 18px 22px; }
+
+.ctx { font-family: var(--font-data); font-size: 12px; color: var(--p-muted); letter-spacing: .02em; }
+
+/* Verdict — rationed to ONE per screen · §6.1 */
+.verdict {
+  font-family: var(--font-display); font-weight: 500; letter-spacing: -.018em;
+  line-height: 1.16; margin: 12px 0 0; text-wrap: balance; font-size: 30px;
+}
+.lede { color: var(--p-ink-2); margin: 10px 0 0; font-size: 14px; line-height: 1.55; }
+
+/* Figures — tabular everywhere · §6.4 */
+.fig { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+
+/* ---- The tick counter · §8.2 ---- */
+.ticks { display: flex; gap: 3px; align-items: flex-end; margin: 20px 0 6px; }
+.ticks i { width: 5px; height: 20px; border-radius: 1px; background: var(--p-faint); }
+.ticks i.open { background: var(--p-open); }
+.ticks i.fix  { background: var(--p-fix); }
+.tick-key { font-family: var(--font-data); font-size: 12px; color: var(--p-muted); font-variant-numeric: tabular-nums; }
+
+/* ---- Group headings — NOT verdicts. Mono eyebrows. ---- */
+.group {
+  display: flex; align-items: center; gap: 8px;
+  margin: 26px 0 0; padding-bottom: 7px; border-bottom: 1px solid var(--p-line-2);
+}
+.group .lbl {
+  font-family: var(--font-data); font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.group .n { margin-left: auto; font-family: var(--font-data); font-size: 12px; color: var(--p-muted); font-variant-numeric: tabular-nums; }
+.g-open .lbl    { color: var(--p-open); }
+.g-fix .lbl     { color: var(--p-fix); }
+.g-settled .lbl { color: var(--p-settled); }
+
+/* ============================================================
+   THE RULED ROW · §8.1 — the signature component
+   ============================================================ */
+.row { display: flex; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--p-line); }
+.row:last-child { border-bottom: 0; }
+
+/* state = glyph + word + colour. Never colour alone · §5.3 */
+.glyph { font-size: 13px; line-height: 1.5; width: 13px; flex: none; }
+.st-open    { color: var(--p-open); }
+.st-fix     { color: var(--p-fix); }
+.st-settled { color: var(--p-settled); }
+
+.row-main { flex: 1; min-width: 0; }
+.row-name { font-size: 14px; font-weight: 500; color: var(--p-ink); }
+.row-arith {
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+  font-size: 12px; color: var(--p-ink-2); margin-top: 4px; line-height: 1.45;
+}
+/* the source tag · §8.3 — a retrieved figure never ships without one */
+.src {
+  font-family: var(--font-data); font-size: 12px; color: var(--p-muted);
+  margin-top: 5px; display: block;
+}
+/* every finding carries its fix, sized in hours · §3.1 */
+.fixline {
+  font-size: 12px; color: var(--p-open); margin-top: 7px; line-height: 1.45;
+  background: var(--p-open-w); border-radius: 4px; padding: 6px 8px;
+}
+.fixline .h { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+/* Settled rows carry NO instruction. That is the point · §5.2 */
+.row.settled .row-name { color: var(--p-settled); }
+.row.settled .row-arith { color: var(--p-settled); }
+
+/* ---- trajectory arithmetic ---- */
+.arith-block {
+  margin-top: 24px; padding: 14px 15px;
+  background: var(--p-surface); border: 1px solid var(--p-line-2); border-radius: 6px;
+}
+.arith-block .k { font-family: var(--font-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--p-muted); }
+.arith-block .v { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 14px; color: var(--p-ink); margin-top: 7px; line-height: 1.5; }
+
+/* ---- proof record · product.md §9.2.1 ---- */
+.proof { margin-top: 14px; padding: 14px 15px; background: var(--p-accent-w); border-radius: 6px; }
+.proof .k { font-family: var(--font-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--p-accent); }
+.proof p { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--p-ink-2); }
+.proof .fig { color: var(--p-ink); }
+
+/* ---- action · Meridian is for action only · §5.3 ---- */
+.s-foot { padding: 14px 18px 18px; border-top: 1px solid var(--p-line); background: var(--p-surface); display: flex; gap: 10px; }
+.btn {
+  font: inherit; font-size: 14px; font-weight: 500; border-radius: 6px;
+  padding: 11px 16px; cursor: pointer; flex: 1;
+  transition: filter 140ms ease-out;   /* 120–180ms, ease-out · §10 */
+}
+.btn:hover { filter: brightness(.94); }
+.btn--p { background: var(--p-accent); color: #fff; border: 1px solid var(--p-accent); }
+.btn--o { background: transparent; color: var(--p-accent); border: 1px solid var(--p-line-3); }
+
+.stamp { padding: 0 18px 16px; }
+.stamp span { font-family: var(--font-data); font-size: 12px; color: var(--p-muted); }
+
+/* ============================================================
+   SHARE CARD · §8.4
+   ============================================================ */
+.card {
+  width: 300px; background: var(--p-surface);
+  border: 1px solid var(--p-line-2); border-radius: 10px; padding: 20px 18px 16px;
+  color: var(--p-ink);
+  box-shadow: 0 1px 2px rgba(16,20,28,.08), 0 14px 34px -16px rgba(16,20,28,.28);
+}
+.card .hero { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 40px; letter-spacing: -.02em; line-height: 1; }
+.card .hero small { font-size: 20px; color: var(--p-muted); }
+.card .who { font-family: var(--font-data); font-size: 12px; color: var(--p-muted); margin-top: 9px; line-height: 1.5; }
+.card .mini { margin-top: 14px; border-top: 1px solid var(--p-line); }
+.card .mini .row { padding: 9px 0; }
+.card-foot { display: flex; align-items: center; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--p-line); }
+.card-foot b { font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: -.018em; }
+.card-foot .d { margin-left: auto; font-family: var(--font-data); font-size: 12px; color: var(--p-muted); }
+
+/* ============================================================
+   SPECIMEN
+   ============================================================ */
+.spec { margin-top: 44px; padding-top: 26px; border-top: 1px solid var(--cv-line); }
+.spec-grid { display: flex; flex-wrap: wrap; gap: 26px; }
+.panel { background: var(--p-paper); border: 1px solid var(--p-line-2); border-radius: 8px; padding: 18px; color: var(--p-ink); }
+
+.sw { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+.sw i { width: 26px; height: 26px; border-radius: 4px; flex: none; border: 1px solid rgba(16,20,28,.10); }
+.sw .nm { font-size: 13px; }
+.sw .hx { margin-left: auto; font-family: var(--font-data); font-size: 11px; color: var(--p-muted); font-variant-numeric: tabular-nums; }
+
+.voice { padding: 9px 0; border-bottom: 1px solid var(--p-line); }
+.voice:last-child { border-bottom: 0; }
+.voice .t { font-family: var(--font-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--p-muted); }
+.voice .e { margin-top: 6px; }
+.voice .e.d { font-family: var(--font-display); font-size: 22px; letter-spacing: -.018em; }
+.voice .e.b { font-size: 14px; color: var(--p-ink-2); }
+.voice .e.f { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 14px; }
+
+footer { margin-top: 40px; font-size: 12px; color: var(--cv-muted); line-height: 1.6; max-width: 68ch; }
+footer code { font-family: var(--font-data); font-size: 11.5px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ---------- canvas header ---------- -->
+  <div class="topbar">
+    <div class="lockup">
+      <!-- The Fix · brand.md §7.1 -->
+      <svg class="mark" viewBox="0 0 24 24" width="22" height="22" fill="none"
+           stroke="currentColor" stroke-width="1.6" stroke-linecap="round" role="img" aria-label="Polaris">
+        <circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/>
+        <path d="M12 1.5V7"/><path d="M12 17v3.5"/><path d="M3.5 12H7"/><path d="M17 12h3.5"/>
+      </svg>
+      <b>Polaris</b>
+    </div>
+    <span class="eyebrow">Brand demo · the Almanac aesthetic</span>
+  </div>
+
+  <p class="demo-note">
+    <b>Mockup.</b> Company names are real; the cutoffs shown are illustrative placeholders and have
+    <b>not</b> been verified — <code>flow.html</code> note 05 already flags that the TCS backlog policy
+    contradicts itself across sources. Nothing here is a source of fact. Built to demonstrate
+    <code>docs/brand.md</code>: the ruled row, the tick counter, the source tag, three type voices,
+    one accent, three states.
+  </p>
+
+  <div class="cols">
+
+    <!-- ================= THE LEDGER ================= -->
+    <div>
+      <p class="caption">/ledger · the signature surface</p>
+
+      <div class="screen">
+        <div class="s-top">
+          <!-- wordmark in frame · §9.3 -->
+          <span class="wm">Polaris</span>
+          <span class="sp"></span>
+          <span class="tr fig">23 companies</span>
+        </div>
+
+        <div class="s-body">
+          <span class="ctx">MVJ College of Engineering · CSE · 2028</span>
+
+          <!-- ONE verdict per screen · §6.1. Leads with what is open · §3.1 -->
+          <h1 class="verdict">Nine doors are open.</h1>
+          <p class="lede">Checked against the real cutoffs of every company that recruited at colleges like yours.</p>
+
+          <!-- tick counter · §8.2 -->
+          <div class="ticks" role="img" aria-label="9 open, 6 within reach, 8 settled, of 23">
+            <i class="open"></i><i class="open"></i><i class="open"></i><i class="open"></i><i class="open"></i>
+            <i class="open"></i><i class="open"></i><i class="open"></i><i class="open"></i>
+            <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <span class="tick-key">9 open · 6 within reach · 8 settled</span>
+
+          <!-- ---- OPEN ---- -->
+          <div class="group g-open">
+            <span class="glyph st-open">&#9679;</span>
+            <span class="lbl">Open now</span>
+            <span class="n">9</span>
+          </div>
+
+          <div class="row">
+            <span class="glyph st-open">&#9679;</span>
+            <div class="row-main">
+              <div class="row-name">Accenture ASE</div>
+              <div class="row-arith">CGPA 6.4 &ge; 6.0 · 12th 63.8% &ge; 60% · backlogs permitted</div>
+              <span class="src">[Accenture 2026 criteria]</span>
+            </div>
+          </div>
+
+          <div class="row">
+            <span class="glyph st-open">&#9679;</span>
+            <div class="row-main">
+              <div class="row-name">Cognizant GenC</div>
+              <div class="row-arith">CGPA 6.4 &ge; 6.0 · 10th 72% &ge; 60%</div>
+              <span class="src">[Cognizant 2026 criteria]</span>
+            </div>
+          </div>
+
+          <div class="row">
+            <span class="glyph st-open">&#9679;</span>
+            <div class="row-main">
+              <div class="row-name">Capgemini</div>
+              <div class="row-arith">CGPA 6.4 &ge; 6.0 · no percentage floor</div>
+              <span class="src">[Capgemini 2026 criteria]</span>
+            </div>
+          </div>
+
+          <!-- ---- WITHIN REACH ---- -->
+          <div class="group g-fix">
+            <span class="glyph st-fix">&#9680;</span>
+            <span class="lbl">Within reach</span>
+            <span class="n">6</span>
+          </div>
+
+          <div class="row">
+            <span class="glyph st-fix">&#9680;</span>
+            <div class="row-main">
+              <div class="row-name">TCS NQT</div>
+              <div class="row-arith">2 active backlogs &rarr; max 1</div>
+              <span class="src">[TCS 2026 criteria]</span>
+              <div class="fixline">Clear one by the November supplementary. <span class="h">~40 hours.</span></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <span class="glyph st-fix">&#9680;</span>
+            <div class="row-main">
+              <div class="row-name">Wipro Elite</div>
+              <div class="row-arith">2 active backlogs &rarr; 0</div>
+              <span class="src">[Wipro 2026 criteria]</span>
+              <div class="fixline">Clear both by the November supplementary. <span class="h">~80 hours.</span></div>
+            </div>
+          </div>
+
+          <!-- ---- SETTLED — no instruction. That is the point. ---- -->
+          <div class="group g-settled">
+            <span class="glyph st-settled">&#9675;</span>
+            <span class="lbl">Settled</span>
+            <span class="n">8</span>
+          </div>
+
+          <div class="row settled">
+            <span class="glyph st-settled">&#9675;</span>
+            <div class="row-main">
+              <div class="row-name">Infosys</div>
+              <div class="row-arith">12th 63.8% against a 65% floor</div>
+              <span class="src">[Infosys 2026 criteria]</span>
+            </div>
+          </div>
+
+          <!-- ---- the arithmetic, shown ---- -->
+          <div class="arith-block">
+            <span class="k">Your trajectory</span>
+            <p class="v">6.4 now. 7.0 needs a 7.9 average<br>across three semesters.</p>
+          </div>
+
+          <!-- ---- proof · product.md §9.2.1 ---- -->
+          <div class="proof">
+            <span class="k">Someone like you</span>
+            <p>A VTU Tier-3 CSE student, <span class="fig">6.2</span> CGPA, one cleared backlog,
+               took an offer last season. Their round-by-round is on file.</p>
+          </div>
+        </div>
+
+        <div class="s-foot">
+          <button type="button" class="btn btn--o">Share</button>
+          <button type="button" class="btn btn--p">Why you won't convert</button>
+        </div>
+        <div class="stamp"><span>Updated 2 Aug 2026 · every number traces to a source</span></div>
+      </div>
+    </div>
+
+    <!-- ================= SHARE CARD + SPECIMEN ================= -->
+    <div style="flex:1; min-width:300px">
+      <p class="caption">/r/[slug] · the share card</p>
+
+      <div class="card">
+        <div class="hero fig">9<small> / 23</small></div>
+        <div class="who">VTU Tier-3 · CSE · graduating 2028<br>No name. No exact CGPA.</div>
+
+        <div class="ticks" style="margin:14px 0 0" role="img" aria-label="9 of 23 open">
+          <i class="open"></i><i class="open"></i><i class="open"></i><i class="open"></i><i class="open"></i>
+          <i class="open"></i><i class="open"></i><i class="open"></i><i class="open"></i>
+          <i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i><i class="fix"></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+
+        <div class="mini">
+          <div class="row">
+            <span class="glyph st-open">&#9679;</span>
+            <div class="row-main"><div class="row-name">Accenture ASE</div><div class="row-arith">Open now</div></div>
+          </div>
+          <div class="row">
+            <span class="glyph st-fix">&#9680;</span>
+            <div class="row-main"><div class="row-name">TCS NQT</div><div class="row-arith">2 backlogs &rarr; max 1</div></div>
+          </div>
+          <div class="row settled">
+            <span class="glyph st-settled">&#9675;</span>
+            <div class="row-main"><div class="row-name">Infosys</div><div class="row-arith">63.8% vs 65% floor</div></div>
+          </div>
+        </div>
+
+        <div class="card-foot">
+          <svg class="mark" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/>
+            <path d="M12 1.5V7"/><path d="M12 17v3.5"/><path d="M3.5 12H7"/><path d="M17 12h3.5"/>
+          </svg>
+          <b>Polaris</b>
+          <span class="d fig">2 Aug 2026</span>
+        </div>
+      </div>
+
+      <p class="caption" style="margin-top:26px">The system</p>
+
+      <div class="spec-grid">
+        <div class="panel" style="min-width:260px; flex:1">
+          <div class="voice">
+            <span class="t">Verdict · display serif</span>
+            <div class="e d">Seven doors just opened.</div>
+          </div>
+          <div class="voice">
+            <span class="t">Body · system sans</span>
+            <div class="e b">Rationed to one verdict per screen.</div>
+          </div>
+          <div class="voice">
+            <span class="t">Figure · mono, tabular</span>
+            <div class="e f">63.8% · 6.4 &rarr; 7.0 · &#8377;1,499</div>
+          </div>
+          <div class="voice">
+            <span class="t">Source tag</span>
+            <div class="e"><span class="src" style="margin:0">[Wipro 2026 criteria]</span></div>
+          </div>
+        </div>
+
+        <div class="panel" style="min-width:250px; flex:1">
+          <div class="sw"><i style="background:var(--p-accent)"></i><span class="nm">Meridian · action only</span><span class="hx">#223FA6</span></div>
+          <div class="sw"><i style="background:var(--p-open)"></i><span class="nm">&#9679; Open now</span><span class="hx">#14654A</span></div>
+          <div class="sw"><i style="background:var(--p-fix)"></i><span class="nm">&#9680; Within reach</span><span class="hx">#A05A00</span></div>
+          <div class="sw"><i style="background:var(--p-settled)"></i><span class="nm">&#9675; Settled</span><span class="hx">#5A6273</span></div>
+          <div class="sw"><i style="background:var(--p-ink)"></i><span class="nm">Ink</span><span class="hx">#10141C</span></div>
+          <div class="sw"><i style="background:var(--p-paper)"></i><span class="nm">Paper</span><span class="hx">#FBFBFC</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    No webfonts, no gradients, no coloured shadows, no illustration, no emoji — every character above is
+    system type. State is carried by glyph <em>and</em> word <em>and</em> colour, so it survives a
+    greyscale screenshot and a colour-vision deficiency. Nothing meaningful sits under 12px or at
+    <code>--p-faint</code>. The wordmark is in frame on both shareable surfaces, and both carry a date.
+  </footer>
+
+</div>
+</body>
+</html>

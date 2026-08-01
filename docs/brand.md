@@ -300,8 +300,10 @@ From the flow board, ratified. Verdict tracks at `-0.018em`, line-height 1.16, `
 | `v-md` | 19px | Section verdict |
 | lede | 14px / 1.55 | One sentence. Ideally zero |
 | body | 14px | Default |
-| tiny | 12px | Meta. **The floor for anything that must survive a screenshot** |
-| eyebrow | 10.5px, `.1em`, upper, mono | Context labels |
+| tiny | 12px | Meta. **The floor for content** — source tags, dates, counts, context lines |
+| eyebrow | 10.5px, `.1em`, upper, mono | **Labels only.** See the carve-out below |
+
+> **The 10.5px carve-out.** Uppercase mono tracked at `.1em` stays legible below the 12px floor where sentence-case would not, so *labels* may sit at 10.5px — "OPEN NOW", "YOUR TRAJECTORY", "SOMEONE LIKE YOU". A label names a region the reader is already looking at. The moment an element carries information that appears nowhere else — a source tag, a date, a count — it is content, and content is 12px. Building the demo (`design/brand-demo.html`) is what surfaced this: the source tag had been drawn at 11px, which is exactly the element §8.3 calls close to the most important in the system.
 
 ### 6.4 Numerals
 
@@ -392,7 +394,7 @@ Twenty-three marks, nine filled. Appears on `/today`, the share card and, as fou
 
 ### 8.3 The source tag
 
-`[Wipro 2026 criteria]` — mono, muted, bracketed, always adjacent to the figure it justifies.
+`[Wipro 2026 criteria]` — mono, muted, bracketed, **12px minimum**, always adjacent to the figure it justifies.
 
 This is the smallest element in the system and close to the most important. It is §12.2 made visible, it is what makes an unwelcome number survive being doubted, and it is the single clearest visual difference between us and a chat answer. **A retrieved figure never ships without one.**
 
@@ -410,7 +412,7 @@ Constraints: readable at 240px wide · legible cropped to the top half · no tex
 
 §2.3 makes this the primary channel, so it gets rules rather than good intentions. Every one of these is a consequence of an image being re-encoded, resized, and viewed on a stranger's phone.
 
-1. **12px is the floor** for anything that carries meaning.
+1. **12px is the floor for content.** The only exception is the 10.5px uppercase mono label (§6.3) — and a label never carries information that appears nowhere else.
 2. **Nothing meaningful at `--p-faint`.** Low-contrast grey is the first casualty of JPEG.
 3. **The wordmark is in frame on every shareable surface** — ledger, audit, re-shock, share card. An unattributed screenshot is free reach we did not collect.
 4. **Nothing essential in the outer 8%.** People crop badly and thumbnails clip.
