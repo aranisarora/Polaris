@@ -2,6 +2,22 @@
 
 Next.js (App Router) + TypeScript + Tailwind, backed by Supabase.
 
+## The documents
+
+Read these before writing code. They are the specification.
+
+| Document | Decides |
+| --- | --- |
+| [`docs/product.md`](docs/product.md) | What Polaris is, who pays, the moat, the hard rules |
+| [`docs/platform.md`](docs/platform.md) | Form factor, onboarding, page inventory, build order |
+| [`docs/research.md`](docs/research.md) | Market evidence and data sources. Figures go stale — re-verify |
+| [`docs/brand.md`](docs/brand.md) | Voice, colour, type, motion, the native-feel model, imagery |
+| [`docs/design/flow.html`](docs/design/flow.html) | The 36-screen flow board — structure and copy |
+| [`docs/design/brand-demo.html`](docs/design/brand-demo.html) | Palette, type scale and components, rendered |
+
+Each document carries an **open questions** table at the end. Those are unresolved
+on purpose; check them before building anything they touch.
+
 ## Getting Started
 
 ```bash
