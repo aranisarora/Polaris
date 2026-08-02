@@ -47,7 +47,7 @@ export default function LinkedInIntake() {
       </main>
       <div className="foot">
         <Link href="/intake" className="btn btn--g btn--sm">Back</Link>
-        <Link href="/intake/upload" className="btn btn--p">Upload the PDF</Link>
+        <Link href="/intake/upload?from=linkedin" className="btn btn--p">Upload the PDF</Link>
       </div>
     </div>
   );
