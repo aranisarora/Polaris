@@ -65,11 +65,17 @@ export type CompanyVerdict = {
 
 export type ReachGroup = {
   key: string;
-  /** "2 active backlogs → 0", "CGPA 6.40 → 7.00". */
+  /** Every blocker on this group's rows, joined. */
   headline: string;
+  /** The lead blocker — the cheapest lever among them. */
   binding: GateFailure;
+  /** All of them, so the UI can state what "opens" actually costs. */
+  blockers: GateFailure[];
   verdicts: CompanyVerdict[];
-  /** How many doors this single fix opens. The persuasive number. */
+  /**
+   * How many doors clearing *every* blocker in this group opens. Exact,
+   * because the group key is the full blocker set.
+   */
   opens: number;
 };
 
@@ -232,9 +238,18 @@ function evaluate(
       ? "settled"
       : "reach";
 
-  // Lead with the failure that decides the row. A settled failure always wins,
-  // because there is no point offering a lever on a door that stays shut.
-  const priority: GateField[] = [
+  // Lead with the failure that decides the row.
+  //
+  // A settled failure always wins, because there is no point offering a lever
+  // on a door that stays shut. Among settled failures the school marks lead,
+  // since they are the most permanent thing on the record.
+  //
+  // Among *fixable* failures the order inverts to cheapest-lever-first:
+  // backlogs before CGPA. A student failing both is one exam window from the
+  // backlog and three semesters from the average, and §11.1 ranks eligibility
+  // repair by exactly that leverage. Leading with the CGPA would hand them the
+  // slower fix and bury the fast one.
+  const settledOrder: GateField[] = [
     "twelfth",
     "tenth",
     "gap",
@@ -242,9 +257,19 @@ function evaluate(
     "ug",
     "backlogs",
   ];
+  const fixableOrder: GateField[] = [
+    "backlogs",
+    "ug",
+    "gap",
+    "branch",
+    "tenth",
+    "twelfth",
+  ];
+
   const binding = [...failures].sort((a, b) => {
     if (a.fixability !== b.fixability) return a.fixability === "settled" ? -1 : 1;
-    return priority.indexOf(a.field) - priority.indexOf(b.field);
+    const order = a.fixability === "settled" ? settledOrder : fixableOrder;
+    return order.indexOf(a.field) - order.indexOf(b.field);
   })[0];
 
   return {
@@ -252,7 +277,7 @@ function evaluate(
     state,
     failures,
     binding,
-    groupKey: binding ? groupKeyFor(binding) : undefined,
+    groupKey: failures.length ? groupKeyFor(failures) : undefined,
   };
 }
 
@@ -260,16 +285,19 @@ function evaluate(
  * Rows that share a blocking reason group into one line — "Wipro +4" rather
  * than five near-identical rows. The grouping is what turns a list into an
  * argument, because it puts a number on what one fix is worth.
+ *
+ * The key is the **full set** of remaining blockers, not just the leading one.
+ * Grouping on the leading failure alone would let a row blocked by backlogs
+ * *and* a CGPA floor sit under "clear 2 backlogs — opens 18 companies", which
+ * is false: clearing the backlogs opens twelve of them and leaves six still
+ * shut. An overstated lever is the same failure mode as a wrong "settled" —
+ * the student acts on it, and finds out we were wrong at the drive.
  */
-function groupKeyFor(f: GateFailure): string {
-  switch (f.field) {
-    case "backlogs":
-      return `backlogs:${f.requiredText}`;
-    case "ug":
-      return `ug:${f.requiredText}`;
-    default:
-      return `${f.field}:${f.requiredText}`;
-  }
+function groupKeyFor(failures: GateFailure[]): string {
+  return failures
+    .map((f) => `${f.field}:${f.requiredText}`)
+    .sort()
+    .join("+");
 }
 
 function headlineFor(f: GateFailure): string {
@@ -323,16 +351,28 @@ export function buildLedger(
   }
 
   const groups: ReachGroup[] = [...byKey.entries()]
-    .map(([key, list]) => ({
-      key,
-      binding: list[0].binding!,
-      headline: headlineFor(list[0].binding!),
-      verdicts: list.sort(
-        (a, b) => b.company.packageMaxLpa - a.company.packageMaxLpa,
-      ),
-      opens: list.length,
-    }))
-    .sort((a, b) => b.opens - a.opens);
+    .map(([key, list]) => {
+      const failures = list[0].failures;
+      return {
+        key,
+        binding: list[0].binding!,
+        // Every blocker, in the order they need doing. A row with two gates
+        // says so rather than advertising the cheaper one.
+        headline: failures.map(headlineFor).join("  ·  "),
+        blockers: failures,
+        verdicts: list.sort(
+          (a, b) => b.company.packageMaxLpa - a.company.packageMaxLpa,
+        ),
+        opens: list.length,
+      };
+    })
+    .sort((a, b) => {
+      // Single-gate groups first — the fastest genuine wins lead.
+      if (a.blockers.length !== b.blockers.length) {
+        return a.blockers.length - b.blockers.length;
+      }
+      return b.opens - a.opens;
+    });
 
   const sourceMap = new Map<string, Source>();
   for (const v of verdicts) {

@@ -186,14 +186,25 @@ export function ReachGroupBlock({ group }: { group: ReachGroup }) {
         </div>
       ) : null}
 
-      {group.binding.fix ? (
-        <p className="fixline">
-          <b>Fix:</b> {group.binding.fix}{" "}
-          {group.opens > 1
-            ? `Opens ${group.opens} companies at once.`
-            : "Opens this one."}
-        </p>
-      ) : null}
+      {/* Every blocker gets its own fix line. A row behind two gates says so:
+          claiming the cheap one opens the door would be an overstated lever,
+          and the student finds out at the drive. */}
+      {group.blockers
+        .filter((b) => b.fix)
+        .map((b, i, all) => (
+          <p className="fixline" key={b.field}>
+            <b>{all.length > 1 ? `Fix ${i + 1}:` : "Fix:"}</b> {b.fix}
+            {i === all.length - 1 ? (
+              <>
+                {" "}
+                {all.length > 1 ? "Both together open " : "Opens "}
+                {group.opens === 1
+                  ? "this one."
+                  : `${group.opens} companies.`}
+              </>
+            ) : null}
+          </p>
+        ))}
 
       <div style={{ marginTop: 8 }}>
         <SourceTag

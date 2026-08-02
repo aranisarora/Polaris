@@ -90,8 +90,15 @@ export function buildReachSet(ledger: Ledger): ReachSet {
 
   // ── The standard split. Safe is open now; stretch is one exam window away;
   // reach needs sustained work across semesters.
-  const stretch = ledger.reach.filter((v) => v.binding?.field === "backlogs");
-  const reach = ledger.reach.filter((v) => v.binding?.field !== "backlogs");
+  //
+  // Split on the *whole* blocker set, not the leading one. A row behind both a
+  // backlog and a CGPA floor is not one exam window away, and filing it under
+  // Stretch would promise a timeline we cannot keep.
+  const needsCgpa = (v: CompanyVerdict) =>
+    v.failures.some((f) => f.field === "ug");
+
+  const stretch = ledger.reach.filter((v) => !needsCgpa(v));
+  const reach = ledger.reach.filter(needsCgpa);
 
   const [sMin, sMax] = packageRange(openVerdicts);
   const [tMin, tMax] = packageRange(stretch);

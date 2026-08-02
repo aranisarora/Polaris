@@ -1098,10 +1098,13 @@ textarea.inp {
   width: 20px;
   height: 20px;
 }
+/* 12px, not 11. §6.3's carve-out below the floor is only for *uppercase mono
+   tracked at .1em*, which stays legible where sentence case would not. A
+   sentence-case tab label does not qualify, so it sits on the floor. */
 .tabs .lb {
   font-family: var(--font-data);
-  font-size: 11px;
-  letter-spacing: 0.03em;
+  font-size: 12px;
+  letter-spacing: 0.01em;
 }
 
 /* Desktop: a persistent left rail, no tab bar. §11.8 — the desktop layout is
@@ -1157,6 +1160,11 @@ textarea.inp {
     font-weight: 500;
   }
   .tabs {
+    display: none;
+  }
+  /* The rail already carries the wordmark and the section names, so the
+     mobile header would be a second copy of both. */
+  .app-main > .top[data-mobile-only] {
     display: none;
   }
   .app-main {
