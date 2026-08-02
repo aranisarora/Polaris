@@ -5,6 +5,7 @@ import {
   StateStamp,
   TickCounter,
   formatDate,
+  lpaRange,
 } from "@/components/brand";
 import type { CompanyVerdict, Ledger, ReachGroup } from "@/lib/engine/eligibility";
 
@@ -119,7 +120,7 @@ export function LedgerRow({
       ) : (
         <div className="arith">
           Clear on every published gate.{" "}
-          <span className="ok">₹{company.packageMinLpa}–{company.packageMaxLpa} LPA</span>
+          <span className="ok">{lpaRange(company.packageMinLpa, company.packageMaxLpa)}</span>
         </div>
       )}
 

@@ -100,11 +100,22 @@ export function computeAltitude(
     WEIGHTS.eligibility * (openShare * 0.6 + higherTierShare * 0.4);
 
   // ── Evidence. Cheap to move, and the first thing anyone checks.
-  const evidenceFindings = audit.bySection.evidence.length;
-  const evidence = Math.max(
-    0,
-    WEIGHTS.evidence * (1 - Math.min(1, evidenceFindings / 4)),
-  );
+  //
+  // Scored from what *exists*, not from the absence of complaints. Scoring
+  // "no findings" as clean would mean a student who has told us nothing
+  // outranks one who has shown us thin evidence — which is both wrong and
+  // exactly backwards as an incentive, since it would reward not connecting
+  // anything. Absence of evidence is not evidence.
+  const gh = audit.githubHealth;
+  const lc = audit.leetcodeHealth;
+  const shipped = audit.hasShippedArtefact;
+
+  const evidencePoints =
+    (gh === "healthy" ? 0.5 : gh === "thin" ? 0.2 : 0) +
+    (lc === "healthy" ? 0.3 : lc === "thin" ? 0.12 : 0) +
+    (shipped ? 0.2 : 0);
+
+  const evidence = WEIGHTS.evidence * Math.min(1, evidencePoints);
 
   // ── Differentiation.
   const differentiation =
@@ -138,9 +149,10 @@ export function computeAltitude(
       label: "Evidence",
       earned: evidence,
       available: WEIGHTS.evidence,
-      detail: evidenceFindings
-        ? `${evidenceFindings} ${evidenceFindings === 1 ? "finding" : "findings"} a recruiter would see`
-        : "GitHub and practice both reading clean",
+      detail:
+        gh === "absent" && lc === "absent"
+          ? "Nothing connected a recruiter could check"
+          : `GitHub ${gh} · practice ${lc}`,
     },
     {
       key: "differentiation",
@@ -201,6 +213,9 @@ function idealAltitudeOver(ledger: Ledger, record: StudentRecord): number {
     findings: [],
     bySection: { projects: [], evidence: [], document: [] },
     differentiatingSignal: "present",
+    githubHealth: "healthy",
+    leetcodeHealth: "healthy",
+    hasShippedArtefact: true,
     hoursToDifferentiate: 0,
     verdict: "",
     destination: "",

@@ -52,7 +52,6 @@ export function CheckForm({
   const formRef = useRef<HTMLFormElement>(null);
   const errors = state.errors ?? {};
 
-  const selected = colleges.find((c) => c.slug === college);
   const notListed = college === "other";
   const countdown = countdowns[gradYear];
 

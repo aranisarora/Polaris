@@ -231,6 +231,17 @@ export function formatDate(iso: string): string {
   });
 }
 
+/**
+ * §6.4 rule 4: Indian numbering where money appears. Never `$`, never
+ * `1,499.00`. Built as one string rather than inline JSX because JSX turns the
+ * newline between `₹{min}` and `–{max}` into a space, and a figure with a
+ * space inside it is not a figure.
+ */
+export function lpaRange(min: number, max: number): string {
+  const n = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
+  return min === max ? `₹${n(min)} LPA` : `₹${n(min)}–${n(max)} LPA`;
+}
+
 export function formatDay(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", {
     weekday: "short",

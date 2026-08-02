@@ -66,11 +66,22 @@ export type Finding = {
 
 export type DifferentiatingSignal = "none" | "thin" | "present";
 
+/**
+ * Positive evidence, graded. Scored separately from findings because absence
+ * of evidence is not evidence: a student who has connected nothing must not
+ * outrank one who has shown us something thin.
+ */
+export type EvidenceHealth = "absent" | "thin" | "healthy";
+
 export type Audit = {
   version: string;
   findings: Finding[];
   bySection: Record<FindingSection, Finding[]>;
   differentiatingSignal: DifferentiatingSignal;
+  githubHealth: EvidenceHealth;
+  leetcodeHealth: EvidenceHealth;
+  /** At least one project a stranger can open. */
+  hasShippedArtefact: boolean;
   /**
    * Hours to a profile that stands out — the project track from the action
    * catalogue plus the cheap evidence fixes. Derived, never asserted.
@@ -305,6 +316,18 @@ export function buildAudit(signals: ProfileSignals): Audit {
       ? "You have something to defend. The work left is making it easy to find."
       : "One project you can defend for twenty minutes, with commits proving you built it.";
 
+  const githubHealth: EvidenceHealth = !gh || gh.publicRepos === 0
+    ? "absent"
+    : gh.distinctCommitDays >= 8
+      ? "healthy"
+      : "thin";
+
+  const leetcodeHealth: EvidenceHealth = !lc || lc.solved === 0
+    ? "absent"
+    : lc.medium >= 25
+      ? "healthy"
+      : "thin";
+
   return {
     version: AUDIT_VERSION,
     findings,
@@ -314,6 +337,9 @@ export function buildAudit(signals: ProfileSignals): Audit {
       document: findings.filter((f) => f.section === "document"),
     },
     differentiatingSignal,
+    githubHealth,
+    leetcodeHealth,
+    hasShippedArtefact: deployed > 0,
     hoursToDifferentiate,
     verdict,
     destination,
