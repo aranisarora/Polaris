@@ -9,7 +9,9 @@ import {
 import { ReloadButton } from "@/components/onboarding/ReloadButton";
 import {
   COMPANY_TYPE_VALUES,
+  ROLE_OTHER,
   SECTOR_VALUES,
+  isKnownRole,
 } from "@/components/onboarding/options";
 import type {
   CompanyTypeOption,
@@ -20,7 +22,6 @@ import type {
 export const metadata: Metadata = { title: "Chart your course" };
 
 interface OnboardingRow {
-  dream_text: string | null;
   dream_interpretation: unknown;
   sector: string | null;
   sector_other: string | null;
@@ -70,12 +71,31 @@ function asCompanyType(
 
 /**
  * Resume at the saved step; completed users revisiting their answers walk
- * the wizard again from the top with everything prefilled.
+ * the wizard again from the top with everything prefilled. Steps 2 and 3
+ * both read off the sector, so a row without one always restarts at step 1
+ * rather than resuming into a step that has nothing to render.
  */
-function resumeStep(row: OnboardingRow | null): 1 | 2 | 3 {
-  if (!row || row.completed_at) return 1;
+function resumeStep(row: OnboardingRow | null, sector: SectorOption | null): 1 | 2 | 3 {
+  if (!row || row.completed_at || !sector) return 1;
   const step = row.current_step ?? 1;
   return step <= 1 ? 1 : step === 2 ? 2 : 3;
+}
+
+/**
+ * Restore step 2's card selection from the stored interpretation: a title
+ * still on the sector's ladder re-selects its card, anything else (typed
+ * through "Something else", or a ladder that has since changed) comes back
+ * in the inline input so the user's answer is never silently dropped.
+ */
+function resumeRole(
+  sector: SectorOption | null,
+  interpretation: DreamInterpretation | null,
+): { role: string | null; roleOther: string } {
+  const title = interpretation?.roleTitle?.trim();
+  if (!sector || !title) return { role: null, roleOther: "" };
+  return isKnownRole(sector, title)
+    ? { role: title, roleOther: "" }
+    : { role: ROLE_OTHER, roleOther: title };
 }
 
 export default async function OnboardingPage() {
@@ -88,7 +108,7 @@ export default async function OnboardingPage() {
   const { data, error } = await supabase
     .from("onboarding")
     .select(
-      "dream_text, dream_interpretation, sector, sector_other, company_type, fast_track_company, fast_track_role, current_step, completed_at",
+      "dream_interpretation, sector, sector_other, company_type, fast_track_company, fast_track_role, current_step, completed_at",
     )
     .eq("user_id", user.id)
     .maybeSingle();
@@ -106,13 +126,17 @@ export default async function OnboardingPage() {
   }
 
   const row = (data ?? null) as OnboardingRow | null;
+  const sector = asSector(row?.sector);
+  const interpretation = asInterpretation(row?.dream_interpretation);
+  const { role, roleOther } = resumeRole(sector, interpretation);
 
   const initial: OnboardingInitial = {
-    step: resumeStep(row),
-    dreamText: row?.dream_text ?? "",
-    dreamInterpretation: asInterpretation(row?.dream_interpretation),
-    sector: asSector(row?.sector),
+    step: resumeStep(row, sector),
+    sector,
     sectorOther: row?.sector_other ?? "",
+    role,
+    roleOther,
+    dreamInterpretation: interpretation,
     companyType: asCompanyType(row?.company_type),
     fastTrackCompany: row?.fast_track_company ?? "",
     fastTrackRole: row?.fast_track_role ?? "",

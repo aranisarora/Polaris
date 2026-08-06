@@ -195,7 +195,7 @@ async function writeCacheRow(
  *  2. Persisting is load-bearing, not best-effort. Classify is fail-closed
  *     (it trusts only ids present in this user's cache rows), so returning
  *     postings that were never recorded would hand the user a bearing where
- *     every batch 400s and "Retake bearing" fails identically. When there
+ *     every batch 400s and "Search again" fails identically. When there
  *     are postings to record and the write won't take — after one retry —
  *     this throws `JobSearchPersistError` instead. The caller's error path
  *     is a dead end the user can retry out of; the alternative is one they

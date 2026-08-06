@@ -356,7 +356,7 @@ export function ProfileFlow({ initialProfile, userName }: ProfileFlowProps) {
                 size="lg"
                 onClick={() => router.push("/bearing")}
               >
-                Take your bearing
+                See your matches
               </Button>
               <Button
                 type="button"
@@ -387,7 +387,7 @@ export function ProfileFlow({ initialProfile, userName }: ProfileFlowProps) {
             pending={pending}
             submitError={actionError}
             submitLabel={
-              view.mode === "edit" ? "Save answers" : "Save and take your bearing"
+              view.mode === "edit" ? "Save answers" : "Save and see your matches"
             }
             onSubmit={(answers) => handleQuestionnaire(answers, view.mode)}
             onBack={() => {

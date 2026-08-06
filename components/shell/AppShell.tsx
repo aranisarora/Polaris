@@ -40,8 +40,14 @@ const TABS = [
   { href: "/cv", label: "CV", icon: FileText },
 ] as const;
 
-/** Plain reading, not a metaphor: say exactly what unlocks these. */
+/**
+ * Plain reading, not a metaphor: say exactly what unlocks these. A `title`
+ * alone would never reach the ~90% of the audience on touch, so this also
+ * rides on each locked tab's accessible name and, on mobile, as one visible
+ * line above the bar.
+ */
 const LOCKED_TITLE = "Opens once your profile is saved";
+const LOCKED_NOTE = "Matches, Roadmap and CV open once your profile is saved.";
 
 /**
  * Authenticated chrome. Mobile: top bar (wordmark + sign-out) and a fixed
@@ -89,6 +95,7 @@ export function AppShell({ user, phase, children }: AppShellProps) {
                       key={tab.href}
                       aria-disabled="true"
                       title={LOCKED_TITLE}
+                      aria-label={`${tab.label} — ${LOCKED_TITLE.toLowerCase()}`}
                       className="inline-flex min-h-11 cursor-default select-none items-center gap-2 rounded-lg px-4 text-sm font-medium text-moonlight opacity-40"
                     >
                       {tab.label}
@@ -129,7 +136,13 @@ export function AppShell({ user, phase, children }: AppShellProps) {
 
         <main
           id="main"
-          className="mx-auto w-full max-w-6xl flex-1 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-6 md:px-8 md:pb-16 md:pt-10"
+          className={cn(
+            "mx-auto w-full max-w-6xl flex-1 px-4 pt-6 md:px-8 md:pb-16 md:pt-10",
+            // the locked note adds a line to the bar; clear it too
+            navLocked
+              ? "pb-[calc(7.25rem+env(safe-area-inset-bottom))]"
+              : "pb-[calc(5.5rem+env(safe-area-inset-bottom))]",
+          )}
         >
           {children}
         </main>
@@ -139,6 +152,11 @@ export function AppShell({ user, phase, children }: AppShellProps) {
           aria-label="Primary"
           className="fixed inset-x-0 bottom-0 z-40 border-t bg-night pb-[env(safe-area-inset-bottom)] md:hidden"
         >
+          {navLocked && (
+            <p className="border-b px-4 py-2 text-center text-xs text-moonlight">
+              {LOCKED_NOTE}
+            </p>
+          )}
           <div className="flex h-16">
             {TABS.map((tab) => {
               const Icon = tab.icon;
@@ -148,6 +166,7 @@ export function AppShell({ user, phase, children }: AppShellProps) {
                     key={tab.href}
                     aria-disabled="true"
                     title={LOCKED_TITLE}
+                    aria-label={`${tab.label} — ${LOCKED_TITLE.toLowerCase()}`}
                     className="relative flex flex-1 select-none flex-col items-center justify-center gap-1 text-moonlight opacity-40"
                   >
                     <Icon size={20} strokeWidth={1.5} aria-hidden />

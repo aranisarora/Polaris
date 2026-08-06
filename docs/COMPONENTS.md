@@ -148,7 +148,7 @@ interface LinkButtonProps extends React.ComponentPropsWithRef<typeof Link> {
 ```
 
 ```tsx
-<LinkButton href="/bearing" variant="secondary">Take your bearing</LinkButton>
+<LinkButton href="/bearing" variant="secondary">See your matches</LinkButton>
 ```
 
 `buttonClasses({ variant, size, className })` is also exported for rare
@@ -239,7 +239,7 @@ interface ChoiceCardProps {
 ```
 
 ```tsx
-<ChoiceCardGroup label="Which sector calls you?" value={sector} onChange={setSector}>
+<ChoiceCardGroup label="What kind of work do you dream of?" value={sector} onChange={setSector}>
   <ChoiceCard value="design" title="Design" />
   <ChoiceCard value="startup" title="Startup" tag="Suggested from your dream" />
 </ChoiceCardGroup>

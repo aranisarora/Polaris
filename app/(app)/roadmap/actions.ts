@@ -60,7 +60,7 @@ export async function toggleTask(input: {
   if (updateError || !task) {
     return {
       ok: false,
-      error: "The waypoint couldn't be updated. Your route is unchanged — try again.",
+      error: "That step couldn't be updated. Your roadmap is unchanged — try again.",
     };
   }
 

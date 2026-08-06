@@ -9,7 +9,7 @@ extend your own feature's files only.
 | Route | Access | Purpose |
 |---|---|---|
 | `/` | public | Landing. Statically prerendered — the redirect for authed visitors happens in `proxy.ts`, not in the page (see below). |
-| `/onboarding` | auth | Phase 1 wizard (3 steps + fast track). |
+| `/onboarding` | auth | Phase 1 wizard (3 card steps + fast track): field of work → dream job title → kind of company. No free-text box on the main path, and no model call. |
 | `/profile` | auth | Phase 2: CV upload + parse confirm, or questionnaire. |
 | `/bearing` | auth | Phase 3 reality check + lock target. |
 | `/roadmap` | auth | Phase 4: generation moment + star-chart roadmap. |
@@ -84,7 +84,10 @@ visitor gets the public landing page rather than a 500.
     hits the day's wall names it as the day's wall, not a momentary wait.
 - Feature prompts live in `lib/gemini/prompts/<feature>.ts` and are owned by
   that feature's agent. Every prompt that reasons about the user MUST receive
-  and use their verbatim `dream_text` and `quotedPhrases`.
+  and use their verbatim `dream_text` and `quotedPhrases`. Onboarding composes
+  both from the card picks (`composeDream`), so `quotedPhrases` are still
+  guaranteed verbatim substrings of `dream_text` — that invariant is what the
+  downstream prompts rely on, not how the sentence was produced.
 
 ## Job providers — `lib/jobs/`
 
@@ -130,7 +133,7 @@ never leak provider errors raw (map to user-safe messages).
 
 | Endpoint | Shape |
 |---|---|
-| action `saveOnboardingStep` | partial OnboardingState → upserts `onboarding`, sets `current_step`; step 1 also calls Gemini for `dream_interpretation` (non-blocking failure: store null, proceed). Fast-track sets all + `completed_at`. |
+| action `saveOnboardingStep` | one step's answer → upserts `onboarding`, sets `current_step`. Step 1 stores `sector`; step 2 composes `dream_text` + `dream_interpretation` from the two card picks (`composeDream` in `components/onboarding/options.ts` — deterministic, no model call); step 3 sets `company_type` + `completed_at`. Fast-track sets company/role + `completed_at`. |
 | action `saveProfile` | `{ cv?: CVData; questionnaire?: QuestionnaireDraft; cvFilePath?: string; stay?: boolean }` → merges with what is stored (cv + answers → source `both`), upserts `career_profiles` with `completed_at`, inserts a `cv_versions` snapshot (score via `lib/score.ts`, never lowered). `questionnaire` is `QuestionnaireAnswers` **plus `name`** (`components/profile/answers.ts`, ≤120 chars, optional): it is stored with the answers AND mirrored to `profiles.full_name`, which is where the living CV and the PDF export read the name from for questionnaire-only users. `stay: true` skips the `/bearing` redirect so the client can offer the optional addendum. |
 | `POST /api/cv/parse` | multipart form `file` (PDF ≤ 8MB) → Gemini (inlineData application/pdf) → `{ cv: CVData }`. Does NOT persist; client shows confirm/edit then calls `saveProfile`. Uploads original to storage `cvs/{userId}/cv.pdf` (best-effort). |
 | `POST /api/jobs/search` | `{}` → reads onboarding + profile, builds JobQuery (keywords from `dream_interpretation.searchKeywords` or fast-track role; location/country from profile hints, default gb) → `JobSearchResult`. |
@@ -181,11 +184,12 @@ NEXT_PUBLIC_SITE_URL     — OAuth redirect base
 
 **5 requests/minute AND 20 requests/day, per project per model.** Not ~10/min
 — that figure was wrong, and everything sized against it was too loose. The
-daily cap is the binding one. A complete journey costs 7 model calls:
+daily cap is the binding one. A complete journey costs 6 model calls
+(onboarding used to spend a 7th on dream interpretation; the card steps
+compose that locally now, so the whole wizard runs with no key at all):
 
 | Call | Where |
 |---|---|
-| dream interpretation | `saveOnboardingStep`, step 1 (failure tolerated) |
 | CV parse | `POST /api/cv/parse` (questionnaire path spends none) |
 | classify ×2 | `POST /api/jobs/classify`, 24 postings at 12/call |
 | dream assess | `POST /api/dream/assess` |

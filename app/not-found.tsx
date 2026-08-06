@@ -10,11 +10,11 @@ export default function NotFound() {
           This coordinate is uncharted
         </h1>
         <p className="text-moonlight">
-          There&apos;s nothing at this position. Your chart is still where you
-          left it.
+          There&apos;s nothing at this position. Everything you&apos;ve charted
+          is still where you left it.
         </p>
       </div>
-      <LinkButton href="/">Return to the chart</LinkButton>
+      <LinkButton href="/">Back to Polaris</LinkButton>
     </main>
   );
 }

@@ -23,7 +23,11 @@ const REF = new URL(URL_).hostname.split('.')[0];
 
 const EMAIL = `polaris.qa.${Date.now()}@qa.polaris.test`;
 const PASS = 'Polaris-QA-' + Math.random().toString(36).slice(2, 10);
-const DREAM = "I want to design indie games in London that make people feel something - small studio, hands-on, shipping cozy narrative worlds.";
+// Onboarding is card-driven, so the dream is now composed from two picks
+// (sector "Design" + this role) rather than typed. The app stores it as
+// "I want to be a Senior Product Designer in design." and quotes the role
+// title back verbatim across the bearing and roadmap.
+const ROLE = 'Senior Product Designer';
 
 const log = (...a) => console.log('[e2e]', ...a);
 const results = [];
@@ -165,21 +169,28 @@ try {
   const page = await ctx.newPage();
   page.setDefaultTimeout(25000);
 
-  await step('onboarding: dream', async () => {
+  // Every onboarding step is now a card tap and the dream is composed from
+  // the picks, so this walk makes no Gemini calls and needs no quota pacing.
+  await step('onboarding: sector', async () => {
     await page.goto(BASE + '/onboarding', { waitUntil: 'networkidle' });
     record('onboarding reached (no bounce)', page.url().includes('/onboarding'), page.url());
-    await shots(page, '02-onboarding-dream');
-    await page.locator('textarea').first().fill(DREAM);
-    await shots(page, '02b-onboarding-dream-filled');
-    await clickButton(page, /continue|next/i, 'dream continue');
-    await page.waitForTimeout(7000); // Gemini interpretation
+    record('step 1 asks for the field of work', (await page.textContent('h1'))?.includes('What kind of work'), await page.textContent('h1'));
+    record('no free-text box on step 1', (await page.locator('textarea').count()) === 0);
+    await shots(page, '02-onboarding-sector');
+    await page.locator('[role=radio]').filter({ hasText: /^Design$/ }).first().click();
+    await shots(page, '02b-onboarding-sector-picked');
+    await clickButton(page, /continue|next/i, 'sector continue');
+    await page.waitForTimeout(1500);
   });
 
-  await step('onboarding: sector', async () => {
-    await shots(page, '03-onboarding-sector');
-    const design = page.locator('[role=radio]').filter({ hasText: /design/i }).first();
-    if (await design.count()) { await design.click(); } else { await page.locator('[role=radio]').first().click(); }
-    await clickButton(page, /continue|next/i, 'sector continue');
+  await step('onboarding: role', async () => {
+    const h1 = (await page.textContent('h1')) ?? '';
+    record('step 2 names the chosen field back', /where do you dream of going in design/i.test(h1), h1);
+    record('step 2 offers the design ladder', (await page.locator('[role=radio]').count()) === 8, `${await page.locator('[role=radio]').count()} cards`);
+    await shots(page, '03-onboarding-role');
+    await page.locator('[role=radio]').filter({ hasText: new RegExp(`^${ROLE}$`) }).first().click();
+    await shots(page, '03b-onboarding-role-picked');
+    await clickButton(page, /continue|next/i, 'role continue');
     await page.waitForTimeout(1500);
   });
 
@@ -236,14 +247,16 @@ try {
     await page.waitForTimeout(50000);
     await shots(page, '11-bearing-results');
     const body = (await page.textContent('body')) ?? '';
-    record('bearing shows tier language', /already possible|attainable|stretch/i.test(body));
-    record('bearing quotes dream verbatim', body.includes('make people feel something'), 'verbatim quote check');
+    record('bearing shows tier language', /ready now|almost there|not yet/i.test(body));
+    record('bearing quotes dream verbatim', body.includes(ROLE), 'verbatim quote check');
     record('bearing shows requirement counts', /\d+\s+of\s+\d+/i.test(body));
     record('nav tab reads "Matches"', (await page.getByRole('link', { name: /^Matches$/ }).count()) > 0);
 
-    // GEOGRAPHY REGRESSION: the dream is a London (UK) role. Postings used to
-    // come back from London/Corbin KENTUCKY. Read the locations the app
-    // actually cached and assert none are US states.
+    // GEOGRAPHY REGRESSION: the target is a UK role — the card-driven dream
+    // carries no location, so the country now comes from the profile location
+    // filled in above ("London, UK"). Postings used to come back from
+    // London/Corbin KENTUCKY. Read the locations the app actually cached and
+    // assert none are US states.
     const { data: cacheRows, error: cacheErr } = await admin
       .from('job_search_cache')
       .select('query, results')
@@ -291,7 +304,7 @@ try {
     record('roadmap has waypoint readout', /waypoint/i.test(rbody));
     record(
       'roadmap personal why (verbatim profile/dream quotes)',
-      /cozy narrative|make people feel something|unity|game jam|itch\.io/i.test(rbody),
+      new RegExp(`${ROLE}|unity|game jam|itch\\.io`, 'i').test(rbody),
       'verbatim-why check',
     );
   });

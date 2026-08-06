@@ -12,18 +12,20 @@ import type {
   DreamInterpretation,
   SectorOption,
 } from "@/lib/types";
-import { deriveCompanyType } from "./options";
-import { StepDream } from "./StepDream";
+import { ROLE_OTHER, deriveCompanyType, sectorChoice } from "./options";
 import { StepSector } from "./StepSector";
+import { StepRole } from "./StepRole";
 import { StepCompany } from "./StepCompany";
 import { CompletionMoment } from "./CompletionMoment";
 
 export interface OnboardingInitial {
   step: 1 | 2 | 3;
-  dreamText: string;
-  dreamInterpretation: DreamInterpretation | null;
   sector: SectorOption | null;
   sectorOther: string;
+  /** A ladder title, ROLE_OTHER, or null when step 2 hasn't been answered. */
+  role: string | null;
+  roleOther: string;
+  dreamInterpretation: DreamInterpretation | null;
   companyType: CompanyTypeOption | null;
   fastTrackCompany: string;
   fastTrackRole: string;
@@ -34,24 +36,18 @@ type Busy = "continue" | "fast" | null;
 
 const HEADING_ID = "onboarding-step-title";
 
-const STEP_TITLES: Record<Step, string> = {
-  1: "Where do you dream of going?",
-  2: "Which sector calls you?",
-  3: "What kind of company suits you?",
-};
-
 /** The route never starts at zero — arriving here is already progress. */
 const STEP_PERCENT: Record<Step, number> = { 1: 10, 2: 43, 3: 76 };
 
-/** Route-extension beat (400ms) before the completion moment mounts. */
+/** Route-extension beat before the completion moment mounts. */
 const CHART_EXTEND_MS = 520;
 
-const MSG_UNREACHABLE =
-  "That didn't save. Try again — your words are still here.";
-const MSG_DREAM_EMPTY = "Name the dream first — a sentence is enough.";
-const MSG_FAST_INCOMPLETE = "Name both the company and the role.";
-const MSG_SECTOR_UNCHOSEN = "Choose the closest one — you can change course later.";
-const MSG_SECTOR_OTHER_EMPTY = "Name your sector — a word or two is enough.";
+const MSG_UNREACHABLE = "That didn't save. Try again — your answers are still here.";
+const MSG_FAST_INCOMPLETE = "Name both the company and the job title.";
+const MSG_SECTOR_UNCHOSEN = "Pick the closest one — you can change course later.";
+const MSG_SECTOR_OTHER_EMPTY = "Name your field of work — a word or two is enough.";
+const MSG_ROLE_UNCHOSEN = "Pick the job you're aiming for.";
+const MSG_ROLE_OTHER_EMPTY = "Name the job title you're aiming for.";
 const MSG_COMPANY_UNCHOSEN = "Choose one — 'Any of these' counts.";
 
 /** Server actions signal auth redirects by throwing; let those through. */
@@ -68,9 +64,10 @@ function rethrowNextRedirect(error: unknown): void {
 }
 
 /**
- * The 3-step wizard. One question per screen; every step persists via
+ * The 3-step wizard: field of work → the job itself → kind of company.
+ * Every step is answered by tapping a card, and each one persists via
  * saveOnboardingStep before advancing, so returning resumes exactly here.
- * Back navigation is local — nothing typed is ever lost.
+ * Back navigation is local — nothing chosen is ever lost.
  */
 export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
   const router = useRouter();
@@ -80,24 +77,15 @@ export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
   const [charted, setCharted] = React.useState(false);
   const [moment, setMoment] = React.useState(false);
 
-  const [dreamText, setDreamText] = React.useState(initial.dreamText);
+  const [sector, setSector] = React.useState<SectorOption | null>(initial.sector);
+  const [sectorOther, setSectorOther] = React.useState(initial.sectorOther);
+  const [role, setRole] = React.useState<string | null>(initial.role);
+  const [roleOther, setRoleOther] = React.useState(initial.roleOther);
   const [interpretation, setInterpretation] =
     React.useState<DreamInterpretation | null>(initial.dreamInterpretation);
-  const [sector, setSector] = React.useState<SectorOption | null>(
-    initial.sector,
-  );
-  const [sectorOther, setSectorOther] = React.useState(initial.sectorOther);
   const [companyType, setCompanyType] =
-    React.useState<CompanyTypeOption | null>(
-      () =>
-        initial.companyType ??
-        (initial.step === 3
-          ? deriveCompanyType(initial.dreamInterpretation)
-          : null),
-    );
-  const [fastCompany, setFastCompany] = React.useState(
-    initial.fastTrackCompany,
-  );
+    React.useState<CompanyTypeOption | null>(initial.companyType);
+  const [fastCompany, setFastCompany] = React.useState(initial.fastTrackCompany);
   const [fastRole, setFastRole] = React.useState(initial.fastTrackRole);
 
   const [busy, setBusy] = React.useState<Busy>(null);
@@ -108,6 +96,22 @@ export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
     () => deriveCompanyType(interpretation),
     [interpretation],
   );
+
+  /** Step 2's question names the field they just picked, in their words. */
+  const roleQuestion = React.useMemo(() => {
+    if (!sector) return "Where do you dream of going?";
+    const phrase =
+      sector === "other" ? sectorOther.trim() : sectorChoice(sector).phrase;
+    return phrase
+      ? `Where do you dream of going in ${phrase}?`
+      : "Where do you dream of going?";
+  }, [sector, sectorOther]);
+
+  const stepTitles: Record<Step, string> = {
+    1: "What kind of work do you dream of?",
+    2: roleQuestion,
+    3: "What kind of company suits you?",
+  };
 
   // the wizard's destination — warm it up
   React.useEffect(() => {
@@ -135,68 +139,6 @@ export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
   const goProfile = React.useCallback(() => {
     router.push("/profile");
   }, [router]);
-
-  async function submitDream() {
-    if (busy) return;
-    const text = dreamText.trim();
-    if (!text) {
-      setStepError(MSG_DREAM_EMPTY);
-      return;
-    }
-    setStepError(null);
-    setBusy("continue");
-    let result: SaveOnboardingStepResult;
-    try {
-      result = await saveOnboardingStep({ kind: "dream", dreamText: text });
-    } catch (error) {
-      rethrowNextRedirect(error);
-      setStepError(MSG_UNREACHABLE);
-      setBusy(null);
-      return;
-    }
-    if (!result.ok) {
-      setStepError(result.error);
-      setBusy(null);
-      return;
-    }
-    // mirror what the server stored (null when interpretation failed)
-    setInterpretation(result.interpretation);
-    setBusy(null);
-    goTo(2);
-  }
-
-  async function submitFastTrack() {
-    if (busy) return;
-    const company = fastCompany.trim();
-    const role = fastRole.trim();
-    if (!company || !role) {
-      setFastError(MSG_FAST_INCOMPLETE);
-      return;
-    }
-    setFastError(null);
-    setBusy("fast");
-    let result: SaveOnboardingStepResult;
-    try {
-      result = await saveOnboardingStep({
-        kind: "fastTrack",
-        company,
-        role,
-        dreamText: dreamText.trim(),
-      });
-    } catch (error) {
-      rethrowNextRedirect(error);
-      setFastError(MSG_UNREACHABLE);
-      setBusy(null);
-      return;
-    }
-    if (!result.ok) {
-      setFastError(result.error);
-      setBusy(null);
-      return;
-    }
-    // keep the pending state through navigation
-    goProfile();
-  }
 
   async function submitSector() {
     if (busy) return;
@@ -229,9 +171,81 @@ export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
       setBusy(null);
       return;
     }
-    if (companyType == null && suggested) setCompanyType(suggested);
+    setBusy(null);
+    goTo(2);
+  }
+
+  async function submitRole() {
+    if (busy) return;
+    if (!role) {
+      setStepError(MSG_ROLE_UNCHOSEN);
+      return;
+    }
+    const other = roleOther.trim();
+    if (role === ROLE_OTHER && !other) {
+      setStepError(MSG_ROLE_OTHER_EMPTY);
+      return;
+    }
+    setStepError(null);
+    setBusy("continue");
+    let result: SaveOnboardingStepResult;
+    try {
+      result = await saveOnboardingStep({
+        kind: "role",
+        role,
+        roleOther: role === ROLE_OTHER ? other : undefined,
+      });
+    } catch (error) {
+      rethrowNextRedirect(error);
+      setStepError(MSG_UNREACHABLE);
+      setBusy(null);
+      return;
+    }
+    if (!result.ok) {
+      setStepError(result.error);
+      setBusy(null);
+      return;
+    }
+    // mirror what the server stored, so step 3's suggestion matches it
+    setInterpretation(result.interpretation);
+    if (companyType == null) {
+      const next = deriveCompanyType(result.interpretation);
+      if (next) setCompanyType(next);
+    }
     setBusy(null);
     goTo(3);
+  }
+
+  async function submitFastTrack() {
+    if (busy) return;
+    const company = fastCompany.trim();
+    const title = fastRole.trim();
+    if (!company || !title) {
+      setFastError(MSG_FAST_INCOMPLETE);
+      return;
+    }
+    setFastError(null);
+    setBusy("fast");
+    let result: SaveOnboardingStepResult;
+    try {
+      result = await saveOnboardingStep({
+        kind: "fastTrack",
+        company,
+        role: title,
+      });
+    } catch (error) {
+      rethrowNextRedirect(error);
+      setFastError(MSG_UNREACHABLE);
+      setBusy(null);
+      return;
+    }
+    if (!result.ok) {
+      setFastError(result.error);
+      setBusy(null);
+      return;
+    }
+    // keep the pending state through navigation
+    goProfile();
   }
 
   async function submitCompany() {
@@ -289,21 +303,30 @@ export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
           id={HEADING_ID}
           className="text-h1 text-starlight outline-none"
         >
-          {STEP_TITLES[step]}
+          {stepTitles[step]}
         </h1>
 
         {step === 1 && (
-          <StepDream
-            headingId={HEADING_ID}
-            value={dreamText}
-            onChange={(value) => {
-              setDreamText(value);
+          <StepSector
+            sector={sector}
+            onSectorChange={(value) => {
+              setSector(value);
+              // the ladder is per-sector: a different field invalidates the pick
+              if (value !== sector) {
+                setRole(null);
+                setRoleOther("");
+              }
+              if (stepError) setStepError(null);
+            }}
+            sectorOther={sectorOther}
+            onSectorOtherChange={(value) => {
+              setSectorOther(value);
               if (stepError) setStepError(null);
             }}
             error={stepError}
             busy={busy !== null}
             saving={busy === "continue"}
-            onContinue={submitDream}
+            onContinue={submitSector}
             fastCompany={fastCompany}
             fastRole={fastRole}
             onFastCompanyChange={(value) => {
@@ -320,23 +343,25 @@ export function OnboardingWizard({ initial }: { initial: OnboardingInitial }) {
           />
         )}
 
-        {step === 2 && (
-          <StepSector
+        {step === 2 && sector && (
+          <StepRole
             sector={sector}
-            onSectorChange={(value) => {
-              setSector(value);
+            question={roleQuestion}
+            role={role}
+            onRoleChange={(value) => {
+              setRole(value);
               if (stepError) setStepError(null);
             }}
-            sectorOther={sectorOther}
-            onSectorOtherChange={(value) => {
-              setSectorOther(value);
+            roleOther={roleOther}
+            onRoleOtherChange={(value) => {
+              setRoleOther(value);
               if (stepError) setStepError(null);
             }}
             error={stepError}
             busy={busy !== null}
             saving={busy === "continue"}
             onBack={() => goTo(1)}
-            onContinue={submitSector}
+            onContinue={submitRole}
           />
         )}
 

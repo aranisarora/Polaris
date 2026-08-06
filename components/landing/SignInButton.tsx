@@ -16,7 +16,7 @@ export interface SignInButtonProps {
 function messageFor(err: unknown): string {
   const raw = err instanceof Error ? err.message : "";
   if (raw.includes("not configured")) {
-    return "Sign-in isn't configured on this deployment yet — the Supabase keys are missing.";
+    return "Sign-in isn't switched on here yet — that's on our end, not yours. Try again a little later.";
   }
   return "Google didn't answer just now. Check your connection and try again.";
 }

@@ -13,7 +13,7 @@ import type {
 } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Your route",
+  title: "Your roadmap",
 };
 
 /**
@@ -52,8 +52,8 @@ export default async function RoadmapPage() {
   if (targetRes.error || roadmapRes.error) {
     return (
       <ErrorState
-        title="Your route couldn't be loaded"
-        detail="The chart didn't answer. Nothing is lost — your destination and progress are safe."
+        title="Your roadmap couldn't be loaded"
+        detail="We couldn't reach it just now. Nothing is lost — your destination and progress are safe."
         action={<RefreshButton>Try again</RefreshButton>}
         className="mx-auto mt-10 max-w-xl"
       />
@@ -66,8 +66,8 @@ export default async function RoadmapPage() {
     return (
       <EmptyState
         title="No destination locked"
-        body="Take your bearing and lock a destination — the route draws from there."
-        action={<LinkButton href="/bearing">Take your bearing</LinkButton>}
+        body="Open Matches and lock a destination — your roadmap draws from there."
+        action={<LinkButton href="/bearing">See your matches</LinkButton>}
         className="mt-10"
       />
     );
@@ -102,8 +102,8 @@ export default async function RoadmapPage() {
     if (tasksRes.error) {
       return (
         <ErrorState
-          title="Your route couldn't be loaded"
-          detail="The waypoints didn't answer. Nothing is lost — your destination and progress are safe."
+          title="Your roadmap couldn't be loaded"
+          detail="We couldn't reach your steps just now. Nothing is lost — your destination and progress are safe."
           action={<RefreshButton>Try again</RefreshButton>}
           className="mx-auto mt-10 max-w-xl"
         />

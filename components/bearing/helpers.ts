@@ -129,11 +129,11 @@ export function missingKeyNames(providers: ProviderStatus[]): string[] {
 
 // ------------------------------------------------------------------- copy
 
-/** Short tab labels; rows keep TIER_LABEL from lib/types. */
+/** Tab labels. Kept identical to TIER_LABEL in lib/types — same group, same word. */
 export const TIER_SHORT: Record<Tier, string> = {
-  ready: "Ready",
-  attainable: "Attainable",
-  stretch: "Stretch",
+  ready: "Ready now",
+  attainable: "Almost there",
+  stretch: "Not yet",
 };
 
 /** One line of trajectory framing above each tier group (docs/SPEC.md). */
@@ -143,16 +143,16 @@ export const TIER_FRAMING: Record<Tier, string> = {
   attainable:
     "A short push away — one or two gaps each, the kind focused work closes in months.",
   stretch:
-    "Not yet, honestly. These sit near your dream's altitude — the tiers below build toward them.",
+    "Not yet, honestly. These sit near your dream's altitude — the groups above build toward them.",
 };
 
 export const TIER_EMPTY: Record<Tier, string> = {
   ready:
-    "Nothing sits at ready in this bearing. Attainable holds your nearest waypoints — a short push away.",
+    "Nothing is open to you right now. “Almost there” holds your closest jobs — a short push away.",
   attainable:
-    "No attainable postings surfaced this time. Ready shows what's open now; a later bearing may find more.",
+    "Nothing landed in “Almost there” this time. “Ready now” shows what's open today; searching again may find more.",
   stretch:
-    "No stretch postings surfaced. Your dream above still carries the honest reading.",
+    "Nothing landed in “Not yet”. Your dream above still carries the honest reading.",
 };
 
 /** The tier each TIER_EMPTY line sends the user to (null = points at nothing). */
@@ -173,7 +173,9 @@ export function tierEmptyLine(tier: Tier, counts: Record<Tier, number>): string 
 
   const elsewhere = ALL_TIERS.find((t) => t !== tier && counts[t] > 0);
   if (elsewhere) {
-    return `Nothing sits at ${TIER_SHORT[tier].toLowerCase()} in this bearing. ${TIER_SHORT[elsewhere]} holds the postings that came back.`;
+    // the labels are phrases now ("Ready now", "Almost there"), so quote them
+    // rather than dropping them into a sentence as if they were nouns
+    return `Nothing in “${TIER_SHORT[tier]}” this time — “${TIER_SHORT[elsewhere]}” holds the postings that came back.`;
   }
-  return "Nothing at this tier in this bearing — retake the bearing or broaden your course.";
+  return "Nothing in this group this time — search again, or edit your dream to widen it.";
 }
