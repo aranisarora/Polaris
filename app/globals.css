@@ -1,0 +1,270 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ theme
+   Polaris — Night Sky Navigator. Every token here is the committed world
+   from docs/DIRECTION.md. Colors become utilities (bg-night, text-starlight,
+   border-veil…), fonts become font-display / font-sans / font-mono. */
+
+@theme {
+  /* palette */
+  --color-abyss: #05080f;
+  --color-night: #0a1226;
+  --color-depth: #111b3a;
+  --color-veil: #1b2850;
+  --color-starlight: #f2f4fa;
+  --color-moonlight: #a9b4d0;
+  --color-faint: #7c87a8;
+  --color-gold: #d9a648;
+  --color-gold-bright: #f0c468;
+  --color-gold-deep: #7a5c1e;
+  --color-astral: #7c9ee8;
+  --color-aurora: #5bc48e;
+  --color-ember: #e0715c;
+
+  /* hairlines — 1px borders everywhere derive from these */
+  --color-hairline: color-mix(in srgb, #f2f4fa 9%, transparent);
+  --color-hairline-strong: color-mix(in srgb, #f2f4fa 16%, transparent);
+
+  /* type scale (Marcellus is single-weight; scale carries hierarchy) */
+  --text-display: clamp(2.5rem, 8vw, 4.25rem);
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: 0.01em;
+  --text-h1: 2rem;
+  --text-h1--line-height: 1.15;
+  --text-h2: 1.5rem;
+  --text-h2--line-height: 1.25;
+  --text-h3: 1.1875rem;
+  --text-h3--line-height: 1.35;
+
+  /* motion grammar */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --default-transition-duration: 150ms;
+
+  /* depth — offset + blur only, never zero-offset halos */
+  --shadow-panel: 0 12px 32px -12px rgb(0 0 0 / 0.55);
+  --shadow-raised: 0 24px 48px -16px rgb(0 0 0 / 0.6);
+
+  /* named animations (keyframes live at top level below) */
+  --animate-rose-spin: rose-spin 3.2s linear infinite;
+  --animate-north-pulse: north-pulse 4s ease-in-out infinite;
+  --animate-waypoint-flare: waypoint-flare 400ms var(--ease-out-expo);
+  --animate-shimmer: shimmer 1.8s ease-in-out infinite;
+  --animate-caret: caret-blink 1s step-end infinite;
+  --animate-fade-up: fade-up 400ms var(--ease-out-expo) both;
+  --animate-quiet-pulse: quiet-pulse 2.8s ease-in-out infinite;
+}
+
+/* fonts arrive from next/font in app/layout.tsx as CSS variables */
+@theme inline {
+  --font-display: var(--font-marcellus), Georgia, serif;
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-mono: var(--font-fragment), ui-monospace, monospace;
+}
+
+/* ------------------------------------------------------------- keyframes */
+
+@keyframes rose-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes north-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes waypoint-flare {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  45% {
+    transform: scale(1.4);
+    filter: brightness(1.35);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(280%);
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes quiet-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ------------------------------------------------------------------ base */
+
+@layer base {
+  /* hairline is the default border color — a bare `border` is on-world */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-hairline);
+  }
+
+  html {
+    color-scheme: dark;
+    background-color: var(--color-abyss);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-night);
+    color: var(--color-starlight);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* the sky — abyss at the zenith deepening into night, fixed behind all */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      var(--color-abyss),
+      var(--color-night) 40%
+    );
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gold) 32%, transparent);
+    color: var(--color-starlight);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-astral);
+    outline-offset: 2px;
+  }
+
+  /* scrollbars — quiet, indigo, never default gray */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-veil) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-veil);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  dialog::backdrop {
+    background: rgb(5 8 15 / 0.7);
+  }
+  body:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  /* autofill must not flash white on the night ground */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--color-depth) inset;
+    -webkit-text-fill-color: var(--color-starlight);
+    caret-color: var(--color-starlight);
+  }
+}
+
+/* ------------------------------------------------------------- utilities */
+
+/* Instrument label — mono, uppercase, wide-tracked. For measurement only:
+   coordinates, counts, dates, tiers, readouts. Never a costume for prose. */
+@utility mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------- reduced motion
+   Everything stops: star drift, pulses, spins, typing, transitions.
+   The single exemption is `.motion-pulse-exempt` (CompassSpinner), which
+   swaps its rotation for a quiet opacity pulse so loading never looks dead —
+   opacity change carries no spatial motion. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .motion-pulse-exempt {
+    animation: quiet-pulse 2.8s ease-in-out infinite !important;
+  }
+}
