@@ -41,16 +41,24 @@ session cookie short-circuits there with zero auth work (docs/CONTRACTS.md).
 Multi-step wizard, ONE question per screen. ProgressRoute starts at ~10%,
 never 0. Progress saved after EVERY step (server action); returning resumes
 at `current_step`. Steps:
-1. **Dream** — "Where do you dream of going?" One free-text textarea:
-   "Describe your dream job — company, role, or just a feeling." Stored
-   verbatim; Gemini interpretation stored alongside (failure tolerated).
-   Fast track: a clearly-secondary link below ("I already know my exact
-   target") expanding company + role inputs → completes onboarding, skips to
-   /profile. Never competes visually with the textarea.
-2. **Sector** — ≤7 ChoiceCards + "Something else" with inline text input.
+Every step is answered by tapping a card. A blank textarea as the first thing
+after sign-up was the flow's worst moment — it asks a mobile visitor with
+seconds of attention to compose an essay before they have seen anything — so
+the dream is now *assembled* from two picks instead of typed.
+1. **Field of work** — "What kind of work do you dream of?" 7 ChoiceCards +
+   "Something else" with inline text input. Fast track: a clearly-secondary
+   disclosure below ("I already know the exact job I want") expanding company
+   + job-title inputs → completes onboarding, skips to /profile.
+2. **Dream job** — "Where do you dream of going in {field}?" The role ladder
+   for the field chosen in step 1 (7 titles, ordered entry → lead) +
+   "Something else" with inline text input. The two picks compose `dream_text`
+   ("I want to be a Senior Product Designer in design.") and a deterministic
+   `dream_interpretation` via `composeDream` — no model call, so this step is
+   instant and works with no Gemini key. `quotedPhrases` stay verbatim
+   substrings of the composed sentence.
 3. **Company type** — ≤7 ChoiceCards, smart default pre-selected from the
-   dream interpretation (e.g. companyHints mention a startup → preselect),
-   shown as "Suggested from your dream" mono tag on that card.
+   dream interpretation (e.g. a "Founding Engineer" title → preselect
+   startup), shown as "Suggested from your dream" mono tag on that card.
 Completion → brief transition moment ("Course charted. Now — where are you
 today?") → /profile.
 
@@ -75,8 +83,8 @@ On first entry: "Taking your bearing" — POST /api/jobs/search then
 - **Dream pinned at top, always**: DreamAssessment card — tier star (honest,
   usually ember), reasoning that QUOTES their dream text verbatim, have/missing
   requirement chips. Never hidden or filtered.
-- Below: classified jobs grouped by tier — tab/segment control (Ready /
-  Attainable / Stretch), each group headed by one line of trajectory framing:
+- Below: classified jobs grouped by tier — tab/segment control (Ready now /
+  Almost there / Not yet), each group headed by one line of trajectory framing:
   "Jobs like these build the experience your dream job requires." ONE
   highlighted "Recommended target" per tier (gold hairline + mono tag).
 - Each JobRow: title, company, location, salary when known, TierStar, the WHY
@@ -181,8 +189,10 @@ public/manifest.webmanifest, public/sw.js, components/pwa/RegisterSW.tsx,
 scripts/icons.mjs + public/icons/*, .env.example, supabase/README.md.
 
 **B1 landing**: app/page.tsx, components/landing/*.
-**B2 onboarding**: app/(app)/onboarding/**, components/onboarding/*,
-lib/gemini/prompts/dream.ts.
+**B2 onboarding**: app/(app)/onboarding/**, components/onboarding/*.
+(The wizard is card-driven and spends no model call; `composeDream` in
+components/onboarding/options.ts builds `dream_text` + `dream_interpretation`
+from the picks. The former lib/gemini/prompts/dream.ts is gone.)
 **B3 profile**: app/(app)/profile/**, app/api/cv/parse/route.ts,
 components/profile/*, lib/gemini/prompts/cv.ts.
 **B4 bearing**: app/(app)/bearing/**, app/api/jobs/{search,classify}/route.ts,

@@ -172,10 +172,15 @@ export interface QuestionnaireAnswers {
 
 export type Tier = "ready" | "attainable" | "stretch";
 
+/**
+ * The row chips. These must stay identical to TIER_SHORT (the tab labels
+ * above the same rows) — two names for one group is the fastest way to make
+ * an honest reading look like two different readings.
+ */
 export const TIER_LABEL: Record<Tier, string> = {
-  ready: "Already possible",
-  attainable: "Attainable",
-  stretch: "Stretch",
+  ready: "Ready now",
+  attainable: "Almost there",
+  stretch: "Not yet",
 };
 
 export interface TierAssessment {

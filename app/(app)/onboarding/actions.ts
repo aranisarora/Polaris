@@ -3,12 +3,13 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { interpretDream } from "@/lib/gemini/prompts/dream";
 import {
   COMPANY_TYPE_VALUES,
+  ROLE_OTHER,
   SECTOR_VALUES,
+  composeDream,
 } from "@/components/onboarding/options";
-import type { DreamInterpretation } from "@/lib/types";
+import type { DreamInterpretation, SectorOption } from "@/lib/types";
 
 /**
  * saveOnboardingStep — the single mutation for the whole wizard
@@ -16,32 +17,34 @@ import type { DreamInterpretation } from "@/lib/types";
  * step and advances `current_step`, so abandoning and returning resumes
  * exactly where they left off.
  *
- * - "dream": stores the text verbatim and fires the Gemini interpretation.
- *   Interpretation failure stores null and proceeds silently — it never
- *   blocks the user.
- * - "fastTrack": exact company + role; completes onboarding in one move.
- * - "sector" / "company": choice steps; "company" completes onboarding.
+ * - "sector": the field of work (step 1).
+ * - "role": the dream job title (step 2). Composes `dream_text` and its
+ *   interpretation from the two picks — deterministically, with no model
+ *   call, so the wizard never waits on Gemini and works when the key is
+ *   throttled or unset.
+ * - "company": kind of company (step 3); completes onboarding.
+ * - "fastTrack": exact company + job title; completes onboarding in one move.
  */
 
 const inputSchema = z.discriminatedUnion("kind", [
-  z.object({
-    kind: z.literal("dream"),
-    dreamText: z.string().trim().min(1).max(4000),
-  }),
-  z.object({
-    kind: z.literal("fastTrack"),
-    company: z.string().trim().min(1).max(160),
-    role: z.string().trim().min(1).max(160),
-    dreamText: z.string().max(4000).optional(),
-  }),
   z.object({
     kind: z.literal("sector"),
     sector: z.enum(SECTOR_VALUES),
     sectorOther: z.string().trim().max(120).optional(),
   }),
   z.object({
+    kind: z.literal("role"),
+    role: z.string().trim().min(1).max(160),
+    roleOther: z.string().trim().max(160).optional(),
+  }),
+  z.object({
     kind: z.literal("company"),
     companyType: z.enum(COMPANY_TYPE_VALUES),
+  }),
+  z.object({
+    kind: z.literal("fastTrack"),
+    company: z.string().trim().min(1).max(160),
+    role: z.string().trim().min(1).max(160),
   }),
 ]);
 
@@ -52,36 +55,23 @@ export type SaveOnboardingStepResult =
   | { ok: false; error: string };
 
 const MSG_SAVE_FAILED =
-  "That didn't save. Try again — nothing you typed is lost.";
+  "That didn't save. Try again — nothing you chose is lost.";
 const MSG_INVALID = "That answer couldn't be read. Adjust it and try again.";
-const MSG_SECTOR_OTHER = "Name your sector — a word or two is enough.";
+const MSG_SECTOR_OTHER = "Name your field of work — a word or two is enough.";
+const MSG_ROLE_OTHER = "Name the job title you're aiming for.";
+const MSG_NO_SECTOR = "Pick your field of work first.";
 
-/**
- * The interpretation is a bonus, never a gate: past this budget the step
- * proceeds with null rather than holding the Continue button hostage.
- * Typical calls land in 1–4s; anything slower isn't worth pinning the
- * product's very first Continue on (the contract tolerates a null
- * interpretation — the step-3 suggestion simply doesn't appear).
- */
-const INTERPRETATION_TIMEOUT_MS = 5_000;
+interface ExistingRow {
+  current_step: number | null;
+  completed_at: string | null;
+  sector: string | null;
+  sector_other: string | null;
+}
 
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`timed out after ${ms}ms`)),
-      ms,
-    );
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (error: unknown) => {
-        clearTimeout(timer);
-        reject(error instanceof Error ? error : new Error(String(error)));
-      },
-    );
-  });
+function asSector(value: string | null): SectorOption | null {
+  return value && (SECTOR_VALUES as readonly string[]).includes(value)
+    ? (value as SectorOption)
+    : null;
 }
 
 export async function saveOnboardingStep(
@@ -104,67 +94,73 @@ export async function saveOnboardingStep(
   ) {
     return { ok: false, error: MSG_SECTOR_OTHER };
   }
+  if (step.kind === "role" && step.role === ROLE_OTHER && !step.roleOther?.trim()) {
+    return { ok: false, error: MSG_ROLE_OTHER };
+  }
 
   const { data: existing } = await supabase
     .from("onboarding")
-    .select("current_step, completed_at")
+    .select("current_step, completed_at, sector, sector_other")
     .eq("user_id", user.id)
     .maybeSingle();
 
+  const row = (existing ?? null) as ExistingRow | null;
   const now = new Date().toISOString();
-  const reached = existing?.current_step ?? 1;
-  const row: Record<string, unknown> = {
+  const reached = row?.current_step ?? 1;
+  const update: Record<string, unknown> = {
     user_id: user.id,
     updated_at: now,
   };
   let interpretation: DreamInterpretation | null = null;
 
   switch (step.kind) {
-    case "dream": {
-      try {
-        interpretation = await withTimeout(
-          interpretDream(step.dreamText),
-          INTERPRETATION_TIMEOUT_MS,
-        );
-      } catch (error) {
-        // Tolerated by contract: store null, proceed silently.
-        console.error("[onboarding] dream interpretation failed:", error);
-        interpretation = null;
-      }
-      row.dream_text = step.dreamText;
-      row.dream_interpretation = interpretation;
-      row.fast_track = false;
-      // never regress a resume point the user already reached
-      row.current_step = Math.max(reached, 2);
-      break;
-    }
-    case "fastTrack": {
-      row.fast_track = true;
-      row.fast_track_company = step.company;
-      row.fast_track_role = step.role;
-      if (step.dreamText !== undefined) row.dream_text = step.dreamText;
-      row.current_step = 3;
-      row.completed_at = existing?.completed_at ?? now;
-      break;
-    }
     case "sector": {
-      row.sector = step.sector;
-      row.sector_other =
+      update.sector = step.sector;
+      update.sector_other =
         step.sector === "other" ? (step.sectorOther?.trim() ?? "") : null;
-      row.current_step = Math.max(reached, 3);
+      update.fast_track = false;
+      // never regress a resume point the user already reached
+      update.current_step = Math.max(reached, 2);
+      break;
+    }
+    case "role": {
+      // the sector is the source of truth for which ladder this title came
+      // from, so read it back rather than trusting a second client copy
+      const sector = asSector(row?.sector ?? null);
+      if (!sector) return { ok: false, error: MSG_NO_SECTOR };
+
+      const composed = composeDream({
+        sector,
+        sectorOther: row?.sector_other ?? "",
+        role: step.role,
+        roleOther: step.roleOther ?? "",
+      });
+      interpretation = composed.interpretation;
+      update.dream_text = composed.dreamText;
+      update.dream_interpretation = composed.interpretation;
+      update.fast_track = false;
+      update.current_step = Math.max(reached, 3);
       break;
     }
     case "company": {
-      row.company_type = step.companyType;
-      row.current_step = 3;
-      row.completed_at = existing?.completed_at ?? now;
+      update.company_type = step.companyType;
+      update.current_step = 3;
+      update.completed_at = row?.completed_at ?? now;
+      break;
+    }
+    case "fastTrack": {
+      update.fast_track = true;
+      update.fast_track_company = step.company;
+      update.fast_track_role = step.role;
+      update.current_step = 3;
+      update.completed_at = row?.completed_at ?? now;
       break;
     }
   }
 
   const { error } = await supabase
     .from("onboarding")
-    .upsert(row, { onConflict: "user_id" });
+    .upsert(update, { onConflict: "user_id" });
 
   if (error) {
     console.error("[onboarding] save failed:", error.message);

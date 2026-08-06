@@ -43,7 +43,8 @@ function formatDate(iso: string): string {
 
 /**
  * Revisit state: the saved profile at a glance, with re-upload and
- * edit-answers actions. The forward action stays "Take your bearing".
+ * edit-answers actions. The forward action names the tab it lands on —
+ * "See your matches" — because /bearing's nav label reads "Matches".
  *
  * Where the profile came from is an instrument reading, not a kicker: it
  * rides in the mono readout strip *under* the heading, alongside the counts
@@ -159,7 +160,7 @@ export function ProfileSummary({
 
       <div className="flex flex-wrap items-center gap-3">
         <LinkButton href="/bearing" size="lg">
-          Take your bearing
+          See your matches
         </LinkButton>
         <Button type="button" variant="secondary" onClick={onUploadNew}>
           Upload a new CV

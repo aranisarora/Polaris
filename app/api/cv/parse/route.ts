@@ -50,9 +50,10 @@ const MSG_EMPTY_FILE = "That file is empty. Choose a different PDF.";
 const MSG_UNREADABLE =
   "We couldn't read that PDF — it may be a scan or an image-based export. Try a text-based PDF, or answer a few questions instead.";
 const MSG_RATE_LIMITED =
-  "The reading instruments are at capacity right now. Wait a moment and try again.";
+  "We're at capacity right now. Wait a moment and try again.";
+/** Names the fallback the user actually has, not an environment variable. */
 const MSG_NOT_CONFIGURED =
-  "CV reading isn't configured yet. Add GEMINI_API_KEY to the environment.";
+  "CV reading isn't switched on yet. Answer a few questions instead — it takes a minute.";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

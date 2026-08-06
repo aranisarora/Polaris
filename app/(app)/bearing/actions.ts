@@ -10,7 +10,7 @@ import type { DreamInterpretation, JobPosting } from "@/lib/types";
  * deactivate the previous target, insert a new locked_targets row
  * (`dream_beyond` = the dream title when the target is a stepping-stone).
  * Returns the locked summary so the client can stage the confirmation
- * moment; it never redirects — "Draw my route" does.
+ * moment; it never redirects — "Draw my roadmap" does.
  */
 
 const lockInputSchema = z.union([

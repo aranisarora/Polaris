@@ -87,18 +87,18 @@ export function RoadmapView({ target, roadmap, reveal = false }: RoadmapViewProp
       {/* voyage header: progress made good */}
       <header className="flex flex-col gap-3">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h1 className="text-h1 text-starlight">Your route</h1>
+          <h1 className="text-h1 text-starlight">Your roadmap</h1>
           <p className="mono-label text-gold">
-            {doneCount} of {total} waypoints
+            {doneCount} of {total} steps
           </p>
         </div>
-        {/* The metaphor keeps its plain reading beside it: a waypoint is one
-            thing to finish, and the route is the ordered plan. */}
+        {/* The one place "waypoint" is taught: the plain reading sits in the
+            same sentence, so the chart's language lands without a glossary. */}
         <p className="max-w-prose text-sm text-moonlight">
           Your step-by-step plan to {roadmap.targetTitle}. Each waypoint below
           is one thing to finish.
         </p>
-        <ProgressRoute percent={percent} waypoints={total} label="Route progress" />
+        <ProgressRoute percent={percent} waypoints={total} label="Roadmap progress" />
         {doneCount === total && total > 0 && (
           <p className="text-sm text-moonlight">
             Every waypoint is lit. The route to {roadmap.targetTitle} is sailed —
@@ -141,13 +141,15 @@ export function RoadmapView({ target, roadmap, reveal = false }: RoadmapViewProp
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         title="Change destination?"
-        description={`Locking a new destination replaces this route. The ${doneCount} waypoint${doneCount === 1 ? "" : "s"} you've completed stay on your record — your score never falls.`}
+        description={`Locking a new destination replaces this roadmap. The ${doneCount} step${doneCount === 1 ? "" : "s"} you've completed stay on your record — your score never falls.`}
         footer={
           <>
             <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
               Stay on course
             </Button>
-            <Button onClick={() => router.push("/bearing")}>Take a new bearing</Button>
+            <Button onClick={() => router.push("/bearing")}>
+              Choose from your matches
+            </Button>
           </>
         }
       />

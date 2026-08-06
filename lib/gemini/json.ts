@@ -48,8 +48,13 @@ const RATE_LIMIT_BACKOFF_MS = 6_000;
 const MIN_RETRY_DELAY_MS = 500;
 const MAX_RETRY_DELAY_MS = 30_000;
 
+/**
+ * Reaches real users through every Gemini-backed route, so it names no
+ * environment variable — a visitor cannot set one. The operator's version of
+ * this lives in the server log, not on the screen.
+ */
 const MSG_NOT_CONFIGURED =
-  "The AI service isn't configured yet. Add GEMINI_API_KEY to your environment.";
+  "This part of Polaris isn't switched on yet. Nothing you've entered is lost — try again later.";
 /** Per-minute rejection: a real wait clears it. */
 export const MSG_RATE_LIMITED =
   "The model is at capacity right now. Wait a moment and try again.";

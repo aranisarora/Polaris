@@ -296,20 +296,20 @@ export function GenerationMoment({ target, onComplete }: GenerationMomentProps) 
 
       {phase === "idle" && (
         <Button size="lg" onClick={start} className="self-start">
-          Draw my route
+          Draw my roadmap
         </Button>
       )}
 
       {phase === "error" && errorMessage && (
         <ErrorState
-          title="The route couldn't be drawn"
+          title="Your roadmap couldn't be drawn"
           detail={errorMessage}
           action={
             <div className="flex flex-wrap gap-3">
               <Button onClick={start}>Draw it again</Button>
               {conflict && (
                 <LinkButton variant="secondary" href="/bearing">
-                  Return to your bearing
+                  Back to your matches
                 </LinkButton>
               )}
             </div>

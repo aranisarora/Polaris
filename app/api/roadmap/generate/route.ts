@@ -150,7 +150,7 @@ export async function POST(): Promise<Response> {
   const targetRow = targetRes.data;
   if (!targetRow) {
     return json(409, {
-      error: "No destination is locked. Take your bearing and lock one — the route draws from there.",
+      error: "No destination is locked yet. Open Matches and lock one — your roadmap draws from there.",
     });
   }
 

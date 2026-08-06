@@ -69,9 +69,9 @@ export default async function CvPage() {
     return (
       <EmptyState
         className="mx-auto mt-16 max-w-md"
-        title="Your chart is waiting for a destination"
-        body="Take your bearing and lock a target — your living CV builds from there."
-        action={<LinkButton href="/bearing">Take your bearing</LinkButton>}
+        title="Your CV is waiting for a destination"
+        body="Open Matches and lock a target — your living CV builds from there."
+        action={<LinkButton href="/bearing">See your matches</LinkButton>}
       />
     );
   }
@@ -127,8 +127,8 @@ export default async function CvPage() {
           </h1>
           <p className="mt-3 text-moonlight">
             {hasRoute
-              ? "Grey lines are waiting on your route. Finish a waypoint and its line earns its place here."
-              : "This chart holds what you've already earned. Draw your route to see the lines it will add."}
+              ? "Grey lines are the ones your roadmap will add. Finish a step and its line lights up here."
+              : "This holds what you've already earned. Draw your roadmap to see the lines it will add."}
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <ExportButton variant={hasRoute ? "primary" : "secondary"} />
@@ -158,11 +158,11 @@ export default async function CvPage() {
       {!hasRoute && (
         <Panel className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-prose text-starlight">
-            Your destination is locked. Draw your route and the lines it earns
+            Your destination is locked. Draw your roadmap and the lines it earns
             will chart here — grey until you brighten them.
           </p>
           <LinkButton href="/roadmap" className="shrink-0">
-            Draw my route
+            Draw my roadmap
           </LinkButton>
         </Panel>
       )}

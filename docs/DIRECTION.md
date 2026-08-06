@@ -51,7 +51,7 @@ finish review, the verdict, and DESIGN.md.
 | `--color-gold-bright` | `#F0C468` | gold hover / ignited waypoint |
 | `--color-gold-deep` | `#7A5C1E` | gold pressed / gold borders |
 | `--color-astral` | `#7C9EE8` | links, focus ring, informational |
-| `--color-aurora` | `#5BC48E` | tier: ready ("Already possible") |
+| `--color-aurora` | `#5BC48E` | tier: ready ("Ready now") |
 | `--color-ember` | `#E0715C` | tier: stretch + destructive/error |
 
 Ground treatment: the page background is a vertical sky — `linear-gradient(to
@@ -64,9 +64,11 @@ with zero offset are banned decoration). Shadows: `0 12px 32px -12px rgb(0 0 0
 
 Tier semantics (this replaces the brief's emoji — emoji are never used as
 icons): tier is shown as a drawn four-point star glyph (`TierStar`) in the tier
-color plus a mono label: AURORA `#5BC48E` "Already possible" · GOLD `#D9A648`
-"Attainable" · EMBER `#E0715C` "Stretch". The dream is always EMBER-or-honest,
-pinned, never hidden.
+color plus a mono label: AURORA `#5BC48E` "Ready now" · GOLD `#D9A648`
+"Almost there" · EMBER `#E0715C` "Not yet". The dream is always EMBER-or-honest,
+pinned, never hidden. These labels are the SAME strings on the chip and on the
+tab above it — `TIER_LABEL` (lib/types.ts) and `TIER_SHORT`
+(components/bearing/helpers.ts) must never drift apart.
 
 ## Type
 
@@ -148,11 +150,18 @@ Calm, certain, second person. Chart language, sparingly: north star, bearing,
 waypoint, route, "You are here." Never: "unlock your potential", "level up",
 "supercharge", "journey" as filler, exclamation marks, corporate job-board
 speak. Honesty is warm, not clinical: "You hold 4 of 6 requirements. The
-missing two are exactly what the route below builds." Buttons name actions:
-"Chart your course", "Take your bearing", "Lock this destination", "Mark as
-done". Errors name the problem and the recovery: "The sky is quiet — job
-search isn't configured yet. Add your Jooble and Adzuna keys to take a real
-bearing."
+missing two are exactly what the roadmap below builds." Errors name the
+problem and the recovery: "The sky is quiet — job search isn't configured
+yet. Add your Jooble and Adzuna keys to take a real bearing."
+
+**Controls are the exception to the metaphor.** Prose, headings and empty-state
+titles keep the celestial voice; anything the user must click names the literal
+outcome, in the same words the nav uses — "See your matches" (not "Take your
+bearing"), "Search again" (not "Retake bearing"), "Draw my roadmap" (not "Draw
+my route"), "Lock this destination", "Mark as done". PRODUCT.md already carves
+this out for the nav ("the bearing tab reads Matches"); the rule is simply
+applied to every control. Where a metaphor is worth teaching, pair it with its
+plain reading in the same sentence rather than dropping it onto a button.
 
 The user's own words are sacred material: quote them back verbatim in
 starlight italic inside quote marks — "Because you said you want *'to design

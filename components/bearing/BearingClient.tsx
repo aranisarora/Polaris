@@ -437,8 +437,8 @@ export function BearingClient({
       ) : failedPostings.length === 0 ? (
         <EmptyState
           title="No postings in this bearing"
-          body="The last search left nothing behind. Retake the bearing to read the sky again."
-          action={<Button onClick={() => void takeBearing(true)}>Retake bearing</Button>}
+          body="The last search left nothing behind. Search again to read the sky."
+          action={<Button onClick={() => void takeBearing(true)}>Search again</Button>}
         />
       ) : null}
     </>
@@ -446,11 +446,11 @@ export function BearingClient({
 
   const emptyView = (
     <EmptyState
-      title="The sky is clear — nothing matched"
+      title="Nothing matched this time"
       body="No live postings came back for your keywords. Broadening the search usually fixes this: reword your dream or loosen the role."
       action={
         <div className="flex flex-wrap justify-center gap-3">
-          <LinkButton href="/onboarding">Edit your course</LinkButton>
+          <LinkButton href="/onboarding">Edit your dream</LinkButton>
           <Button variant="secondary" onClick={() => void takeBearing(false)}>
             Search again
           </Button>
@@ -475,7 +475,7 @@ export function BearingClient({
         {phase === "ready" && jobs.length > 0 && (
           <Button variant="ghost" onClick={() => setRetakeOpen(true)}>
             <RefreshCw size={16} strokeWidth={1.5} aria-hidden />
-            Retake bearing
+            Search again
           </Button>
         )}
       </header>
@@ -488,7 +488,7 @@ export function BearingClient({
             {locked.company ? ` at ${locked.company}` : ""}
           </span>
           <span className="text-sm text-moonlight">
-            Locking a new waypoint replaces it.
+            Locking a new destination replaces it.
           </span>
         </div>
       )}
@@ -538,7 +538,7 @@ export function BearingClient({
         title="Course locked"
         footer={
           <Button size="lg" onClick={() => router.push("/roadmap")}>
-            Draw my route
+            Draw my roadmap
           </Button>
         }
       >
@@ -560,7 +560,7 @@ export function BearingClient({
             </p>
             {!confirmTarget.isDream && confirmTarget.dreamBeyond && (
               <p className="text-sm text-moonlight">
-                Your north star stays on the chart — this waypoint builds toward it.
+                Your north star stays on the chart — this destination builds toward it.
               </p>
             )}
           </div>
@@ -571,12 +571,12 @@ export function BearingClient({
       <Dialog
         open={retakeOpen}
         onClose={() => setRetakeOpen(false)}
-        title="Retake your bearing?"
+        title="Search again?"
         description="Polaris re-queries the live sky and measures every posting against your profile again. Recent searches are cached, so this is quick."
         footer={
           <>
             <Button variant="ghost" onClick={() => setRetakeOpen(false)}>
-              Keep this bearing
+              Keep these results
             </Button>
             <Button
               onClick={() => {
@@ -584,7 +584,7 @@ export function BearingClient({
                 void takeBearing(true);
               }}
             >
-              Retake bearing
+              Search again
             </Button>
           </>
         }
