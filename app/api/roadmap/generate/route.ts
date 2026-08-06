@@ -1,5 +1,6 @@
 import "server-only";
 
+import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { generateJSON, GeminiError } from "@/lib/gemini/json";
 import {
@@ -13,6 +14,7 @@ import {
   type RequirementCount,
   type TargetFacts,
 } from "@/lib/gemini/prompts/roadmap";
+import { defaultHours, formatEffort } from "@/lib/schedule";
 import type {
   CVData,
   DreamInterpretation,
@@ -20,11 +22,17 @@ import type {
   JobPosting,
   QuestionnaireAnswers,
   Roadmap,
+  RoadmapStep,
   RoadmapTask,
+  Tier,
 } from "@/lib/types";
 
 /**
  * POST /api/roadmap/generate — the narrated generation moment.
+ *
+ * Body: `{ "hoursPerWeek": number }`, optional. Missing, empty or unreadable
+ * bodies fall back to 8 — the request predates the pace question and must
+ * still draw a route.
  *
  * Streams NDJSON GenerationEvents (content-type application/x-ndjson).
  * Every stage is REAL work on the user's own data:
@@ -45,8 +53,71 @@ export const maxDuration = 120;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const MSG_GENERIC = "The route couldn't be drawn. Your destination is still locked — try again.";
 
+/** Most evenings. What the pace chooser preselects for an attainable target. */
+const DEFAULT_HOURS_PER_WEEK = 8;
+const MIN_HOURS_PER_WEEK = 1;
+const MAX_HOURS_PER_WEEK = 60;
+
 function json(status: number, body: Record<string, unknown>): Response {
   return Response.json(body, { status });
+}
+
+// ------------------------------------------------------------- request body
+
+const bodySchema = z.object({
+  hoursPerWeek: z.number().optional(),
+});
+
+/**
+ * The user's weekly capacity, clamped to 1–60 hours.
+ *
+ * Nothing here rejects: a body that is absent, empty, malformed or carrying a
+ * nonsense number falls back to 8 rather than 400ing. The pace only sets how
+ * far apart the dates sit, and refusing to draw a route over an unparseable
+ * number would be a worse answer than drawing it at a sensible default. There
+ * is no DB check constraint behind this — the clamp lives here, at the only
+ * door hours_per_week comes through on generation.
+ */
+async function readHoursPerWeek(request: Request): Promise<number> {
+  const raw: unknown = await request.json().catch(() => null);
+  const parsed = bodySchema.safeParse(raw);
+  const wanted = parsed.success ? parsed.data.hoursPerWeek : undefined;
+
+  if (wanted === undefined || !Number.isFinite(wanted)) {
+    return DEFAULT_HOURS_PER_WEEK;
+  }
+  // The column is an int, so round before clamping — 0.4 must not floor to 0.
+  return Math.min(MAX_HOURS_PER_WEEK, Math.max(MIN_HOURS_PER_WEEK, Math.round(wanted)));
+}
+
+/**
+ * The server's calendar day as `YYYY-MM-DD` — day one of the plan.
+ * Written explicitly rather than left to the column default so the row and
+ * the roadmap streamed back on `done` can never name two different dates.
+ */
+function todayISO(now: Date): string {
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
+/** job_assessments.tier is free text at the type level; narrow it or drop it. */
+function readTier(value: unknown): Tier | null {
+  return value === "ready" || value === "attainable" || value === "stretch"
+    ? value
+    : null;
+}
+
+/** A row read back from roadmap_steps — there are no generated DB types. */
+interface StepRow {
+  id: string;
+  task_id: string;
+  position: number;
+  title: string;
+  detail: string | null;
+  minutes: number;
+  done: boolean;
+  done_at: string | null;
 }
 
 // ------------------------------------------------------- stage composition
@@ -116,7 +187,7 @@ const SEQUENCING_TEXT =
 
 // ---------------------------------------------------------------- handler
 
-export async function POST(): Promise<Response> {
+export async function POST(request: Request): Promise<Response> {
   const supabase = await createSupabaseServer();
   const {
     data: { user },
@@ -125,6 +196,11 @@ export async function POST(): Promise<Response> {
   if (!user) {
     return json(401, { error: "Sign in to draw your route." });
   }
+
+  // Read the pace before anything else: the body can only be consumed once,
+  // and the stream below is opened long after this point.
+  const hoursPerWeek = await readHoursPerWeek(request);
+  const startDate = todayISO(new Date());
 
   // ---- preconditions: active locked target + completed profile (409s) ----
 
@@ -245,6 +321,10 @@ export async function POST(): Promise<Response> {
         const targetHave = Array.isArray(targetAssessment?.have)
           ? (targetAssessment.have as string[])
           : [];
+        // How far the target sits from the user sets how heavy the route
+        // should be. Null when the target was locked without an assessment on
+        // file — the prompt then asks for honest hours with no band at all.
+        const targetTier = readTier(targetAssessment?.tier);
 
         const target: TargetFacts = {
           title: targetRow.title,
@@ -305,7 +385,7 @@ export async function POST(): Promise<Response> {
         emit({ type: "stage", key: "sequencing", text: SEQUENCING_TEXT });
 
         const draft = await generateJSON({
-          prompt: buildRoadmapPrompt({ ...promptContext, gaps }),
+          prompt: buildRoadmapPrompt({ ...promptContext, gaps, tier: targetTier }),
           schema: RoadmapDraftSchema,
           system: ROADMAP_SYSTEM,
           temperature: 0.6,
@@ -319,9 +399,10 @@ export async function POST(): Promise<Response> {
 
         // ---- persist: build the new roadmap fully BEFORE touching actives.
         // Order matters for crash-safety: insert the row inactive, insert
-        // its tasks, and only then flip actives. A failure at any earlier
-        // step leaves the prior roadmap active and untouched — never an
-        // active zero-task roadmap, never a silently discarded route.
+        // its tasks, insert their steps, and only then flip actives. A failure
+        // at any earlier step leaves the prior roadmap active and untouched —
+        // never an active zero-task roadmap, never an active roadmap whose
+        // tasks lost their steps, never a silently discarded route.
         const { data: roadmapRow, error: roadmapError } = await supabase
           .from("roadmaps")
           .insert({
@@ -329,9 +410,11 @@ export async function POST(): Promise<Response> {
             target_id: targetRow.id,
             dream_beyond: target.dreamBeyond,
             narrative: transcript,
+            start_date: startDate,
+            hours_per_week: hoursPerWeek,
             active: false,
           })
-          .select("id, generated_at")
+          .select("id, generated_at, start_date, hours_per_week")
           .single();
         if (roadmapError || !roadmapRow) {
           throw new Error(`roadmap insert failed: ${roadmapError?.message ?? "no row"}`);
@@ -347,21 +430,63 @@ export async function POST(): Promise<Response> {
               title: t.title,
               why: t.why,
               category: t.category,
-              effort: t.effort,
+              // Derived, never generated: the prose and the number the dates
+              // are built from come from one source (lib/schedule.ts), so the
+              // column stays non-null and can never contradict the calendar.
+              effort: formatEffort(t.estimateHours),
+              estimate_hours: t.estimateHours,
               done: false,
               done_at: null,
               first_week: t.firstWeek,
               cv_line: t.cvLine,
             })),
           )
-          .select("id, position, title, why, category, effort, done, done_at, first_week, cv_line");
+          .select(
+            "id, position, title, why, category, effort, estimate_hours, done, done_at, first_week, cv_line",
+          );
         if (tasksError || !taskRows) {
           throw new Error(`task insert failed: ${tasksError?.message ?? "no rows"}`);
         }
 
+        // Steps hang off the task rows we just got back, matched on position —
+        // the drafts were re-numbered 1..n above, and the insert preserves it.
+        const taskIdByPosition = new Map<number, string>(
+          taskRows.map((row) => [row.position as number, row.id as string]),
+        );
+        const stepInserts = drafts.flatMap((t) => {
+          const taskId = taskIdByPosition.get(t.position);
+          if (!taskId) return [];
+          return t.steps.map((s, i) => ({
+            task_id: taskId,
+            user_id: user.id,
+            position: i + 1,
+            title: s.title,
+            detail: s.detail,
+            minutes: s.minutes,
+            done: false,
+            done_at: null,
+          }));
+        });
+
+        const stepRows: StepRow[] = [];
+        if (stepInserts.length > 0) {
+          const { data, error: stepsError } = await supabase
+            .from("roadmap_steps")
+            .insert(stepInserts)
+            .select("id, task_id, position, title, detail, minutes, done, done_at");
+          if (stepsError || !data) {
+            throw new Error(`step insert failed: ${stepsError?.message ?? "no rows"}`);
+          }
+          stepRows.push(...(data as StepRow[]));
+        }
+
         // Flip actives last (roadmaps_one_active demands deactivate-first).
-        // If activation fails after the deactivate, no roadmap is active and
-        // the generation moment simply re-offers — nothing dead-ends.
+        // These two statements are the one window this route cannot make
+        // atomic: a reset connection or a maxDuration cut between them leaves
+        // the user owning roadmaps with none active. That is not a dead end —
+        // app/(app)/roadmap/page.tsx adopts the newest roadmap of the active
+        // target that has tasks and re-flags it, so the next load lands on the
+        // plan rather than on an offer to redraw one they already have.
         const { error: deactivateError } = await supabase
           .from("roadmaps")
           .update({ active: false })
@@ -381,21 +506,47 @@ export async function POST(): Promise<Response> {
           throw new Error(`roadmap activate failed: ${activateError.message}`);
         }
 
+        const stepsByTask = new Map<string, RoadmapStep[]>();
+        for (const row of stepRows) {
+          const step: RoadmapStep = {
+            id: row.id,
+            position: row.position,
+            title: row.title,
+            detail: row.detail ?? "",
+            minutes: Number(row.minutes) || 0,
+            done: Boolean(row.done),
+            doneAt: row.done_at ?? null,
+          };
+          const existing = stepsByTask.get(row.task_id);
+          if (existing) existing.push(step);
+          else stepsByTask.set(row.task_id, [step]);
+        }
+        for (const steps of stepsByTask.values()) {
+          steps.sort((a, b) => a.position - b.position);
+        }
+
         const tasks: RoadmapTask[] = taskRows
           .slice()
           .sort((a, b) => (a.position as number) - (b.position as number))
-          .map((row) => ({
-            id: row.id as string,
-            position: row.position as number,
-            title: row.title as string,
-            why: row.why as string,
-            category: row.category as RoadmapTask["category"],
-            effort: row.effort as string,
-            done: Boolean(row.done),
-            doneAt: (row.done_at as string | null) ?? null,
-            firstWeek: Boolean(row.first_week),
-            cvLine: (row.cv_line as RoadmapTask["cvLine"]) ?? null,
-          }));
+          .map((row) => {
+            const category = row.category as RoadmapTask["category"];
+            return {
+              id: row.id as string,
+              position: row.position as number,
+              title: row.title as string,
+              why: row.why as string,
+              category,
+              effort: row.effort as string,
+              // numeric(5,2) can come back as a string; 0 and null both mean
+              // "never estimated", which the category fallback covers.
+              estimateHours: Number(row.estimate_hours) || defaultHours(category),
+              steps: stepsByTask.get(row.id as string) ?? [],
+              done: Boolean(row.done),
+              doneAt: (row.done_at as string | null) ?? null,
+              firstWeek: Boolean(row.first_week),
+              cvLine: (row.cv_line as RoadmapTask["cvLine"]) ?? null,
+            };
+          });
 
         const roadmap: Roadmap = {
           id: roadmapRow.id as string,
@@ -404,6 +555,8 @@ export async function POST(): Promise<Response> {
           targetCompany: target.company,
           tasks,
           dreamBeyond: target.dreamBeyond,
+          startDate: (roadmapRow.start_date as string | null) ?? startDate,
+          hoursPerWeek: Number(roadmapRow.hours_per_week) || hoursPerWeek,
           generatedAt: roadmapRow.generated_at as string,
         };
 

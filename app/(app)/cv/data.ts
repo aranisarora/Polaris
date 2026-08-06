@@ -5,10 +5,12 @@ import type {
   CVData,
   CVLine,
   QuestionnaireAnswers,
+  RoadmapStep,
   RoadmapTask,
   TaskCategory,
 } from "@/lib/types";
 import { questionnaireToCV } from "@/lib/cvdiff";
+import { defaultHours } from "@/lib/schedule";
 
 /** Raw roadmap_tasks row shape (supabase/schema.sql). */
 export interface RoadmapTaskRow {
@@ -18,23 +20,96 @@ export interface RoadmapTaskRow {
   why: string;
   category: string;
   effort: string;
+  /** numeric(5,2), null on tasks written before the plan carried dates. */
+  estimate_hours: number | string | null;
   done: boolean;
   done_at: string | null;
   first_week: boolean;
   cv_line: CVLine | null;
 }
 
-export const TASK_COLUMNS =
-  "id, position, title, why, category, effort, done, done_at, first_week, cv_line";
+/** Raw roadmap_steps row. `task_id` rides along so rows can be grouped. */
+export interface RoadmapStepRow {
+  id: string;
+  task_id: string;
+  position: number;
+  title: string;
+  detail: string;
+  minutes: number;
+  done: boolean;
+  done_at: string | null;
+}
 
-export function taskRowToTask(row: RoadmapTaskRow): RoadmapTask {
+export const TASK_COLUMNS =
+  "id, position, title, why, category, effort, estimate_hours, done, done_at, first_week, cv_line";
+
+export const STEP_COLUMNS =
+  "id, task_id, position, title, detail, minutes, done, done_at";
+
+/**
+ * The hours the schedule is built from. `estimate_hours` is nullable on
+ * purpose — a task drawn before dates existed never had an honest number — and
+ * PostgREST can hand a `numeric` back as a string, so both cases fall to the
+ * category default rather than dropping the task out of the calendar.
+ */
+function readEstimateHours(
+  value: RoadmapTaskRow["estimate_hours"],
+  category: TaskCategory,
+): number {
+  const hours = typeof value === "string" ? Number(value) : value;
+  return typeof hours === "number" && Number.isFinite(hours) && hours > 0
+    ? hours
+    : defaultHours(category);
+}
+
+export function stepRowToStep(row: RoadmapStepRow): RoadmapStep {
+  return {
+    id: row.id,
+    position: row.position,
+    title: row.title,
+    detail: row.detail ?? "",
+    minutes: row.minutes,
+    done: row.done,
+    doneAt: row.done_at,
+  };
+}
+
+/**
+ * Steps keyed by their parent task, each list in position order. Sorted here
+ * rather than trusted from the query, so the order a checklist reads in never
+ * depends on the order rows came back.
+ */
+export function groupStepsByTask(
+  rows: RoadmapStepRow[],
+): Map<string, RoadmapStep[]> {
+  const byTask = new Map<string, RoadmapStep[]>();
+  for (const row of [...rows].sort((a, b) => a.position - b.position)) {
+    const list = byTask.get(row.task_id);
+    if (list) list.push(stepRowToStep(row));
+    else byTask.set(row.task_id, [stepRowToStep(row)]);
+  }
+  return byTask;
+}
+
+/**
+ * `steps` is a required argument, not a defaulted one: `rows.map(taskRowToTask)`
+ * would silently pass the array index as the second parameter. Readers that
+ * don't need the checklist — /cv works off `cvLine` — pass [].
+ */
+export function taskRowToTask(
+  row: RoadmapTaskRow,
+  steps: RoadmapStep[],
+): RoadmapTask {
+  const category = row.category as TaskCategory;
   return {
     id: row.id,
     position: row.position,
     title: row.title,
     why: row.why,
-    category: row.category as TaskCategory,
+    category,
     effort: row.effort,
+    estimateHours: readEstimateHours(row.estimate_hours, category),
+    steps,
     done: row.done,
     doneAt: row.done_at,
     firstWeek: row.first_week,
@@ -42,7 +117,11 @@ export function taskRowToTask(row: RoadmapTaskRow): RoadmapTask {
   };
 }
 
-/** All tasks of the active roadmap, ordered by position. [] when no roadmap. */
+/**
+ * All tasks of the active roadmap, ordered by position. [] when no roadmap.
+ * Steps are deliberately not read: every caller here scores or renders whole
+ * tasks, and the checklist is only ever needed on /roadmap.
+ */
 export async function fetchActiveTasks(
   supabase: SupabaseClient,
   userId: string,
@@ -65,7 +144,7 @@ export async function fetchActiveTasks(
 
   return {
     roadmapId: roadmap.data.id,
-    tasks: (rows.data as RoadmapTaskRow[]).map(taskRowToTask),
+    tasks: (rows.data as RoadmapTaskRow[]).map((row) => taskRowToTask(row, [])),
   };
 }
 
