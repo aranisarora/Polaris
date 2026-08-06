@@ -45,3 +45,6 @@ next-env.d.ts
 .impeccable/mocks/
 .impeccable/tmp-*/
 tmp-*.mjs
+
+.vercel
+.env*
