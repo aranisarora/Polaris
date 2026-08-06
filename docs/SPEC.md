@@ -31,7 +31,10 @@ zero client JS above the fold except the sign-in button.
    (greeked lines, no invented names/claims). Structure now, content later.
 5. **Closing CTA** — restate the promise in one line + the same gold CTA.
 No pricing, no feature grid, no analytics scripts, no cookie banner.
-Auth'd visitors are server-redirected to their resume point.
+Auth'd visitors never see this page: `proxy.ts` matches `/` and redirects
+them to their resume point before it is served, which is what lets
+`app/page.tsx` stay statically prerendered. A visitor carrying no Supabase
+session cookie short-circuits there with zero auth work (docs/CONTRACTS.md).
 
 ## Phase 1 — Onboarding `/onboarding`
 

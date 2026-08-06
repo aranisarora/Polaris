@@ -421,6 +421,7 @@ interface StageReadoutProps {
   label: string;      // instrument label, e.g. "READING" — mono gold
   text: string;       // narration line; types on
   speed?: number;     // ms per character, default 16
+  tone?: "mono" | "prose"; // typeface of the line body, default "mono"
   onDone?: () => void; // fires once when typing finishes — use to sequence stages
   className?: string;
 }
@@ -428,10 +429,17 @@ interface StageReadoutProps {
 
 ```tsx
 <StageReadout label="Comparing" text="41 live postings for Product Designer measured against your chart." onDone={next} />
+<StageReadout label="Comparing" tone="prose" text="…" onDone={next} />
 ```
 
 Gold caret while typing; instant + immediate `onDone` under reduced motion;
 screen readers get the full line at once.
+
+`tone="mono"` is a short instrument reading. `tone="prose"` sets the body in
+Hanken Grotesk at 1rem/relaxed for lines that are sentences about the user —
+the roadmap generation moment uses it. The label stays mono gold either way.
+Under `sm` the label stacks above the line; at `sm`+ it becomes a fixed gutter
+so a log of stages hangs off one left edge.
 
 ### CompassSpinner — `components/ui/CompassSpinner.tsx`
 

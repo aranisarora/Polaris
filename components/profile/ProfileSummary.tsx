@@ -1,7 +1,8 @@
 "use client";
 
 import { Button, LinkButton, Panel } from "@/components/ui";
-import type { CareerProfile, QuestionnaireAnswers } from "@/lib/types";
+import type { QuestionnaireDraft } from "./answers";
+import type { CareerProfile } from "@/lib/types";
 
 export interface ProfileSummaryProps {
   profile: CareerProfile;
@@ -15,7 +16,8 @@ const SOURCE_LABEL: Record<CareerProfile["source"], string> = {
   both: "CV + answers",
 };
 
-const ANSWER_LABELS: [keyof QuestionnaireAnswers, string][] = [
+const ANSWER_LABELS: [keyof QuestionnaireDraft, string][] = [
+  ["name", "Name"],
   ["currentRole", "Current role"],
   ["yearsExperience", "Experience"],
   ["location", "Location"],
@@ -42,54 +44,63 @@ function formatDate(iso: string): string {
 /**
  * Revisit state: the saved profile at a glance, with re-upload and
  * edit-answers actions. The forward action stays "Take your bearing".
+ *
+ * Where the profile came from is an instrument reading, not a kicker: it
+ * rides in the mono readout strip *under* the heading, alongside the counts
+ * it belongs with (docs/DIRECTION.md hard-bans eyebrow labels above
+ * headings). The charted date sits on the heading's own baseline.
  */
 export function ProfileSummary({
   profile,
   onUploadNew,
   onEditAnswers,
 }: ProfileSummaryProps) {
-  const { cv, questionnaire } = profile;
+  const { cv } = profile;
+  const questionnaire = profile.questionnaire as QuestionnaireDraft | null;
   const answered = questionnaire
     ? ANSWER_LABELS.filter(([key]) => {
+        // The CV panel above already leads with the name — don't say it twice.
+        if (key === "name" && cv) return false;
         const v = questionnaire[key];
         return typeof v === "string" && v.trim().length > 0;
       })
     : [];
 
-  const counts = cv
-    ? [
-        `${cv.experience.length} ${cv.experience.length === 1 ? "ROLE" : "ROLES"}`,
-        `${cv.skills.length} SKILLS`,
-        `${cv.projects.length} ${cv.projects.length === 1 ? "PROJECT" : "PROJECTS"}`,
-        `${cv.education.length} EDUCATION`,
-      ].join(" · ")
+  const charted = profile.completedAt
+    ? `Charted ${formatDate(profile.completedAt)}`
     : null;
+
+  // One readout strip per panel, under whichever heading leads it.
+  const readout = [
+    SOURCE_LABEL[profile.source],
+    ...(cv
+      ? [
+          `${cv.experience.length} ${cv.experience.length === 1 ? "ROLE" : "ROLES"}`,
+          `${cv.skills.length} SKILLS`,
+          `${cv.projects.length} ${cv.projects.length === 1 ? "PROJECT" : "PROJECTS"}`,
+          `${cv.education.length} EDUCATION`,
+        ]
+      : // Source reads "Answers" here, so the count needs no second noun.
+        [`${answered.length} recorded`]),
+  ].join(" · ");
 
   return (
     <div className="grid gap-6">
       <Panel padding="lg">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="mono-label text-gold">
-            Source · {SOURCE_LABEL[profile.source]}
-          </span>
-          {profile.completedAt && (
-            <span className="mono-label text-moonlight">
-              Charted {formatDate(profile.completedAt)}
-            </span>
-          )}
-        </div>
-
         {cv && (
-          <div className="mt-5">
-            <h2 className="text-h2 text-starlight">
-              {cv.basics.name || "Your CV"}
-            </h2>
+          <div>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h2 className="text-h2 text-starlight">
+                {cv.basics.name || "Your CV"}
+              </h2>
+              {charted && (
+                <span className="mono-label text-moonlight">{charted}</span>
+              )}
+            </div>
             {cv.basics.headline && (
               <p className="mt-1 text-moonlight">{cv.basics.headline}</p>
             )}
-            {counts && (
-              <p className="mono-label mt-4 text-moonlight">{counts}</p>
-            )}
+            <p className="mono-label mt-4 text-moonlight">{readout}</p>
             {cv.experience[0] && (
               <p className="mt-4 text-starlight">
                 {cv.experience[0].role}
@@ -122,8 +133,16 @@ export function ProfileSummary({
         )}
 
         {answered.length > 0 && (
-          <div className={cv ? "mt-6 border-t pt-6" : "mt-5"}>
-            <h2 className="text-h3 text-starlight">Your answers</h2>
+          <div className={cv ? "mt-6 border-t pt-6" : undefined}>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h2 className={cv ? "text-h3 text-starlight" : "text-h2 text-starlight"}>
+                Your answers
+              </h2>
+              {!cv && charted && (
+                <span className="mono-label text-moonlight">{charted}</span>
+              )}
+            </div>
+            {!cv && <p className="mono-label mt-4 text-moonlight">{readout}</p>}
             <dl className="mt-4 grid gap-3">
               {answered.map(([key, label]) => (
                 <div key={key} className="grid gap-0.5 sm:grid-cols-[10rem_1fr]">

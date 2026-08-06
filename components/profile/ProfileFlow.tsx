@@ -10,7 +10,8 @@ import { LinkedInDisclosure } from "./LinkedInDisclosure";
 import { ParsingState } from "./ParsingState";
 import { ProfileSummary } from "./ProfileSummary";
 import { QuestionnaireForm } from "./QuestionnaireForm";
-import type { CareerProfile, CVData, QuestionnaireAnswers } from "@/lib/types";
+import type { QuestionnaireDraft } from "./answers";
+import type { CareerProfile, CVData } from "@/lib/types";
 
 export interface ProfileFlowProps {
   initialProfile: CareerProfile;
@@ -25,7 +26,7 @@ type View =
   | { kind: "parse-error"; message: string }
   | { kind: "confirm"; cv: CVData; storagePath: string | null }
   | { kind: "addendum" }
-  | { kind: "questionnaire"; mode: QuestionnaireMode; initial?: QuestionnaireAnswers }
+  | { kind: "questionnaire"; mode: QuestionnaireMode; initial?: QuestionnaireDraft }
   | { kind: "summary" };
 
 const MSG_NETWORK =
@@ -34,10 +35,11 @@ const MSG_UNEXPECTED =
   "Something went wrong while reading your CV. Try again.";
 
 /** Map what the CV already knows into the addendum questionnaire. */
-function prefillFromCV(cv: CVData | null): QuestionnaireAnswers {
+function prefillFromCV(cv: CVData | null): QuestionnaireDraft {
   if (!cv) return {};
   const latest = cv.experience[0];
   return {
+    name: cv.basics.name.trim() || undefined,
     currentRole: latest
       ? latest.company
         ? `${latest.role} at ${latest.company}`
@@ -53,6 +55,20 @@ function prefillFromCV(cv: CVData | null): QuestionnaireAnswers {
         .filter(Boolean)
         .join("\n") || undefined,
   };
+}
+
+/**
+ * Open the questionnaire with the name we already hold (parsed CV, saved
+ * answers, or the signed-in account) — the field is there to be corrected,
+ * never to be asked twice.
+ */
+function withKnownName(
+  answers: QuestionnaireDraft,
+  fallback: string | null,
+): QuestionnaireDraft {
+  if (answers.name?.trim()) return answers;
+  const name = fallback?.trim();
+  return name ? { ...answers, name } : answers;
 }
 
 function heading(view: View): { title: string; sub?: string } {
@@ -82,7 +98,7 @@ function heading(view: View): { title: string; sub?: string } {
       }
       return {
         title: "Where are you now?",
-        sub: "Nine questions, plain words. Any format works — nothing here is graded.",
+        sub: "Ten questions, plain words. Any format works — nothing here is graded.",
       };
     case "summary":
       return {
@@ -115,6 +131,13 @@ export function ProfileFlow({ initialProfile, userName }: ProfileFlowProps) {
 
   /** Was the profile already complete when the page loaded? */
   const revisit = initialProfile.completedAt != null;
+
+  /**
+   * The saved answers as this surface collects them. `CareerProfile` types the
+   * column as the shared contract; the profile surface also stores the name
+   * there, so it survives a round trip back into the form.
+   */
+  const storedAnswers = profile.questionnaire as QuestionnaireDraft | null;
 
   // ---- CV path ------------------------------------------------------------
 
@@ -189,7 +212,7 @@ export function ProfileFlow({ initialProfile, userName }: ProfileFlowProps) {
   // ---- questionnaire path ---------------------------------------------------
 
   function handleQuestionnaire(
-    answers: QuestionnaireAnswers,
+    answers: QuestionnaireDraft,
     mode: QuestionnaireMode,
   ) {
     setActionError(null);
@@ -354,12 +377,13 @@ export function ProfileFlow({ initialProfile, userName }: ProfileFlowProps) {
 
         {view.kind === "questionnaire" && (
           <QuestionnaireForm
-            initial={
+            initial={withKnownName(
               view.initial ??
-              (view.mode === "edit"
-                ? profile.questionnaire ?? prefillFromCV(profile.cv)
-                : undefined)
-            }
+                (view.mode === "edit"
+                  ? storedAnswers ?? prefillFromCV(profile.cv)
+                  : {}),
+              userName,
+            )}
             pending={pending}
             submitError={actionError}
             submitLabel={
@@ -390,7 +414,7 @@ export function ProfileFlow({ initialProfile, userName }: ProfileFlowProps) {
               setView({
                 kind: "questionnaire",
                 mode: "edit",
-                initial: profile.questionnaire ?? prefillFromCV(profile.cv),
+                initial: storedAnswers ?? prefillFromCV(profile.cv),
               });
             }}
           />

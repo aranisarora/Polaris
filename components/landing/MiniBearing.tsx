@@ -7,12 +7,19 @@ import {
   WaypointGlyph,
 } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { ChartBackdrop } from "./ChartBackdrop";
 
 /**
  * Show, don't claim: the product's reality-check moment rebuilt as a real
  * component. Three tiered rows — the dream pinned at the top, honest — joined
  * by a dotted route. Content is a clearly-labeled specimen (generic job
  * titles only); the copy says so.
+ *
+ * From `md` up the frame widens to the page measure and each row splits into
+ * three instrument columns — mark, name + readout, honest read — so the
+ * bearing holds the desktop frame instead of sitting as a phone card in the
+ * middle of it. Below `md` the rows stay exactly as they were: one stacked
+ * column beside the route.
  */
 
 const RAIL_DOTS =
@@ -62,8 +69,12 @@ function RowGlyph({ row }: { row: SpecimenRow }) {
 
 export function MiniBearing() {
   return (
-    <section aria-labelledby="bearing-heading" className="px-6 py-16 md:py-24">
-      <div className="mx-auto max-w-2xl">
+    <section
+      aria-labelledby="bearing-heading"
+      className="relative px-6 py-16 md:py-24"
+    >
+      <ChartBackdrop seed={0x2b8e41} stars={20} />
+      <div className="relative mx-auto max-w-2xl md:max-w-5xl">
         <div className="text-center">
           <h2 id="bearing-heading" className="text-h1">
             Where you stand, without flattery.
@@ -76,29 +87,30 @@ export function MiniBearing() {
         </div>
 
         <ChartFrame
+          grid
           topLeft="SPECIMEN BEARING"
           bottomRight="3 MARKS PLOTTED"
           className="mt-10"
-          contentClassName="px-5 py-10 sm:px-8"
+          contentClassName="px-5 py-10 sm:px-8 md:px-10 md:py-12"
         >
-          <ul className="grid gap-8">
+          <ul className="grid gap-8 md:gap-10">
             {ROWS.map((row, i) => (
               <li
                 key={row.title}
-                className="relative grid grid-cols-[28px_1fr] gap-x-4"
+                className="relative grid grid-cols-[28px_1fr] gap-x-4 md:grid-cols-[28px_minmax(0,19rem)_minmax(0,1fr)] md:gap-x-8"
               >
                 {/* route segment down to the next mark */}
                 {i < ROWS.length - 1 && (
                   <div
                     aria-hidden="true"
-                    className="absolute -bottom-[26px] left-[13px] top-[30px] w-[2px]"
+                    className="absolute -bottom-[26px] left-[13px] top-[30px] w-[2px] md:-bottom-[34px]"
                     style={{ backgroundImage: RAIL_DOTS }}
                   />
                 )}
-                <div className="flex h-7 items-center justify-center">
+                <div className="col-start-1 row-start-1 flex h-7 items-center justify-center">
                   <RowGlyph row={row} />
                 </div>
-                <div>
+                <div className="col-start-2 row-start-1">
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <p className="font-medium text-starlight">{row.title}</p>
                     <TierStar tier={row.tier} />
@@ -111,10 +123,10 @@ export function MiniBearing() {
                   >
                     {row.readout}
                   </p>
-                  <p className="mt-1.5 max-w-[52ch] text-sm leading-relaxed text-moonlight">
-                    {row.reasoning}
-                  </p>
                 </div>
+                <p className="col-start-2 row-start-2 mt-1.5 max-w-[52ch] text-sm leading-relaxed text-moonlight md:col-start-3 md:row-start-1 md:mt-0 md:self-center">
+                  {row.reasoning}
+                </p>
               </li>
             ))}
           </ul>

@@ -1,52 +1,40 @@
 import * as React from "react";
-import { Panel } from "@/components/ui";
-import { cn } from "@/lib/cn";
+import { ChartFrame, EmptyState } from "@/components/ui";
+import { ChartBackdrop } from "./ChartBackdrop";
 
 /**
- * Social proof, structure only — Polaris is pre-launch and invents nothing.
- * Three quote frames greeked with CSS bars, and one mono line that says
- * plainly what this space is waiting for.
+ * Social proof, honestly empty — Polaris is pre-launch and invents nothing.
+ *
+ * This slot used to ship three greeked panels: soft rounded rectangles
+ * standing in for content the product does not have. That is a placeholder,
+ * not a design, and it was going out on paid traffic. The world already owns
+ * the right device for "there is nothing here yet" — the EmptyState's compass
+ * rose and one honest line — set inside a chart frame whose corner readout
+ * counts the routes that exist: zero.
  */
-
-const GREEK_WIDTHS: readonly (readonly [string, string, string])[] = [
-  ["w-full", "w-10/12", "w-3/5"],
-  ["w-11/12", "w-full", "w-1/2"],
-  ["w-full", "w-9/12", "w-2/3"],
-];
-
 export function Navigators() {
   return (
-    <section aria-labelledby="navigators-heading" className="px-6 py-16 md:py-24">
-      <div className="mx-auto max-w-4xl">
+    <section
+      aria-labelledby="navigators-heading"
+      className="relative px-6 py-16 md:py-24"
+    >
+      <ChartBackdrop seed={0x5c31a7} stars={16} />
+      <div className="relative mx-auto max-w-2xl md:max-w-3xl">
         <h2 id="navigators-heading" className="text-center text-h1">
           Navigators
         </h2>
 
-        <div aria-hidden="true" className="mt-10 grid gap-4 sm:grid-cols-3">
-          {GREEK_WIDTHS.map((widths, i) => (
-            <Panel key={i} className="select-none">
-              <div className="grid gap-2.5">
-                {widths.map((w, j) => (
-                  <div
-                    key={j}
-                    className={cn("h-2.5 rounded-full bg-veil/70", w)}
-                  />
-                ))}
-              </div>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="h-9 w-9 shrink-0 rounded-full border bg-veil/70" />
-                <div className="grid gap-1.5">
-                  <div className="h-2.5 w-24 rounded-full bg-veil/70" />
-                  <div className="h-2 w-16 rounded-full bg-veil/50" />
-                </div>
-              </div>
-            </Panel>
-          ))}
-        </div>
-
-        <p className="mono-label mt-8 text-center text-moonlight">
-          AWAITING TRANSMISSIONS
-        </p>
+        <ChartFrame
+          topLeft="NAVIGATORS LOG"
+          bottomRight="0 ROUTES PLOTTED"
+          className="mt-10"
+          contentClassName="p-0"
+        >
+          <EmptyState
+            title="No courses logged yet."
+            body="Polaris has only just opened. When the first navigators reach the star they named, their routes are recorded here — until then this space stays empty rather than invented."
+          />
+        </ChartFrame>
       </div>
     </section>
   );

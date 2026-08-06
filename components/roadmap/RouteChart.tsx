@@ -232,13 +232,19 @@ export function RouteChart({
         );
       })}
 
-      {/* the north star — the locked destination */}
+      {/* The north star — the locked destination. Its label crowns the star
+          rather than trailing below it: the route rises from the bottom-left,
+          so everything the chart draws (waypoint glyphs and their number
+          ticks alike) lives *under* the star. Sitting the name above it puts
+          it outside that band at every task count, which the old below-right
+          placement could not do — at six waypoints the last glyph and its
+          "06" tick landed straight on the destination name. */}
       <g transform={`translate(${END.x - 15}, ${END.y - 15})`}>
         <NorthStarGlyph size={30} />
       </g>
       <text
-        x={END.x + 4}
-        y={END.y + 26}
+        x={END.x + 15}
+        y={END.y - 24}
         fontSize={9}
         textAnchor="end"
         fill="var(--color-gold-bright)"

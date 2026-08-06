@@ -151,7 +151,7 @@ export function AppShell({ user, phase, children }: AppShellProps) {
                     className="relative flex flex-1 select-none flex-col items-center justify-center gap-1 text-moonlight opacity-40"
                   >
                     <Icon size={20} strokeWidth={1.5} aria-hidden />
-                    <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em]">
+                    <span className="mono-label">
                       {tab.label}
                     </span>
                   </span>
@@ -172,7 +172,7 @@ export function AppShell({ user, phase, children }: AppShellProps) {
                     <StarGlyph size={7} className="absolute top-1.5" />
                   )}
                   <Icon size={20} strokeWidth={1.5} aria-hidden />
-                  <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em]">
+                  <span className="mono-label">
                     {tab.label}
                   </span>
                 </Link>

@@ -3,7 +3,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getGemini, MODEL } from "@/lib/gemini/client";
-import { GeminiError } from "@/lib/gemini/json";
+import { GeminiError, MSG_DAILY_QUOTA, readQuotaSignal } from "@/lib/gemini/json";
 import {
   asCVData,
   CV_PARSE_PROMPT,
@@ -29,7 +29,17 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const MAX_BYTES = 8 * 1024 * 1024;
+/** Used only when Gemini's 429 names no RetryInfo of its own. */
 const RATE_LIMIT_BACKOFF_MS = 6_000;
+/** Floor/ceiling on an honoured RetryInfo — an upload must never hang. */
+const MIN_RETRY_DELAY_MS = 500;
+const MAX_RETRY_DELAY_MS = 30_000;
+
+/** Honour Gemini's own delay, but never below a tick or above the cap. */
+function clampRetryDelay(ms: number | null): number {
+  const wanted = ms ?? RATE_LIMIT_BACKOFF_MS;
+  return Math.min(MAX_RETRY_DELAY_MS, Math.max(MIN_RETRY_DELAY_MS, wanted));
+}
 
 const MSG_NOT_PDF =
   "That file isn't a PDF. Export your CV as a PDF and try again.";
@@ -126,16 +136,24 @@ async function parseCVFromPdf(base64: string): Promise<CVData> {
         });
         return response.text ?? "";
       } catch (err) {
-        if (isMissingKey(err)) throw new GeminiError(MSG_NOT_CONFIGURED, err);
+        if (isMissingKey(err)) {
+          throw new GeminiError(MSG_NOT_CONFIGURED, err, "not-configured");
+        }
         if (isRateLimited(err)) {
+          // Same reading of Gemini's 429 as lib/gemini/json.ts, so a CV
+          // upload tells the truth the rest of the product tells: the day's
+          // allowance is not a wait, and saying "wait a moment" when it is
+          // spent is a promise the instruments cannot keep.
+          const { daily, retryAfterMs } = readQuotaSignal(err);
+          if (daily) throw new GeminiError(MSG_DAILY_QUOTA, err, "daily-quota");
           if (!rateLimitRetryUsed) {
             rateLimitRetryUsed = true;
-            await sleep(RATE_LIMIT_BACKOFF_MS);
+            await sleep(clampRetryDelay(retryAfterMs));
             continue;
           }
-          throw new GeminiError(MSG_RATE_LIMITED, err);
+          throw new GeminiError(MSG_RATE_LIMITED, err, "rate-limited");
         }
-        throw new GeminiError(MSG_UNREADABLE, err);
+        throw new GeminiError(MSG_UNREADABLE, err, "unreadable");
       }
     }
   }

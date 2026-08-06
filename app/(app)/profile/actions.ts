@@ -6,7 +6,12 @@ import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { computeScore } from "@/lib/score";
 import { cvDataSchema, asCVData } from "@/lib/gemini/prompts/cv";
-import type { CVData, QuestionnaireAnswers } from "@/lib/types";
+import {
+  hasRealAnswer,
+  NAME_MAX,
+  type QuestionnaireDraft,
+} from "@/components/profile/answers";
+import type { CVData } from "@/lib/types";
 
 /**
  * saveProfile — the one mutation of the profile surface.
@@ -18,6 +23,10 @@ import type { CVData, QuestionnaireAnswers } from "@/lib/types";
  *
  * `stay: true` skips the redirect so the client can offer the optional
  * addendum (or return to the profile summary) — the data is saved either way.
+ *
+ * The questionnaire also carries the user's name (the CV path gets one from
+ * `basics.name`). It is stored with the answers and mirrored to
+ * `profiles.full_name`, which is where the living CV reads it from.
  */
 
 const answer = z
@@ -29,7 +38,18 @@ const answer = z
     return t ? t : undefined;
   });
 
+/** The display name: same forgiving trim, a tighter ceiling, never required. */
+const nameAnswer = z
+  .string()
+  .max(4000)
+  .nullish()
+  .transform((v) => {
+    const t = v?.trim().replace(/\s+/g, " ");
+    return t ? t.slice(0, NAME_MAX) : undefined;
+  });
+
 const questionnaireSchema = z.object({
+  name: nameAnswer,
   currentRole: answer,
   yearsExperience: answer,
   topSkills: answer,
@@ -52,16 +72,12 @@ const saveProfileSchema = z.object({
 
 export interface SaveProfileInput {
   cv?: CVData;
-  questionnaire?: QuestionnaireAnswers;
+  questionnaire?: QuestionnaireDraft;
   cvFilePath?: string;
   stay?: boolean;
 }
 
 export type SaveProfileResult = { ok: true } | { ok: false; error: string };
-
-function hasAnswers(q: QuestionnaireAnswers): boolean {
-  return Object.values(q).some((v) => typeof v === "string" && v.length > 0);
-}
 
 function splitList(text: string | undefined): string[] {
   if (!text) return [];
@@ -77,7 +93,7 @@ function splitList(text: string | undefined): string[] {
  * (the living CV builds from it). This is a deterministic mapping of the
  * user's own words into CV sections — nothing invented, nothing reworded.
  */
-function cvFromQuestionnaire(q: QuestionnaireAnswers, name: string): CVData {
+function cvFromQuestionnaire(q: QuestionnaireDraft, name: string): CVData {
   return {
     basics: {
       name,
@@ -121,7 +137,7 @@ export async function saveProfile(
 
   const cv = parsed.data.cv ? asCVData(parsed.data.cv) : undefined;
   const questionnaire =
-    parsed.data.questionnaire && hasAnswers(parsed.data.questionnaire)
+    parsed.data.questionnaire && hasRealAnswer(parsed.data.questionnaire)
       ? parsed.data.questionnaire
       : undefined;
   const { cvFilePath, stay } = parsed.data;
@@ -148,7 +164,7 @@ export async function saveProfile(
   const mergedCv = (cv ?? existing?.cv_structured ?? null) as CVData | null;
   const mergedQuestionnaire = (questionnaire ??
     existing?.questionnaire ??
-    null) as QuestionnaireAnswers | null;
+    null) as QuestionnaireDraft | null;
   const source =
     mergedCv && mergedQuestionnaire ? "both" : mergedCv ? "cv" : "questionnaire";
   const now = new Date().toISOString();
@@ -170,15 +186,35 @@ export async function saveProfile(
     };
   }
 
-  // Snapshot for cv_versions. First save: "Profile created" at the base
-  // score. Later re-saves record the change without ever lowering the score.
+  // The name the questionnaire path now collects. Empty is fine everywhere
+  // below — every consumer already renders a nameless CV gracefully.
   const metaName =
     user.user_metadata?.full_name ?? user.user_metadata?.name ?? "";
+  const accountName = typeof metaName === "string" ? metaName.trim() : "";
+  const answeredName = mergedQuestionnaire?.name?.trim() ?? "";
+
+  // A questionnaire-only user has no `cv_structured`, so their living CV is
+  // rebuilt on every read by app/(app)/cv/data.ts → questionnaireToCV(), which
+  // takes the name from `profiles.full_name`. Without this write the name they
+  // just typed would never reach /cv or the PDF export. Best-effort: the
+  // profile is already saved, and a nameless CV still renders.
+  if (answeredName && answeredName !== accountName) {
+    const { error: nameError } = await supabase
+      .from("profiles")
+      .update({ full_name: answeredName })
+      .eq("id", user.id);
+    if (nameError) {
+      console.error("[profile] full_name update failed:", nameError.message);
+    }
+  }
+
+  // Snapshot for cv_versions. First save: "Profile created" at the base
+  // score. Later re-saves record the change without ever lowering the score.
   const snapshot =
     mergedCv ??
     cvFromQuestionnaire(
-      mergedQuestionnaire as QuestionnaireAnswers,
-      typeof metaName === "string" ? metaName : "",
+      mergedQuestionnaire as QuestionnaireDraft,
+      answeredName || accountName,
     );
 
   const { data: latest } = await supabase

@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-06T07:10:00Z",
+  "title": "Design System: Polaris",
+  "extensions": {
+    "colorMeta": {
+      "abyss": {
+        "role": "neutral",
+        "displayName": "Zenith Abyss",
+        "canonical": "#05080f",
+        "tonalRamp": [
+          "oklch(8% 0.018 265)",
+          "oklch(20% 0.022 265)",
+          "oklch(32% 0.024 265)",
+          "oklch(44% 0.024 265)",
+          "oklch(56% 0.022 265)",
+          "oklch(68% 0.018 265)",
+          "oklch(80% 0.014 265)",
+          "oklch(92% 0.008 265)"
+        ]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Nautical Night",
+        "canonical": "#0a1226",
+        "tonalRamp": [
+          "oklch(15% 0.040 265)",
+          "oklch(26% 0.050 265)",
+          "oklch(37% 0.055 265)",
+          "oklch(48% 0.055 265)",
+          "oklch(59% 0.050 265)",
+          "oklch(70% 0.042 265)",
+          "oklch(81% 0.030 265)",
+          "oklch(92% 0.016 265)"
+        ]
+      },
+      "depth": {
+        "role": "neutral",
+        "displayName": "Chart Depth",
+        "canonical": "#111b3a",
+        "tonalRamp": [
+          "oklch(15% 0.045 268)",
+          "oklch(26% 0.055 268)",
+          "oklch(37% 0.060 268)",
+          "oklch(48% 0.060 268)",
+          "oklch(59% 0.055 268)",
+          "oklch(70% 0.045 268)",
+          "oklch(81% 0.032 268)",
+          "oklch(92% 0.017 268)"
+        ]
+      },
+      "veil": {
+        "role": "neutral",
+        "displayName": "Veil Indigo",
+        "canonical": "#1b2850",
+        "tonalRamp": [
+          "oklch(15% 0.050 268)",
+          "oklch(26% 0.062 268)",
+          "oklch(37% 0.068 268)",
+          "oklch(48% 0.068 268)",
+          "oklch(59% 0.062 268)",
+          "oklch(70% 0.050 268)",
+          "oklch(81% 0.035 268)",
+          "oklch(92% 0.018 268)"
+        ]
+      },
+      "starlight": {
+        "role": "neutral",
+        "displayName": "Starlight",
+        "canonical": "#f2f4fa",
+        "tonalRamp": [
+          "oklch(15% 0.006 275)",
+          "oklch(26% 0.007 275)",
+          "oklch(37% 0.008 275)",
+          "oklch(48% 0.008 275)",
+          "oklch(59% 0.008 275)",
+          "oklch(70% 0.008 275)",
+          "oklch(81% 0.008 275)",
+          "oklch(96% 0.008 275)"
+        ]
+      },
+      "moonlight": {
+        "role": "neutral",
+        "displayName": "Moonlight",
+        "canonical": "#a9b4d0",
+        "tonalRamp": [
+          "oklch(15% 0.024 270)",
+          "oklch(26% 0.030 270)",
+          "oklch(37% 0.034 270)",
+          "oklch(48% 0.035 270)",
+          "oklch(59% 0.035 270)",
+          "oklch(75% 0.033 270)",
+          "oklch(85% 0.024 270)",
+          "oklch(94% 0.012 270)"
+        ]
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Faint",
+        "canonical": "#7c87a8",
+        "tonalRamp": [
+          "oklch(15% 0.028 270)",
+          "oklch(26% 0.036 270)",
+          "oklch(37% 0.040 270)",
+          "oklch(48% 0.042 270)",
+          "oklch(59% 0.040 270)",
+          "oklch(70% 0.035 270)",
+          "oklch(81% 0.026 270)",
+          "oklch(92% 0.014 270)"
+        ]
+      },
+      "gold": {
+        "role": "primary",
+        "displayName": "Polaris Brass",
+        "canonical": "#d9a648",
+        "tonalRamp": [
+          "oklch(15% 0.035 82)",
+          "oklch(26% 0.055 82)",
+          "oklch(37% 0.075 82)",
+          "oklch(48% 0.095 82)",
+          "oklch(59% 0.110 82)",
+          "oklch(74% 0.115 82)",
+          "oklch(84% 0.095 82)",
+          "oklch(94% 0.050 82)"
+        ]
+      },
+      "gold-bright": {
+        "role": "primary",
+        "displayName": "Ignited Brass",
+        "canonical": "#f0c468",
+        "tonalRamp": [
+          "oklch(15% 0.032 84)",
+          "oklch(26% 0.050 84)",
+          "oklch(37% 0.068 84)",
+          "oklch(48% 0.086 84)",
+          "oklch(59% 0.098 84)",
+          "oklch(70% 0.104 84)",
+          "oklch(83% 0.100 84)",
+          "oklch(94% 0.048 84)"
+        ]
+      },
+      "gold-deep": {
+        "role": "primary",
+        "displayName": "Deep Brass",
+        "canonical": "#7a5c1e",
+        "tonalRamp": [
+          "oklch(15% 0.030 80)",
+          "oklch(26% 0.048 80)",
+          "oklch(43% 0.075 80)",
+          "oklch(52% 0.082 80)",
+          "oklch(63% 0.086 80)",
+          "oklch(74% 0.082 80)",
+          "oklch(85% 0.062 80)",
+          "oklch(94% 0.034 80)"
+        ]
+      },
+      "astral": {
+        "role": "secondary",
+        "displayName": "Astral Blue",
+        "canonical": "#7c9ee8",
+        "tonalRamp": [
+          "oklch(15% 0.035 262)",
+          "oklch(26% 0.055 262)",
+          "oklch(37% 0.075 262)",
+          "oklch(48% 0.090 262)",
+          "oklch(59% 0.098 262)",
+          "oklch(69% 0.100 262)",
+          "oklch(81% 0.072 262)",
+          "oklch(92% 0.038 262)"
+        ]
+      },
+      "aurora": {
+        "role": "tertiary",
+        "displayName": "Aurora Green",
+        "canonical": "#5bc48e",
+        "tonalRamp": [
+          "oklch(15% 0.035 155)",
+          "oklch(26% 0.055 155)",
+          "oklch(37% 0.075 155)",
+          "oklch(48% 0.095 155)",
+          "oklch(59% 0.115 155)",
+          "oklch(74% 0.130 155)",
+          "oklch(85% 0.100 155)",
+          "oklch(94% 0.048 155)"
+        ]
+      },
+      "ember": {
+        "role": "tertiary",
+        "displayName": "Ember Coral",
+        "canonical": "#e0715c",
+        "tonalRamp": [
+          "oklch(15% 0.040 33)",
+          "oklch(26% 0.065 33)",
+          "oklch(37% 0.090 33)",
+          "oklch(48% 0.115 33)",
+          "oklch(59% 0.135 33)",
+          "oklch(67% 0.140 33)",
+          "oklch(81% 0.098 33)",
+          "oklch(92% 0.048 33)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "color-mix(in srgb, #f2f4fa 9%, transparent)",
+        "note": "Alpha derivative of starlight, not a solid value — it is the global default border-color set in the base layer, so a bare `border` utility is already on-world. No tonal ramp: the token only exists as transparency."
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "color-mix(in srgb, #f2f4fa 16%, transparent)",
+        "note": "Alpha derivative of starlight at 16%. Marks chart frames, dialog edges, the route-ahead track, and control hover. No tonal ramp."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The landing headline only. Marcellus 400, sentence case, text-wrap: balance. Never caps, never bolded."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The h1 on every authenticated surface, and the landing's section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings inside a surface — the CV name block, dialog-scale headings."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "The smallest Marcellus step — dialog titles, empty-state titles, CV section headings, landing step titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default reading text. Measure capped at 42-70ch depending on the surface."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Help text, field errors, card descriptions, tier framing lines, reasoning paragraphs."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Button labels at the 44px size, and the dense list-line step used for CV lines and landing step copy."
+      },
+      "label": {
+        "displayName": "Instrument Label",
+        "purpose": "The `mono-label` utility. Only for things that were measured: coordinates, counts, dates, tiers, salaries, chart-frame corners, progress readouts. Never prose."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel",
+        "value": "0 12px 32px -12px rgb(0 0 0 / 0.55)",
+        "purpose": "Every raised surface at rest — panels, cards, list rows, chart frames, error states, toasts. Offset and blur only."
+      },
+      {
+        "name": "raised",
+        "value": "0 24px 48px -16px rgb(0 0 0 / 0.6)",
+        "purpose": "The modal tier. Dialog only, over a rgb(5 8 15 / 0.7) backdrop."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The system easing. Every state change and every signature moment."
+      },
+      {
+        "name": "duration-feedback",
+        "value": "150ms",
+        "purpose": "The default transition duration. Color-only hover/active feedback on controls."
+      },
+      {
+        "name": "duration-state",
+        "value": "400ms",
+        "purpose": "State moves — progress width, waypoint flare, dialog and toast entry, CV line un-greying."
+      },
+      {
+        "name": "duration-signature",
+        "value": "700ms",
+        "purpose": "The one authored moment per surface — the route drawing itself in through an SVG mask."
+      },
+      {
+        "name": "rose-spin",
+        "value": "rose-spin 3.2s linear infinite",
+        "purpose": "CompassSpinner rotation. The only motion exempted from the reduced-motion kill switch, and the exemption swaps it for quiet-pulse."
+      },
+      {
+        "name": "north-pulse",
+        "value": "north-pulse 4s ease-in-out infinite",
+        "purpose": "The north star's 1 to 1.06 scale breath — the one ambient motion beyond the star field."
+      },
+      {
+        "name": "waypoint-flare",
+        "value": "waypoint-flare 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Ignition on completion: scale 1 to 1.4 to 1 with a brightness lift."
+      },
+      {
+        "name": "fade-up",
+        "value": "fade-up 400ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        "purpose": "Entry for dialogs, toasts, and streaming list rows (60ms stagger)."
+      },
+      {
+        "name": "shimmer",
+        "value": "shimmer 1.8s ease-in-out infinite",
+        "purpose": "Skeleton sweep. The block stays visible when the shimmer stops."
+      },
+      {
+        "name": "quiet-pulse",
+        "value": "quiet-pulse 2.8s ease-in-out infinite",
+        "purpose": "Opacity breath, 0.4 to 0.9 — the current waypoint ring, hero twinklers, and the reduced-motion substitute for rotation."
+      },
+      {
+        "name": "caret-blink",
+        "value": "caret-blink 1s step-end infinite",
+        "purpose": "The gold caret block while a StageReadout types on."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation-duration: 0.01ms; transition-duration: 0.01ms",
+        "purpose": "Global kill switch under prefers-reduced-motion. Everything stops: star drift, pulses, spins, typing, transitions. The single exemption is .motion-pulse-exempt."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one gold-filled action on a screen. 44px floor, colors-only transition, never moves or lifts.",
+      "html": "<button class=\"ds-btn-primary\">Chart your course</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: none; border-radius: 8px; background: var(--color-gold); color: var(--color-night); font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 500; white-space: nowrap; user-select: none; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-btn-primary:hover { background: var(--color-gold-bright); } .ds-btn-primary:active { background: var(--color-gold-deep); color: var(--color-starlight); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-astral); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.55; pointer-events: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The default action outside the one gold CTA. Hairline at 25% starlight, veil fill on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Lock this destination</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 1px solid color-mix(in srgb, var(--color-starlight) 25%, transparent); border-radius: 8px; background: transparent; color: var(--color-starlight); font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-secondary:hover { background: color-mix(in srgb, var(--color-veil) 40%, transparent); } .ds-btn-secondary:active { background: color-mix(in srgb, var(--color-veil) 60%, transparent); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-astral); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Depth ground, hairline border, 44px floor. Focus shifts the border to astral — no glow, no fill change. Field label sits 6px above.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Where do you dream of ending up?<span class=\"ds-field-req\">*</span></span><input class=\"ds-input\" type=\"text\" placeholder=\"A role, a company, or just a feeling\" /><span class=\"ds-field-help\">Your words come back to you, never a category.</span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; font-family: var(--font-sans); } .ds-field-label { margin-bottom: 6px; font-size: 0.875rem; font-weight: 500; color: var(--color-starlight); } .ds-field-req { margin-left: 4px; color: var(--color-gold); } .ds-input { width: 100%; min-height: 44px; padding: 0 14px; border: 1px solid color-mix(in srgb, var(--color-starlight) 9%, transparent); border-radius: 8px; background: var(--color-depth); color: var(--color-starlight); font-family: var(--font-sans); font-size: 1rem; transition: border-color 150ms; } .ds-input::placeholder { color: var(--color-faint); } .ds-input:hover { border-color: color-mix(in srgb, var(--color-starlight) 16%, transparent); } .ds-input:focus { outline: 2px solid var(--color-astral); outline-offset: 2px; border-color: color-mix(in srgb, var(--color-astral) 60%, transparent); } .ds-field-help { margin-top: 6px; font-size: 0.875rem; color: var(--color-moonlight); }"
+    },
+    {
+      "name": "Choice Card",
+      "kind": "chip",
+      "refersTo": "choice-card",
+      "description": "Radio-semantics option card. Selected turns the border gold, fills veil at 30%, and fades in the four-point star.",
+      "html": "<div class=\"ds-choices\" role=\"radiogroup\" aria-label=\"Sector\"><button class=\"ds-choice ds-choice--selected\" role=\"radio\" aria-checked=\"true\" type=\"button\"><span class=\"ds-choice-tag\">Suggested from your dream</span><span class=\"ds-choice-row\"><span class=\"ds-choice-title\">Games &amp; interactive</span><svg class=\"ds-choice-star\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"currentColor\"/></svg></span></button><button class=\"ds-choice\" role=\"radio\" aria-checked=\"false\" type=\"button\"><span class=\"ds-choice-row\"><span class=\"ds-choice-title\">Product design</span></span><span class=\"ds-choice-desc\">Interfaces, systems, and the teams that ship them.</span></button></div>",
+      "css": ".ds-choices { display: grid; gap: 10px; font-family: var(--font-sans); } .ds-choice { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; min-height: 44px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--color-starlight) 9%, transparent); border-radius: 12px; background: var(--color-depth); text-align: left; cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-choice:hover { border-color: color-mix(in srgb, var(--color-starlight) 16%, transparent); background: color-mix(in srgb, var(--color-veil) 20%, var(--color-depth)); } .ds-choice:focus-visible { outline: 2px solid var(--color-astral); outline-offset: 2px; } .ds-choice--selected { border-color: var(--color-gold); background: color-mix(in srgb, var(--color-veil) 30%, var(--color-depth)); } .ds-choice-tag { font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.5; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-gold); } .ds-choice-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; } .ds-choice-title { font-weight: 500; color: var(--color-starlight); } .ds-choice-star { color: var(--color-gold); flex-shrink: 0; } .ds-choice-desc { font-size: 0.875rem; color: var(--color-moonlight); }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The raised surface. Depth ground, 12px radius, hairline, offset-and-blur shadow. Never nested inside another panel.",
+      "html": "<div class=\"ds-panel\"><h3 class=\"ds-panel-title\">Experience</h3><p class=\"ds-panel-body\">Two years shipping interface work at a small studio, with the design-system credit the dream above asks for still ahead of you.</p></div>",
+      "css": ".ds-panel { border: 1px solid color-mix(in srgb, var(--color-starlight) 9%, transparent); border-radius: 12px; background: var(--color-depth); box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.55); padding: 20px; font-family: var(--font-sans); } .ds-panel-title { margin: 0; font-family: var(--font-display); font-size: 1.1875rem; font-weight: 400; line-height: 1.35; color: var(--color-starlight); } .ds-panel-body { margin: 12px 0 0; font-size: 0.875rem; line-height: 1.6; color: var(--color-moonlight); max-width: 65ch; }"
+    },
+    {
+      "name": "Chart Frame",
+      "kind": "custom",
+      "refersTo": "chart-frame",
+      "description": "The instrument container: 60% night ground, hairline-strong border, graticule ticks on every edge, mono coordinates in the corners.",
+      "html": "<div class=\"ds-chart\"><span class=\"ds-chart-tick ds-chart-tick--top\"></span><span class=\"ds-chart-tick ds-chart-tick--bottom\"></span><span class=\"ds-chart-corner ds-chart-corner--tl\">Voyage chart</span><span class=\"ds-chart-corner ds-chart-corner--tr\">Locked 2026-08-06</span><span class=\"ds-chart-corner ds-chart-corner--bl\">Position plotted</span><div class=\"ds-chart-body\"><svg width=\"100%\" viewBox=\"0 0 320 130\" aria-hidden=\"true\"><path d=\"M 40 108 C 90 98, 130 78, 170 62 C 210 46, 240 34, 274 24\" fill=\"none\" stroke=\"var(--color-gold)\" stroke-width=\"1.5\" stroke-dasharray=\"2 6\" stroke-linecap=\"round\" opacity=\"0.85\"/><circle cx=\"40\" cy=\"108\" r=\"9\" fill=\"none\" stroke=\"var(--color-starlight)\" stroke-opacity=\"0.4\" stroke-width=\"1.5\"/><line x1=\"40\" y1=\"103\" x2=\"40\" y2=\"113\" stroke=\"var(--color-starlight)\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><line x1=\"35\" y1=\"108\" x2=\"45\" y2=\"108\" stroke=\"var(--color-starlight)\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><g transform=\"translate(163 55) scale(0.62)\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"var(--color-gold)\"/></g><g transform=\"translate(262 12)\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"var(--color-gold-bright)\"/></g></svg></div></div>",
+      "css": ".ds-chart { position: relative; overflow: hidden; border: 1px solid color-mix(in srgb, var(--color-starlight) 16%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--color-night) 60%, transparent); box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.55); font-family: var(--font-sans); } .ds-chart-tick { position: absolute; left: 0; right: 0; height: 8px; pointer-events: none; background-image: linear-gradient(to right, color-mix(in srgb, var(--color-starlight) 22%, transparent) 0 1px, transparent 1px), linear-gradient(to right, color-mix(in srgb, var(--color-starlight) 22%, transparent) 0 1px, transparent 1px); background-size: 12px 4px, 60px 8px; background-repeat: repeat-x; } .ds-chart-tick--top { top: 0; background-position: left top; } .ds-chart-tick--bottom { bottom: 0; background-position: left bottom; } .ds-chart-corner { position: absolute; font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.5; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--color-moonlight) 80%, transparent); } .ds-chart-corner--tl { left: 16px; top: 10px; } .ds-chart-corner--tr { right: 16px; top: 10px; } .ds-chart-corner--bl { left: 16px; bottom: 10px; } .ds-chart-body { position: relative; padding: 40px 24px; }"
+    },
+    {
+      "name": "Tier Star",
+      "kind": "custom",
+      "refersTo": "chip-have",
+      "description": "The classification marker: a drawn four-point star in the tier color plus its mono label. Never an emoji, never a colored dot.",
+      "html": "<span class=\"ds-tiers\"><span class=\"ds-tier ds-tier--ready\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"currentColor\"/></svg>Already possible</span><span class=\"ds-tier ds-tier--attainable\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"currentColor\"/></svg>Attainable</span><span class=\"ds-tier ds-tier--stretch\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"currentColor\"/></svg>Stretch</span></span>",
+      "css": ".ds-tiers { display: flex; flex-wrap: wrap; gap: 16px; } .ds-tier { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.5; letter-spacing: 0.14em; text-transform: uppercase; } .ds-tier--ready { color: var(--color-aurora); } .ds-tier--attainable { color: var(--color-gold); } .ds-tier--stretch { color: var(--color-ember); }"
+    },
+    {
+      "name": "Requirement Chips",
+      "kind": "chip",
+      "refersTo": "chip-have",
+      "description": "Read-only readings from a real posting: aurora for held, ember for missing. Never filters, never actions.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chips-label ds-chips-label--have\">You have</span><span class=\"ds-chip ds-chip--have\"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Figma</span><span class=\"ds-chip ds-chip--have\"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>2+ years in product</span><span class=\"ds-chips-label ds-chips-label--missing\">Missing</span><span class=\"ds-chip ds-chip--missing\"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18M6 6l12 12\"/></svg>Design-system ownership</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--font-sans); } .ds-chips-label { margin-right: 4px; font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.5; letter-spacing: 0.14em; text-transform: uppercase; } .ds-chips-label--have { color: var(--color-aurora); } .ds-chips-label--missing { color: var(--color-ember); } .ds-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; } .ds-chip--have { border: 1px solid color-mix(in srgb, var(--color-aurora) 35%, transparent); color: var(--color-aurora); } .ds-chip--missing { border: 1px solid color-mix(in srgb, var(--color-ember) 35%, transparent); color: var(--color-ember); }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "The desktop top-bar nav: moonlight at rest, veil fill on hover, gold with a leading star when active. Below md this becomes a fixed bottom tab bar with mono labels.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary\"><a class=\"ds-nav-item ds-nav-item--active\" href=\"#\" aria-current=\"page\"><svg width=\"9\" height=\"9\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"currentColor\"/></svg>Matches</a><a class=\"ds-nav-item\" href=\"#\">Roadmap</a><a class=\"ds-nav-item\" href=\"#\">CV</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; font-family: var(--font-sans); } .ds-nav-item { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; text-decoration: none; color: var(--color-moonlight); transition: background-color 150ms, color 150ms; } .ds-nav-item:hover { background: color-mix(in srgb, var(--color-veil) 30%, transparent); color: var(--color-starlight); } .ds-nav-item:focus-visible { outline: 2px solid var(--color-astral); outline-offset: 2px; } .ds-nav-item--active, .ds-nav-item--active:hover { color: var(--color-gold); background: transparent; }"
+    },
+    {
+      "name": "Wordmark",
+      "kind": "custom",
+      "refersTo": "nav-tab",
+      "description": "The entire identity: a gold four-point star beside POLARIS in Marcellus caps tracked at 0.22em. There is no logotype file.",
+      "html": "<span class=\"ds-wordmark\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2C12.55 8.4 15.6 11.45 22 12C15.6 12.55 12.55 15.6 12 22C11.45 15.6 8.4 12.55 2 12C8.4 11.45 11.45 8.4 12 2Z\" fill=\"currentColor\"/></svg><span class=\"ds-wordmark-text\">POLARIS</span></span>",
+      "css": ".ds-wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--color-gold); } .ds-wordmark-text { margin-right: -0.22em; font-family: var(--font-display); font-size: 1rem; font-weight: 400; letter-spacing: 0.22em; color: var(--color-starlight); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Voyage Track Chart",
+    "overview": "Polaris renders a career the way an admiralty chart renders a passage: a fixed star at the top of the frame, an honestly plotted position low in it, and one dotted brass-gold route between them. The product's binding identity concept is Night Sky Navigator (PRODUCT.md); the chart is how that concept was actually drawn. Every surface sits on the same fixed vertical sky — abyss at the zenith deepening into nautical-twilight indigo — with a magnitude-varied star field behind all content and hairline graticules dressing the instruments. Nothing in the built world is a raster: the sky, the stars, the route, the waypoints, the compass rose and the readiness gauge are all code-drawn canvas and SVG.\n\nThe register is quiet and instrumented rather than dark-and-dramatic. Depth comes almost entirely from four tonal grounds and 1px hairlines, not from shadow; the two shadow tokens that exist are offset-and-blur, and no surface in the build carries a zero-offset halo, a neon glow, or backdrop blur. Ink is never neutral: every \"grey\" in the system is indigo-tinted. Brass gold is the single accent and it is rationed hard — it is the route, the waypoints, the instrument labels, and exactly one action per screen. Aurora green and ember coral are not decoration at all; they are classifications, and they only appear where something has been measured.\n\nThe type does the same split. An engraved chart-roman (Marcellus, one weight) carries headings and the wordmark; a plain grotesque (Hanken Grotesk) carries everything a person reads at length; a mono (Fragment Mono) is reserved for things that were measured — coordinates, counts, dates, tiers, salaries, stage readouts. The world is expressed almost entirely in the ground, the glyphs and the mono readouts, which lets the interaction layer stay completely conventional: native <dialog>, native <select>, real radios, a standard bottom tab bar. Confirmed rejections: the job-board card grid, the hype-gradient hero, glassmorphism, emoji as icons, and kicker/eyebrow labels.",
+    "keyCharacteristics": [
+      "One fixed sky behind everything — a two-stop vertical gradient plus a canvas star field, never a per-page background.",
+      "Four tonal grounds (abyss → night → depth → veil) and hairline borders do the work shadows usually do.",
+      "One accent (brass gold) and three classification colors (aurora / gold / ember) that only appear on measured things.",
+      "Three faces with three jobs: engraved roman for headings, grotesque for reading, mono for measurement only.",
+      "Every identity mark is an authored SVG glyph — four-point star, waypoint, position cross, compass rose, north star.",
+      "One authored motion per surface; everything else is a 150ms color transition or nothing.",
+      "Conventional interaction patterns throughout; the distinctiveness lives in the skin and the copy."
+    ],
+    "rules": [
+      {
+        "name": "The One Gold Rule",
+        "body": "Gold is the route and the action. A screen gets one gold-filled control; every other gold on that screen is route, waypoint, instrument label, or the active tab. When two rows both deserve the action, only the recommended one gets the gold fill — the rest fall back to secondary.",
+        "section": "colors"
+      },
+      {
+        "name": "The Indigo Neutral Rule",
+        "body": "There is no grey in this system. Every muted text, border, divider and disabled state is mixed from starlight or drawn from the indigo family. A #888-class value anywhere is a bug.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Black Rule",
+        "body": "The floor is abyss (#05080F) and it only appears at the zenith of the fixed sky and behind an open dialog. Pure black is never used as a ground, a border, or a text color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Classification Rule",
+        "body": "Aurora, gold and ember are readings, not paint. They appear on tier stars, requirement chips, and error surfaces — never on a heading, a panel, an illustration or a divider to add interest.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Weight Rule",
+        "body": "Marcellus ships at 400 and only 400. Size is the entire heading hierarchy — never bolden a heading, never fake weight with a stroke, never letterspace a heading to manufacture emphasis. The two sanctioned tracking exceptions are the wordmark (+0.22em) and the display line (+0.01em).",
+        "section": "typography"
+      },
+      {
+        "name": "The Measurement Rule",
+        "body": "Fragment Mono is only for things that were measured: coordinates, degrees, counts, dates, tiers, salaries, progress readouts, chart corners. It is never a costume for prose, a heading, or a button.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Eyebrow Rule",
+        "body": "Nothing floats above a heading. Mono instrument labels live inside instrument components — chart-frame corners, tier rows, readout strips, the provenance tag inside a choice card — never as a kicker above an h1 or h2. The build carries zero kickers; keep it that way.",
+        "section": "typography"
+      },
+      {
+        "name": "The Verbatim Quote Rule",
+        "body": "The user's own words return in starlight italic inside curly quotes, inline in moonlight prose. They are never paraphrased into a category label, never set in mono, never given a blockquote treatment.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sans Row Rule",
+        "body": "Titles inside a repeating list row (task cards, job rows) are set in Hanken Grotesk at 1rem/500, not Marcellus. Marcellus marks the document; the grotesque marks the record.",
+        "section": "typography"
+      },
+      {
+        "name": "The Offset Shadow Rule",
+        "body": "Every shadow has vertical offset and negative spread. A zero-offset halo is banned decoration — a glow around an element is never how this system says \"elevated\" or \"active\".",
+        "section": "elevation"
+      },
+      {
+        "name": "The Drawn Ring Exception",
+        "body": "The one thing that looks like a glow is not one: the current waypoint's 25%-opacity ring and the roadmap chart's pulsing 1px circle are drawn SVG elements, part of the chart's mark vocabulary. Drawn rings are allowed; CSS halos are not.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat Panel Rule",
+        "body": "Surfaces do not gain elevation on hover. Hover is a tonal move into veil (20–60% alpha) or a hairline going from 9% to 16% — never a shadow change, never a lift.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put content on the existing sky. The gradient and star field are global and fixed; a new surface adds no background of its own.",
+      "Do use a bare `border` utility for any 1px line — the base layer already resolves it to 9% starlight hairline.",
+      "Do express state by recoloring the 1px border (gold for selected/current, ember for invalid/error) rather than by adding fills, shadows or outlines.",
+      "Do keep gold to one filled control per screen; every other action on that screen is secondary or ghost.",
+      "Do set anything that was measured in the `mono-label` utility (0.6875rem, +0.14em, uppercase) — counts, tiers, dates, coordinates, salaries, readouts.",
+      "Do quote the user's own words verbatim in starlight italic inside curly quotes, inline in the surrounding moonlight prose.",
+      "Do give every interactive element a 44px minimum in both axes, including inline links inside dense rows.",
+      "Do draw identity marks from `components/ui/glyphs.tsx` and functional icons from lucide-react at 1.5px stroke.",
+      "Do ship exactly one authored motion per surface and make everything else a 150ms color transition.",
+      "Do verify every new animation dies under `prefers-reduced-motion`; the only sanctioned exemption is `.motion-pulse-exempt` on the compass spinner."
+    ],
+    "donts": [
+      "Don't use a zero-offset box-shadow as a glow, halo, or focus treatment. Both shadow tokens have vertical offset and negative spread; a ring is drawn in SVG or it does not exist.",
+      "Don't introduce a neutral grey. If a value is not from the indigo family or mixed from starlight, it is wrong.",
+      "Don't use pure black as a ground, border, or text color — abyss is the floor.",
+      "Don't put a kicker, eyebrow, or floating mono label above a heading. Mono labels live inside instrument components.",
+      "Don't bolden, letterspace, or otherwise fake weight on a Marcellus heading; the face has one weight and size is the hierarchy.",
+      "Don't set prose, headings, or buttons in Fragment Mono. Monospace means measured.",
+      "Don't use aurora, ember or gold as decoration — they only mark something that was actually assessed.",
+      "Don't nest a card inside a card, or build a page out of same-size icon-card grids.",
+      "Don't use emoji or unicode dingbats as icons; tiers are drawn stars with mono labels.",
+      "Don't add backdrop-filter, gradient text, section numbers, or a gradient hero — all four are refused by the built world.",
+      "Don't swap responsive compositions with `display: none` when a one-shot animation is involved; use `visibility` so the animation is not restarted at a breakpoint.",
+      "Don't widen an authenticated surface past the single centered column; desktop widens gutters and charts, it does not add a second column."
+    ]
+  }
+}

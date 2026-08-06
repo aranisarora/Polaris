@@ -8,7 +8,7 @@ extend your own feature's files only.
 
 | Route | Access | Purpose |
 |---|---|---|
-| `/` | public | Landing. If already authed AND onboarded, server-redirect to resume point. |
+| `/` | public | Landing. Statically prerendered — the redirect for authed visitors happens in `proxy.ts`, not in the page (see below). |
 | `/onboarding` | auth | Phase 1 wizard (3 steps + fast track). |
 | `/profile` | auth | Phase 2: CV upload + parse confirm, or questionnaire. |
 | `/bearing` | auth | Phase 3 reality check + lock target. |
@@ -18,9 +18,20 @@ extend your own feature's files only.
 | `/auth/signout` | auth | POST → sign out → redirect `/`. |
 
 Auth pages live under route group `app/(app)/` sharing `app/(app)/layout.tsx`
-(AppShell + CheckInGate). `proxy.ts` (Next 16's rename of `middleware.ts`)
-refreshes the Supabase session and redirects unauthenticated visitors of
-`(app)` routes to `/`.
+(AppShell + CheckInGate). `proxy.ts` (Next 16's rename of `middleware.ts`;
+the file at the repo root is `proxy.ts` and it exports `proxy`) refreshes the
+Supabase session and redirects unauthenticated visitors of `(app)` routes
+to `/`.
+
+`proxy.ts` also matches `/` — and that is the ONLY reason it matches it:
+sending a signed-in visitor to their resume point. `app/page.tsx` does no
+auth work at all, which is what lets the landing page stay statically
+prerendered for cold social traffic. Before any Supabase call,
+`lib/supabase/middleware.ts` checks for a Supabase session cookie
+(`sb-*-auth-token*`, excluding the PKCE `-code-verifier`); a request without
+one is waved straight through to the prerendered HTML, so an anonymous
+visitor costs zero Supabase work. A stale cookie that resolves to no user
+also falls through to the landing page.
 
 ### Flow resume — `lib/flow.ts`
 
@@ -30,9 +41,12 @@ refreshes the Supabase session and redirects unauthenticated visitors of
 3. no active locked_targets row → `bearing`
 4. no active roadmaps row → `roadmap`
 5. else → `roadmap` if any task not done, `cv` never forced — default `roadmap`.
-Authenticated visit to `/` and to a phase *ahead* of the resume point
-redirects to `FLOW_ROUTE[phase]`. Earlier phases stay reachable (users may
-revisit onboarding answers or profile).
+An authenticated visit to `/` is redirected by `lib/supabase/middleware.ts`
+calling `resolveRoute(supabase, userId)`; a visit to a phase *ahead* of the
+resume point is redirected to `FLOW_ROUTE[phase]` by `guardPhase(...)`, which
+each phase page calls for itself. Earlier phases stay reachable (users may
+revisit onboarding answers or profile). If the resume lookup throws, the
+visitor gets the public landing page rather than a 500.
 
 ## Supabase access
 
@@ -52,8 +66,22 @@ revisit onboarding answers or profile).
 - `json.ts`: `generateJSON<T>(opts: { prompt: string; schema: ZodType<T>;
   system?: string; temperature?: number }): Promise<T>` — calls
   `responseMimeType: "application/json"`, validates with zod, retries once on
-  parse/validation failure, retries once with backoff on 429/503. Throws
-  `GeminiError` with a user-safe `message`.
+  parse/validation failure, retries once on 429/503. Throws `GeminiError`
+  with a user-safe `message` and a `kind`
+  (`not-configured` | `rate-limited` | `daily-quota` | `unreadable` |
+  `unknown`) so callers can tell a wait-and-retry from a dead end.
+  - The 429 retry honours Gemini's own `google.rpc.RetryInfo.retryDelay`
+    (e.g. `"20.3s"`), clamped to 0.5–30s; 6s when the payload names none.
+  - A per-DAY quota exhaustion is NOT retried and is never described as a
+    momentary wait. `readQuotaSignal(err): { daily, retryAfterMs }` (exported
+    from `json.ts`) reads the `google.rpc.QuotaFailure` violations that the
+    API returns — `GenerateRequestsPerDay…` vs `GenerateRequestsPerMinute…` —
+    with a text-scan fallback. `MSG_DAILY_QUOTA` / `MSG_RATE_LIMITED` are
+    exported alongside it.
+  - `app/api/cv/parse/route.ts` makes its multimodal call directly (inlineData
+    PDFs can't go through `generateJSON`), but reads the same 429 with the
+    same `readQuotaSignal` / `MSG_DAILY_QUOTA` exports — so a CV upload that
+    hits the day's wall names it as the day's wall, not a momentary wait.
 - Feature prompts live in `lib/gemini/prompts/<feature>.ts` and are owned by
   that feature's agent. Every prompt that reasons about the user MUST receive
   and use their verbatim `dream_text` and `quotedPhrases`.
@@ -84,6 +112,14 @@ export interface JobProvider {
   Persists to cache. Zero configured providers → returns
   `{ postings: [], providers: [{configured:false}...], cached: false }` —
   the UI renders the designed "instruments not configured" state, never a crash.
+  Provider failures never throw. The ONE throw is
+  `JobSearchPersistError`: postings were found but the cache write failed
+  twice (one retry, 250ms apart). Persisting is load-bearing, not
+  best-effort — `POST /api/jobs/classify` is fail-closed and trusts only ids
+  it can find in this user's cache rows, so returning unrecorded postings
+  would hand the user a bearing where every batch 400s. `POST
+  /api/jobs/search` has no special branch for it: like any throw it becomes
+  the route's retryable 500 ("The bearing couldn't be taken. Try again.").
 
 ## API routes & server actions
 
@@ -95,10 +131,10 @@ never leak provider errors raw (map to user-safe messages).
 | Endpoint | Shape |
 |---|---|
 | action `saveOnboardingStep` | partial OnboardingState → upserts `onboarding`, sets `current_step`; step 1 also calls Gemini for `dream_interpretation` (non-blocking failure: store null, proceed). Fast-track sets all + `completed_at`. |
-| action `saveProfile` | `{ cv?: CVData; questionnaire?: QuestionnaireAnswers }` → upsert `career_profiles` with `completed_at`, insert first `cv_versions` snapshot (score via `lib/score.ts`). |
+| action `saveProfile` | `{ cv?: CVData; questionnaire?: QuestionnaireDraft; cvFilePath?: string; stay?: boolean }` → merges with what is stored (cv + answers → source `both`), upserts `career_profiles` with `completed_at`, inserts a `cv_versions` snapshot (score via `lib/score.ts`, never lowered). `questionnaire` is `QuestionnaireAnswers` **plus `name`** (`components/profile/answers.ts`, ≤120 chars, optional): it is stored with the answers AND mirrored to `profiles.full_name`, which is where the living CV and the PDF export read the name from for questionnaire-only users. `stay: true` skips the `/bearing` redirect so the client can offer the optional addendum. |
 | `POST /api/cv/parse` | multipart form `file` (PDF ≤ 8MB) → Gemini (inlineData application/pdf) → `{ cv: CVData }`. Does NOT persist; client shows confirm/edit then calls `saveProfile`. Uploads original to storage `cvs/{userId}/cv.pdf` (best-effort). |
 | `POST /api/jobs/search` | `{}` → reads onboarding + profile, builds JobQuery (keywords from `dream_interpretation.searchKeywords` or fast-track role; location/country from profile hints, default gb) → `JobSearchResult`. |
-| `POST /api/jobs/classify` | `{ postings: JobPosting[] }` (≤ 24) → Gemini in batches of 8 (one call per batch, JSON array out) vs the career profile → upserts `job_assessments`, marks `recommended` per tier (highest matchScore) → `{ classified: ClassifiedJob[] }`. |
+| `POST /api/jobs/classify` | `{ postings: JobPosting[], reset?: boolean }` (≤ 24) → rehydrates every id from this user's `job_search_cache` (the client's copies are discarded) → Gemini in batches of `CLASSIFY_BATCH_SIZE` = **12** (one call per batch, JSON array out) vs the career profile → upserts `job_assessments`, marks `recommended` per tier (highest matchScore) → `{ classified: ClassifiedJob[] }` for the requested postings only. Quota discipline: postings that already have a stored assessment are skipped (no second call for an answer we hold — `reset` deletes the rows first, so a retake still re-reads), and a short batch is topped up to 12 with not-yet-read postings from the same cached search, so a 24-posting bearing costs 2 model calls however the client chunks it. Consecutive calls in one request are paced 12s apart from call *start*. |
 | `POST /api/dream/assess` | `{}` → Gemini: dream vs profile (uses real posting requirements when a matching posting exists in results) → upsert `job_assessments` with `is_dream: true` → `{ dream: DreamAssessment }`. |
 | action `lockTarget` | `{ assessmentId }` or `{ dream: true }` → deactivate previous, insert `locked_targets` (`dream_beyond` = dream title when stepping-stone) |
 | `POST /api/roadmap/generate` | `{}` → NDJSON stream of `GenerationEvent`. Stages MUST be real work, personalized: `reading` (profile facts: n skills, named project), `comparing` (real count of cached postings for the target role), `gaps` (3 named gaps from assessments), `sequencing`. Final Gemini call returns 6–10 RoadmapTask drafts (each with why referencing profile specifics + posting requirements, effort, cvLine, category; task 1 `firstWeek: true`). Persist roadmap + tasks (deactivate prior), emit `done`. On failure mid-stream emit `error`. |
@@ -140,14 +176,46 @@ JOOBLE_API_KEY           — server only, optional (provider unconfigured state)
 ADZUNA_APP_ID, ADZUNA_APP_KEY — server only, optional
 NEXT_PUBLIC_SITE_URL     — OAuth redirect base
 ```
-Gemini free tier is ~10 req/min: batch classifications (8/call), keep roadmap
-generation ≤4 model calls total, retry-once on 429 with 6s backoff.
+
+### Gemini free-tier budget (measured, August 2026)
+
+**5 requests/minute AND 20 requests/day, per project per model.** Not ~10/min
+— that figure was wrong, and everything sized against it was too loose. The
+daily cap is the binding one. A complete journey costs 7 model calls:
+
+| Call | Where |
+|---|---|
+| dream interpretation | `saveOnboardingStep`, step 1 (failure tolerated) |
+| CV parse | `POST /api/cv/parse` (questionnaire path spends none) |
+| classify ×2 | `POST /api/jobs/classify`, 24 postings at 12/call |
+| dream assess | `POST /api/dream/assess` |
+| gaps | `POST /api/roadmap/generate` (falls back to recorded missing reqs) |
+| roadmap draft | `POST /api/roadmap/generate` |
+
+Repair and 429 retries add to that, so 20/day is roughly two journeys with
+room to stumble. Design to it:
+
+- Batch classifications 12/call and skip postings already assessed (see
+  `/api/jobs/classify` above). A 24-posting bearing = 2 calls.
+- Roadmap generation is 2 calls, not more.
+- Pace, don't race: sequential calls with ≥12s between starts stay under
+  5/min without any coordination.
+- Retry a per-minute 429 once, honouring Gemini's `RetryInfo.retryDelay`
+  (clamped 0.5–30s). Never retry a per-day 429 — say `MSG_DAILY_QUOTA`
+  instead, which promises tomorrow rather than "a moment".
+
 Per-user budget: `proxy.ts` matches the four Gemini endpoints (cv/parse,
 jobs/classify, dream/assess, roadmap/generate) and `lib/supabase/middleware.ts`
-claims a slot via the `claim_gemini_slot` RPC (6 requests / 60s per user —
-sized so the bearing burst of 3 classify batches + dream assess fits) before
-the route runs; over budget → 429 `{ error }` with the designed "at capacity"
-copy. Missing migration fails open.
+claims a slot via the `claim_gemini_slot` RPC before the route runs —
+**4 requests / 60s per user**, deliberately under the 5/min project ceiling,
+and exactly what one honest bearing costs (dream assess + up to three classify
+requests, of which at most two reach the model). Over budget → 429
+`{ error }` with the designed "at capacity" copy. Missing migration fails
+open. `GEMINI_MAX_CALLS` in `lib/supabase/middleware.ts` is the value that
+binds (it is passed explicitly on every call); the matching default in
+`supabase/schema.sql` exists so the function reads true on its own. Change
+both, and re-run `schema.sql` — `create or replace` makes that safe at any
+time.
 
 ## Global states matrix (every screen designs all of these)
 

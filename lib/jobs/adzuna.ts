@@ -10,6 +10,7 @@ import {
   toIso,
   type JobProvider,
 } from "./provider";
+import { isSafePostingUrl } from "./posting";
 
 /**
  * Adzuna provider. GET /v1/api/jobs/{country}/search/1 with app_id/app_key
@@ -69,7 +70,7 @@ export const adzuna: JobProvider = {
       const url = asText(job.redirect_url);
       // Unusable or non-http(s) rows are skipped, never crash — a hostile
       // javascript:/data: link must never reach an anchor href.
-      if (!title || !url || !/^https?:\/\//i.test(url)) continue;
+      if (!title || !isSafePostingUrl(url)) continue;
 
       const sourceId = asText(job.id) || url;
       const company =

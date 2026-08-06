@@ -45,6 +45,17 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- The trigger only fires for NEW sign-ups, so accounts that already existed
+-- when this schema was first applied would never get a profiles row and would
+-- land in the app half-initialised. Backfill them; safe to re-run.
+insert into public.profiles (id, email, full_name, avatar_url)
+select u.id,
+       u.email,
+       coalesce(u.raw_user_meta_data ->> 'full_name', u.raw_user_meta_data ->> 'name'),
+       u.raw_user_meta_data ->> 'avatar_url'
+from auth.users u
+where not exists (select 1 from public.profiles p where p.id = u.id);
+
 -- -------------------------------------------------------------- onboarding
 
 create table if not exists public.onboarding (
@@ -228,10 +239,12 @@ create policy "checkins: own all" on public.checkins
 
 -- ---------------------------------------------------------- gemini throttle
 
--- Per-user request budget for Gemini-backed endpoints (the shared free tier
--- is ~10 req/min — docs/CONTRACTS.md). RLS is enabled with NO policies on
--- purpose: rows are only ever touched through the security-definer function
--- below, so a client can't reset its own window.
+-- Per-user request budget for Gemini-backed endpoints. The shared free tier's
+-- measured ceiling is 5 requests/minute and 20 requests/day, per project per
+-- model (docs/CONTRACTS.md), so the per-user budget has to sit UNDER five per
+-- minute to be worth anything: it is 4 per 60s. RLS is enabled with NO
+-- policies on purpose: rows are only ever touched through the
+-- security-definer function below, so a client can't reset its own window.
 create table if not exists public.gemini_throttle (
   user_id uuid primary key references auth.users (id) on delete cascade,
   window_start timestamptz not null default now(),
@@ -244,8 +257,12 @@ alter table public.gemini_throttle enable row level security;
 -- when the call may proceed; false when the user has already spent
 -- max_calls inside the current window_seconds window. Single statement —
 -- race-safe under concurrent requests.
+--
+-- The defaults mirror lib/supabase/middleware.ts, which always passes both
+-- explicitly. Changing either means re-running this file against the live
+-- database; `create or replace` keeps that safe to do at any time.
 create or replace function public.claim_gemini_slot(
-  max_calls int default 6,
+  max_calls int default 4,
   window_seconds int default 60
 )
 returns boolean

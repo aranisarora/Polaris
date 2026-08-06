@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { Button, Field, Input, Panel, Textarea } from "@/components/ui";
-import type { QuestionnaireAnswers } from "@/lib/types";
+import { hasRealAnswer, NAME_MAX, type QuestionnaireDraft } from "./answers";
 
 export interface QuestionnaireFormProps {
-  initial?: QuestionnaireAnswers;
-  onSubmit: (answers: QuestionnaireAnswers) => void;
+  initial?: QuestionnaireDraft;
+  onSubmit: (answers: QuestionnaireDraft) => void;
   pending: boolean;
   submitLabel: string;
   submitError?: string | null;
@@ -15,7 +15,7 @@ export interface QuestionnaireFormProps {
   backLabel?: string;
 }
 
-type Key = keyof QuestionnaireAnswers;
+type Key = keyof QuestionnaireDraft;
 
 interface QuestionSpec {
   key: Key;
@@ -23,13 +23,24 @@ interface QuestionSpec {
   help: string;
   kind: "input" | "textarea";
   placeholder?: string;
+  autoComplete?: string;
+  maxLength?: number;
 }
 
-/** Three labeled groups, nine fields — one calm step, flexible formats. */
+/** Three labeled groups, ten fields — one calm step, flexible formats. */
 const GROUPS: { title: string; questions: QuestionSpec[] }[] = [
   {
     title: "Today",
     questions: [
+      {
+        key: "name",
+        label: "Your name",
+        help: "As you'd want it at the top of your CV — optional, but it makes the chart yours.",
+        kind: "input",
+        placeholder: "e.g. Ada Lovelace",
+        autoComplete: "name",
+        maxLength: NAME_MAX,
+      },
       {
         key: "currentRole",
         label: "Your current role",
@@ -109,7 +120,7 @@ export function QuestionnaireForm({
   onBack,
   backLabel = "Back",
 }: QuestionnaireFormProps) {
-  const [answers, setAnswers] = React.useState<QuestionnaireAnswers>(
+  const [answers, setAnswers] = React.useState<QuestionnaireDraft>(
     initial ?? {},
   );
   const [emptyError, setEmptyError] = React.useState<string | null>(null);
@@ -121,10 +132,8 @@ export function QuestionnaireForm({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const hasAny = Object.values(answers).some(
-      (v) => typeof v === "string" && v.trim().length > 0,
-    );
-    if (!hasAny) {
+    // A name alone is not a position — it never satisfies this gate.
+    if (!hasRealAnswer(answers)) {
       setEmptyError(
         "Give us at least one answer — a role or a few skills is enough to start from.",
       );
@@ -163,6 +172,8 @@ export function QuestionnaireForm({
                       id={`q-${q.key}`}
                       value={answers[q.key] ?? ""}
                       placeholder={q.placeholder}
+                      autoComplete={q.autoComplete}
+                      maxLength={q.maxLength}
                       onChange={(e) => set(q.key, e.target.value)}
                     />
                   )}

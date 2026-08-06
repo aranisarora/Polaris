@@ -4,7 +4,7 @@ import * as React from "react";
 import type { ClassifiedJob, Tier } from "@/lib/types";
 import { cn } from "@/lib/cn";
 import { StarGlyph, TIER_COLOR } from "@/components/ui";
-import { TIER_FRAMING, TIER_SHORT, tierEmptyLine } from "./assessments";
+import { TIER_FRAMING, TIER_SHORT, tierEmptyLine } from "./helpers";
 import { JobRow } from "./JobRow";
 
 const TIER_ORDER: readonly Tier[] = ["ready", "attainable", "stretch"];

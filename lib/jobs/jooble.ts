@@ -9,6 +9,7 @@ import {
   toIso,
   type JobProvider,
 } from "./provider";
+import { isSafePostingUrl } from "./posting";
 
 /**
  * Jooble provider. POST https://jooble.org/api/{key} with
@@ -72,7 +73,7 @@ export const jooble: JobProvider = {
       const url = asText(job.link);
       // Unusable or non-http(s) rows are skipped, never crash — a hostile
       // javascript:/data: link must never reach an anchor href.
-      if (!title || !url || !/^https?:\/\//i.test(url)) continue;
+      if (!title || !isSafePostingUrl(url)) continue;
 
       const sourceId = asText(job.id) || url;
       const salaryText = asText(job.salary);

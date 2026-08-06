@@ -9,11 +9,34 @@ import type {
   ProviderStatus,
 } from "@/lib/types";
 import { ProviderError, type JobProvider } from "./provider";
+import { parsePostings } from "./posting";
 import { jooble } from "./jooble";
 import { adzuna } from "./adzuna";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h per PRODUCT.md
 const MAX_POSTINGS = 24;
+/** One retry before a cache write is called a failure. */
+const CACHE_WRITE_RETRY_DELAY_MS = 250;
+
+/**
+ * The search found postings but couldn't record them.
+ *
+ * `POST /api/jobs/classify` is fail-closed: it will only classify posting ids
+ * it can find in this user's own `job_search_cache` rows. So an unrecorded
+ * search is a search whose postings are unclassifiable — showing them would
+ * strand the user on 24 rows that every classify batch rejects, with no way
+ * forward. A clean, retryable failure is the better outcome, and the caller
+ * gets it as a throw instead of a poisoned result.
+ */
+export class JobSearchPersistError extends Error {
+  constructor(cause?: unknown) {
+    super(
+      "The bearing couldn't be recorded, so it can't be read. Try again.",
+      cause === undefined ? undefined : { cause },
+    );
+    this.name = "JobSearchPersistError";
+  }
+}
 
 /** Registration order matters: on duplicates the Jooble record wins. */
 const PROVIDERS: readonly JobProvider[] = [jooble, adzuna];
@@ -121,6 +144,33 @@ function isCachedPayload(value: unknown): value is CachedPayload {
   return Array.isArray(v.postings) && Array.isArray(v.providers);
 }
 
+interface CacheRow {
+  user_id: string;
+  query_hash: string;
+  query: NormalizedQuery;
+  results: CachedPayload;
+  fetched_at: string;
+}
+
+/**
+ * Write the cache row. Returns null on success, or a log-safe reason.
+ * PostgREST reports failures on the resolved `{ error }` — it does not throw —
+ * so both shapes have to be read or the write is silent.
+ */
+async function writeCacheRow(
+  supabase: SupabaseClient,
+  row: CacheRow,
+): Promise<string | null> {
+  try {
+    const { error } = await supabase
+      .from("job_search_cache")
+      .upsert(row, { onConflict: "user_id,query_hash" });
+    return error ? (error.message || error.code || "unknown error") : null;
+  } catch (err) {
+    return err instanceof Error ? err.message : "unknown error";
+  }
+}
+
 // ------------------------------------------------------------------ search
 
 /**
@@ -130,11 +180,28 @@ function isCachedPayload(value: unknown): value is CachedPayload {
  *   younger than 24h.
  * - Otherwise queries every CONFIGURED provider in parallel
  *   (Promise.allSettled — one failing provider never sinks the other),
- *   merges + dedupes, caps at 24, and persists to the cache (best-effort;
- *   a cache write failure never fails the search).
+ *   merges + dedupes, caps at 24, and persists to the cache.
  * - Zero configured providers is a NORMAL state: returns empty postings
  *   with `configured: false` statuses so the UI can render the designed
  *   "instruments not configured" state. Never throws for provider issues.
+ *
+ * THE GUARANTEE: every posting this returns is a posting
+ * `POST /api/jobs/classify` will accept. That holds because of two rules
+ * this function keeps, and nothing else in the codebase may weaken:
+ *
+ *  1. Every posting returned has passed `postingSchema` — the same schema
+ *     classify re-validates the cached copy against. A posting that can't
+ *     round-trip is dropped here, not refused there.
+ *  2. Persisting is load-bearing, not best-effort. Classify is fail-closed
+ *     (it trusts only ids present in this user's cache rows), so returning
+ *     postings that were never recorded would hand the user a bearing where
+ *     every batch 400s and "Retake bearing" fails identically. When there
+ *     are postings to record and the write won't take — after one retry —
+ *     this throws `JobSearchPersistError` instead. The caller's error path
+ *     is a dead end the user can retry out of; the alternative is one they
+ *     can't.
+ *
+ * @throws {JobSearchPersistError} postings were found but couldn't be cached.
  */
 export async function searchJobs(
   supabase: SupabaseClient,
@@ -158,15 +225,23 @@ export async function searchJobs(
       if (Number.isFinite(age) && age >= 0 && age < CACHE_TTL_MS) {
         const payload: unknown = row.results;
         if (isCachedPayload(payload)) {
-          return {
-            postings: payload.postings,
-            providers: payload.providers,
-            cached: true,
-            fetchedAt:
-              typeof payload.fetchedAt === "string"
-                ? payload.fetchedAt
-                : (row.fetched_at as string),
-          };
+          // Re-validate on the way out: classify re-parses these same rows
+          // with the same schema, so anything that wouldn't survive that
+          // parse is dropped here rather than shown and then refused.
+          const postings = parsePostings(payload.postings);
+          // A row that held postings but yields none is corrupt — fall
+          // through to a live search instead of serving an empty bearing.
+          if (postings.length > 0 || payload.postings.length === 0) {
+            return {
+              postings,
+              providers: payload.providers,
+              cached: true,
+              fetchedAt:
+                typeof payload.fetchedAt === "string"
+                  ? payload.fetchedAt
+                  : (row.fetched_at as string),
+            };
+          }
         }
       }
     }
@@ -236,30 +311,42 @@ export async function searchJobs(
   );
 
   // 4. Merge in registration order (Jooble first) so Jooble wins duplicates.
+  //    Each provider's list is put through the shared posting contract FIRST,
+  //    so the 24-posting cap fills with postings classify can accept rather
+  //    than being spent on rows that would be dropped later.
   const postings = mergePostings(
-    PROVIDERS.map((p) => listsByName.get(p.name) ?? []),
+    PROVIDERS.map((p) => parsePostings(listsByName.get(p.name) ?? [])),
   );
 
-  const result: JobSearchResult = { postings, providers, cached: false, fetchedAt };
-
   // 5. Persist to cache — only when at least one provider answered, so a
-  //    transient outage is never frozen for 24h. Best-effort.
+  //    transient outage is never frozen for 24h.
   if (providers.some((p) => p.ok)) {
-    try {
-      await supabase.from("job_search_cache").upsert(
-        {
-          user_id: userId,
-          query_hash: queryHash,
-          query: normalized,
-          results: { postings, providers, fetchedAt } satisfies CachedPayload,
-          fetched_at: fetchedAt,
-        },
-        { onConflict: "user_id,query_hash" },
+    const row: CacheRow = {
+      user_id: userId,
+      query_hash: queryHash,
+      query: normalized,
+      results: { postings, providers, fetchedAt },
+      fetched_at: fetchedAt,
+    };
+
+    let failure = await writeCacheRow(supabase, row);
+    if (failure) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, CACHE_WRITE_RETRY_DELAY_MS),
       );
-    } catch {
-      // Cache write failure is invisible to the user.
+      failure = await writeCacheRow(supabase, row);
+    }
+
+    if (failure) {
+      console.error("[lib/jobs/search] cache write failed", failure);
+      // With postings in hand, an unrecorded search is an unclassifiable
+      // one — classify only trusts ids it can find in this cache. Fail
+      // clean and retryable rather than returning a poisoned bearing.
+      // With nothing found there is nothing to classify, so the missing
+      // row costs the user only a repeated provider call.
+      if (postings.length > 0) throw new JobSearchPersistError(failure);
     }
   }
 
-  return result;
+  return { postings, providers, cached: false, fetchedAt };
 }

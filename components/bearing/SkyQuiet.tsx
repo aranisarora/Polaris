@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { ProviderStatus } from "@/lib/types";
 import { Button, CompassRose } from "@/components/ui";
-import { missingKeyNames } from "./assessments";
+import { missingKeyNames } from "./helpers";
 
 export interface SkyQuietProps {
   providers: ProviderStatus[];

@@ -62,10 +62,13 @@ export function TaskCard({ task, state, pending = false, flare = false, onToggle
         </span>
 
         <div className="min-w-0 flex-1">
-          {/* Stable two-column header: the button anchors top-right at every
-              title length (long titles wrap within their own column) so the
-              action never jumps position between cards. */}
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2">
+          {/* Below sm the title owns the full measure and the action sits
+              full-width beneath it — a ~140px button in the same row costs a
+              phone ~40% of the line and shreds every title into 3–4 ragged
+              lines. From sm up the two-column composition returns: the button
+              anchors top-right at every title length, so the action never
+              jumps position between cards. */}
+          <div className="grid grid-cols-1 items-start gap-x-4 gap-y-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-y-2">
             <div className="min-w-0">
               <h3
                 className={cn(
@@ -75,9 +78,21 @@ export function TaskCard({ task, state, pending = false, flare = false, onToggle
               >
                 {task.title}
               </h3>
+              {/* Each measurement is one unbreakable unit — the line may wrap
+                  between readings, never inside one ("· 2 EVENINGS" stays
+                  whole). */}
               <p className="mono-label mt-1.5 text-moonlight">
-                {String(task.position).padStart(2, "0")} · {task.category} · {task.effort}
-                {task.firstWeek && <span className="text-gold"> · This week</span>}
+                <span className="whitespace-nowrap">
+                  {String(task.position).padStart(2, "0")}
+                </span>{" "}
+                <span className="whitespace-nowrap">· {task.category}</span>{" "}
+                <span className="whitespace-nowrap">· {task.effort}</span>
+                {task.firstWeek && (
+                  <>
+                    {" "}
+                    <span className="whitespace-nowrap text-gold">· This week</span>
+                  </>
+                )}
               </p>
             </div>
 
@@ -92,7 +107,7 @@ export function TaskCard({ task, state, pending = false, flare = false, onToggle
                   : `Mark "${task.title}" as done`
               }
               className={cn(
-                "shrink-0",
+                "w-full shrink-0 sm:w-auto",
                 task.done && "border-gold/50 text-gold-bright hover:bg-gold/10",
               )}
             >

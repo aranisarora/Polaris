@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TriangleAlert } from "lucide-react";
 import type { ProviderStatus } from "@/lib/types";
-import { providerLabel } from "./assessments";
+import { providerLabel } from "./helpers";
 
 export interface ProviderNoticeProps {
   providers: ProviderStatus[];

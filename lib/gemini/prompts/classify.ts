@@ -11,8 +11,17 @@ import type { CVData, JobPosting, QuestionnaireAnswers } from "@/lib/types";
  * their verbatim dream_text and quotedPhrases.
  */
 
-/** Max postings per Gemini call (docs/CONTRACTS.md: batches of 8). */
-export const CLASSIFY_BATCH_SIZE = 8;
+/**
+ * Max postings per Gemini call (docs/CONTRACTS.md).
+ *
+ * Sized against the free tier's real ceiling — 5 requests/minute and 20
+ * requests/DAY per project per model — not against throughput: a full
+ * 24-posting bearing has to cost 2 model calls, not 3. Twelve assessments
+ * (~150 output tokens each) sit far inside the model's output budget, and
+ * the prompt asks for the count explicitly so the schema's exact-length
+ * check still holds.
+ */
+export const CLASSIFY_BATCH_SIZE = 12;
 
 // ---------------------------------------------------------------- schemas
 

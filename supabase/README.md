@@ -11,15 +11,20 @@ policies, the new-user trigger, the `claim_gemini_slot` throttle function, and
 the private `cvs` storage bucket. The script is idempotent — re-running it is
 safe, and re-running it is how schema changes reach an existing project.
 
-**Already provisioned before the Gemini budget shipped?** Re-run the script.
-`proxy.ts` calls `claim_gemini_slot` to hold each user to 6 Gemini-backed
-requests per 60s (the shared free tier is ~10 req/min). If the function is
-missing the check **fails open** — the app keeps working, but one user looping
-`/api/cv/parse` or `/api/roadmap/generate` can exhaust the quota for everyone.
-Verify it landed:
+**Already provisioned?** Re-run the script. The Gemini budget was resized on
+6 Aug 2026: `proxy.ts` passes `max_calls` explicitly, so the new limit is
+already live without a re-run — but the function's own defaults and comments
+still say the old number until you re-apply, and a re-run is free.
+`proxy.ts` calls `claim_gemini_slot` to hold each user to **4** Gemini-backed
+requests per 60s. The free tier's measured ceiling is **5 requests/minute and
+20 requests/day**, per project per model (not the ~10/min this file used to
+claim), so the per-user budget has to sit under five to be worth anything. If
+the function is missing the check **fails open** — the app keeps working, but
+one user looping `/api/cv/parse` or `/api/roadmap/generate` can exhaust the
+day's quota for everyone. Verify it landed:
 
 ```sql
-select public.claim_gemini_slot(6, 60);  -- false when run as a non-user role
+select public.claim_gemini_slot(4, 60);  -- false when run as a non-user role
 ```
 
 ## 2. Enable Google sign-in

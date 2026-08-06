@@ -17,13 +17,21 @@ import {
  * Scaling strategy: the star scatter and graticule dress the whole container
  * fluidly (percentage space + CSS), while the route composition lives in a
  * fixed-aspect SVG per breakpoint (`meet`, never cropped, never distorted) —
- * portrait for phones, two widening charts for tablet and desktop.
+ * portrait for phones, a squarer cut for short phones, two widening charts for
+ * tablet and desktop.
+ *
+ * Short viewports get their own composition and their own band height. At
+ * 360×640 the tall portrait cut plus a 55svh band pushed the gold CTA to
+ * ~733px — below the fold, which breaks the one rule the first viewport has.
+ * The fix is a rebalance, not a shrink: the band drops to 45svh and the chart
+ * swaps to a wider cut that fills the full width of the shorter band, so the
+ * route stays full-bleed and the CTA lands with room to spare.
  *
  * The breakpoint swap uses `visibility`, never `display`: a display toggle
  * cancels and restarts the one-shot draw/fade animations, which (with their
  * fill-mode holding the pre-state) left the route, waypoints and north star
  * invisible whenever the viewport crossed a breakpoint. With visibility all
- * three compositions animate once at page load and hold their finished
+ * four compositions animate once at page load and hold their finished
  * state, so the full route is in frame at every width from 320px up.
  */
 
@@ -92,7 +100,7 @@ function routePath(points: readonly Pt[]): string {
 
 interface Composition {
   id: string;
-  /** Breakpoint visibility. */
+  /** Breakpoint visibility — one of the `hero-c-*` classes in HERO_CSS. */
   className: string;
   w: number;
   h: number;
@@ -102,6 +110,15 @@ interface Composition {
   tracking: number;
   crossLabel: Pt;
   starSize: number;
+  /**
+   * The destination label CROWNS the north star — it sits above it in every
+   * cut, never trailing below or beside it. This is structural, not a nudge:
+   * the route only ever rises from the lower left to the star, so the band
+   * above the star is the one region of the chart no dash can ever enter.
+   * Trailing the label below-right put the dotted route straight through the
+   * type at three of the four cuts (through "DESIGNER" at phone, tablet and
+   * desktop). Keep every `y` here above `star.y - starSize / 2`.
+   */
   starLabel: {
     x: number;
     y: number;
@@ -115,7 +132,7 @@ const JOB_LINE = "SENIOR PRODUCT DESIGNER - LONDON";
 const COMPOSITIONS: readonly Composition[] = [
   {
     id: "m",
-    className: "md:invisible",
+    className: "hero-c-m",
     w: 400,
     h: 460,
     route: [
@@ -131,14 +148,40 @@ const COMPOSITIONS: readonly Composition[] = [
     starSize: 34,
     starLabel: {
       x: 372,
-      y: 117,
+      y: 27,
+      lineHeight: 17,
+      lines: ["SENIOR PRODUCT DESIGNER", "LONDON"],
+    },
+  },
+  {
+    // Short phones: the same voyage, cut wider so it still fills the band.
+    // The last leg is steep on purpose — it keeps the star clear of the
+    // waypoint below it at this squarer aspect.
+    id: "s",
+    className: "hero-c-s",
+    w: 400,
+    h: 300,
+    route: [
+      [72, 248],
+      [140, 224],
+      [208, 194],
+      [254, 148],
+      [302, 74],
+    ],
+    fontSize: 12,
+    tracking: 1.6,
+    crossLabel: [72, 278],
+    starSize: 32,
+    starLabel: {
+      x: 350,
+      y: 24,
       lineHeight: 17,
       lines: ["SENIOR PRODUCT DESIGNER", "LONDON"],
     },
   },
   {
     id: "t",
-    className: "invisible md:visible xl:invisible",
+    className: "hero-c-t",
     w: 950,
     h: 540,
     route: [
@@ -152,11 +195,11 @@ const COMPOSITIONS: readonly Composition[] = [
     tracking: 1.7,
     crossLabel: [150, 462],
     starSize: 36,
-    starLabel: { x: 912, y: 146, lineHeight: 17, lines: [JOB_LINE] },
+    starLabel: { x: 912, y: 68, lineHeight: 17, lines: [JOB_LINE] },
   },
   {
     id: "w",
-    className: "invisible xl:visible",
+    className: "hero-c-w",
     w: 1300,
     h: 520,
     route: [
@@ -170,7 +213,7 @@ const COMPOSITIONS: readonly Composition[] = [
     tracking: 1.8,
     crossLabel: [180, 446],
     starSize: 36,
-    starLabel: { x: 1150, y: 140, lineHeight: 17, lines: [JOB_LINE] },
+    starLabel: { x: 1150, y: 62, lineHeight: 17, lines: [JOB_LINE] },
   },
 ];
 
@@ -187,7 +230,7 @@ function RouteComposition({ c }: { c: Composition }) {
     <svg
       viewBox={`0 0 ${c.w} ${c.h}`}
       preserveAspectRatio="xMidYMid meet"
-      className={cn("absolute inset-0 h-full w-full", c.className)}
+      className={cn("hero-c absolute inset-0 h-full w-full", c.className)}
       aria-hidden="true"
     >
       <defs>
@@ -284,6 +327,41 @@ function RouteComposition({ c }: { c: Composition }) {
 /* ---------------------------------------------------------------- chart */
 
 const HERO_CSS = `
+/* The chart band. 55svh is the committed height; under 820px of viewport it
+   gives way so the one gold CTA stays above the fold — and the composition
+   swaps to a wider cut at the same time, so the route keeps filling the frame
+   instead of being letterboxed into insignificance. */
+.hero-band {
+  height: 55svh;
+  min-height: 360px;
+  max-height: 640px;
+}
+@media (max-height: 820px) {
+  .hero-band { height: 45svh; min-height: 240px; }
+}
+
+/* Composition visibility: exactly one cut showing, all four animating once. */
+.hero-c { visibility: hidden; }
+.hero-c-m { visibility: visible; }
+@media (max-width: 767.98px) and (max-height: 820px) {
+  .hero-c-m { visibility: hidden; }
+  .hero-c-s { visibility: visible; }
+}
+@media (min-width: 768px) {
+  .hero-c-m { visibility: hidden; }
+  .hero-c-s { visibility: hidden; }
+  .hero-c-t { visibility: visible; }
+}
+/* short laptops get the widest cut — it is the one that fills a low band */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .hero-c-t { visibility: hidden; }
+  .hero-c-w { visibility: visible; }
+}
+@media (min-width: 1280px) {
+  .hero-c-t { visibility: hidden; }
+  .hero-c-w { visibility: visible; }
+}
+
 @keyframes hero-route-draw {
   from { stroke-dashoffset: 1; }
   to { stroke-dashoffset: 0; }
@@ -318,7 +396,7 @@ export function HeroChart({ className }: HeroChartProps) {
         role="img"
         aria-label="A night-sky voyage chart. A dotted gold route rises from a cross marked 'you are here', through three waypoints, to a bright north star labeled Senior Product Designer, London."
         className={cn(
-          "relative h-[55svh] max-h-[640px] min-h-[360px] w-full overflow-hidden",
+          "hero-band relative w-full overflow-hidden",
           className,
         )}
       >

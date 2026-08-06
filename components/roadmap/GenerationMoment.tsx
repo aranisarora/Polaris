@@ -266,11 +266,17 @@ export function GenerationMoment({ target, onComplete }: GenerationMomentProps) 
       >
         <PreviewChart targetTitle={target.title} />
 
+        {/* The narration is sentences, not readings: the gold mono stage
+            label stays an instrument label, and the sentence it introduces is
+            set in Hanken Grotesk at body size (DIRECTION.md Type — mono is
+            for measurement, never a costume for prose). Stages breathe
+            further apart now that each one is a paragraph. */}
         {(phase === "streaming" || (phase === "error" && stages.length > 0)) && (
-          <div className="mt-5 flex flex-col gap-2.5 border-t pt-5" aria-live="polite">
+          <div className="mt-5 flex flex-col gap-4 border-t pt-5" aria-live="polite">
             {visibleStages.map((stage, i) => (
               <StageReadout
                 key={stage.key}
+                tone="prose"
                 label={STAGE_LABEL[stage.key] ?? stage.key}
                 text={stage.text}
                 onDone={() => setTypedCount((c) => Math.max(c, i + 1))}

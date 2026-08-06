@@ -7,6 +7,11 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Landing — matched only to send signed-in visitors to their resume
+    // point, so app/page.tsx can stay statically prerendered. Requests
+    // without a Supabase session cookie short-circuit in updateSession
+    // before any auth call (lib/supabase/middleware.ts).
+    "/",
     "/onboarding/:path*",
     "/profile/:path*",
     "/bearing/:path*",

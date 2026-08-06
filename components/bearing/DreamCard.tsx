@@ -22,9 +22,18 @@ export interface DreamCardProps {
   actionable: boolean;
 }
 
+/**
+ * The dream in the user's own words. A personal string is never cut mid-word
+ * and never left with a dangling separator before the ellipsis — only a very
+ * long statement is shortened at all, and only at a word boundary.
+ */
 function truncateText(text: string, max: number): string {
   const clean = text.replace(/\s+/g, " ").trim();
-  return clean.length <= max ? clean : `${clean.slice(0, max - 1).trimEnd()}…`;
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  const head = lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut;
+  return `${head.replace(/[\s,;:.·—–-]+$/u, "")}…`;
 }
 
 /** Wraps the verbatim quoted phrase inside the reasoning in starlight italic. */
@@ -99,7 +108,7 @@ export function DreamCard({
       {state === "error" && (
         <div className="mt-4 flex flex-col gap-3">
           <p className="text-sm text-moonlight">
-            <em className="text-starlight">&ldquo;{truncateText(dreamStatement, 180)}&rdquo;</em>
+            <em className="text-starlight">&ldquo;{truncateText(dreamStatement, 320)}&rdquo;</em>
           </p>
           <p className="text-sm text-ember">
             {error ?? "Your dream couldn't be assessed."}

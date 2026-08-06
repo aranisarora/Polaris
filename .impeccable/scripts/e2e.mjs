@@ -69,6 +69,16 @@ const newCtx = async (mobile, authed) => {
   if (authed) await ctx.addCookies(pwCookies);
   return ctx;
 };
+// Gemini's free tier allows 5 requests/min per project per model. The journey
+// fires three bursts (onboarding interpretation, the bearing's 3 classify
+// batches + dream assess, then roadmap generation) that together blow through
+// that ceiling and starve the later steps. Give each burst its own quota
+// window so the run tests the product, not the free-tier rate limit.
+const QUOTA_WINDOW_MS = 65000;
+const pace = async (why) => {
+  log(`pacing ${QUOTA_WINDOW_MS / 1000}s for Gemini free-tier quota before ${why}...`);
+  await new Promise((r) => setTimeout(r, QUOTA_WINDOW_MS));
+};
 const clickButton = async (page, re, note) => {
   const btn = page.getByRole('button', { name: re }).first();
   await btn.scrollIntoViewIfNeeded();
@@ -86,8 +96,66 @@ try {
       const resp = await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 });
       record(`landing ${label} 200`, resp.status() === 200, String(resp.status()));
       record(`landing ${label} headline`, (await page.textContent('body'))?.includes('Every dream job has coordinates'));
-      await page.waitForTimeout(1200);
+      // The hero's last fade starts at 950ms and runs 500ms — wait past it so
+      // the screenshot shows the settled composition, not a mid-animation frame.
+      await page.waitForTimeout(2500);
       await shots(page, `01-landing-${label}`);
+
+      // HERO REGRESSION: at 1440px everything except the cross used to be
+      // cropped/invisible. Assert the whole composition — cross, route,
+      // waypoints, labeled north star — is opaque and inside the frame.
+      const hero = await page.evaluate(() => {
+        const box = document.querySelector('[role=img][aria-label*="voyage chart"]');
+        if (!box) return { error: 'hero container not found' };
+        // The three breakpoint compositions are toggled with `visibility`,
+        // so checkVisibility must be told to honour that property.
+        const svgs = [...box.querySelectorAll('svg[viewBox]')].filter(
+          (s) => s.checkVisibility({ visibilityProperty: true }) && s.querySelector('text'),
+        );
+        if (svgs.length !== 1) return { error: `expected 1 visible composition, found ${svgs.length}` };
+        const svg = svgs[0];
+        const r = box.getBoundingClientRect();
+        const inFrame = (el) => {
+          const b = el.getBoundingClientRect();
+          return b.width > 0 && b.height > 0 &&
+            b.left >= r.left - 1 && b.right <= r.right + 1 &&
+            b.top >= r.top - 1 && b.bottom <= r.bottom + 1;
+        };
+        const opaque = (el) => {
+          let o = 1, n = el;
+          while (n && n !== document.body) { o *= parseFloat(getComputedStyle(n).opacity || '1'); n = n.parentElement ?? n.parentNode?.host; }
+          return o;
+        };
+        const texts = [...svg.querySelectorAll('text')].map((t) => t.textContent.trim());
+        const wps = [...svg.querySelectorAll('g')].filter((g) => g.querySelector('svg,path,polygon,circle'));
+        const route = svg.querySelector('path[stroke-dasharray]');
+        const crossText = [...svg.querySelectorAll('text')].find((t) => /YOU ARE HERE/i.test(t.textContent));
+        const starText = [...svg.querySelectorAll('text')].find((t) => /NORTH|DESIGNER|LONDON/i.test(t.textContent));
+        const fades = [...svg.querySelectorAll('.hero-fade')];
+        return {
+          viewBox: svg.getAttribute('viewBox'),
+          texts,
+          routeInFrame: route ? inFrame(route) : false,
+          routeOpacity: route ? opaque(route) : 0,
+          crossInFrame: crossText ? inFrame(crossText) : false,
+          starTextInFrame: starText ? inFrame(starText) : false,
+          starTextOpacity: starText ? opaque(starText) : 0,
+          fadeCount: fades.length,
+          minFadeOpacity: fades.length ? Math.min(...fades.map((f) => parseFloat(getComputedStyle(f).opacity || '1'))) : 0,
+          allFadesInFrame: fades.every(inFrame),
+          glyphCount: wps.length,
+        };
+      });
+      if (hero.error) {
+        record(`HERO ${label}: composition readable`, false, hero.error);
+      } else {
+        log(`hero ${label} viewBox=${hero.viewBox} texts=${JSON.stringify(hero.texts)}`);
+        record(`HERO ${label}: YOU ARE HERE cross in frame`, hero.crossInFrame);
+        record(`HERO ${label}: dotted route in frame + opaque`, hero.routeInFrame && hero.routeOpacity > 0.9, `inFrame=${hero.routeInFrame} opacity=${hero.routeOpacity.toFixed(2)}`);
+        record(`HERO ${label}: waypoints + star faded in`, hero.fadeCount >= 4 && hero.minFadeOpacity > 0.9, `${hero.fadeCount} fade groups, min opacity ${hero.minFadeOpacity.toFixed(2)}`);
+        record(`HERO ${label}: all fade groups in frame`, hero.allFadesInFrame);
+        record(`HERO ${label}: north star label in frame + opaque`, hero.starTextInFrame && hero.starTextOpacity > 0.9, `inFrame=${hero.starTextInFrame} opacity=${hero.starTextOpacity.toFixed(2)} | ${hero.texts.join(' / ')}`);
+      }
       await ctx.close();
     });
   }
@@ -132,20 +200,33 @@ try {
     if (await q.count()) { await q.click(); } else { await page.getByText(/questionnaire|answer a few|no cv/i).first().click(); }
     await page.waitForTimeout(1000);
     await shots(page, '07-profile-questionnaire');
-    const tryFill = async (re, val) => {
-      try { await page.getByLabel(re).first().fill(val, { timeout: 3000 }); } catch { /* field optional */ }
+    // Fills are label-driven. A silent miss used to hide selector drift
+    // (the "location" field is labelled "Where you're based"), so a skipped
+    // fill is now logged and, for the fields the later assertions depend on,
+    // recorded as a failure.
+    const tryFill = async (re, val, required = false) => {
+      try {
+        await page.getByLabel(re).first().fill(val, { timeout: 3000 });
+        if (required) record(`questionnaire field filled: ${re}`, true);
+      } catch {
+        log('SKIPPED fill (no matching label):', String(re));
+        if (required) record(`questionnaire field filled: ${re}`, false, 'no matching label');
+      }
     };
-    await tryFill(/current role|role/i, 'Junior UI designer at a small agency');
+    await tryFill(/^your name$/i, 'Nadia Ellery', true);
+    await tryFill(/current role|role/i, 'Junior UI designer at a small agency', true);
     await tryFill(/years/i, '1.5 years');
-    await tryFill(/skills/i, 'Figma, prototyping, Unity basics, C#, pixel art');
+    await tryFill(/skills/i, 'Figma, prototyping, Unity basics, C#, pixel art', true);
     await tryFill(/proudest|proud/i, 'Shipped a small itch.io narrative game jam entry that got 2k plays');
     await tryFill(/education/i, 'BSc Computer Science, 2025');
-    await tryFill(/location/i, 'London, UK');
+    await tryFill(/where you.?re based|location/i, 'London, UK', true);
     await shots(page, '08-profile-questionnaire-filled');
     await clickButton(page, /save|continue|this is me|done|confirm/i, 'profile save');
     await page.waitForTimeout(4000);
     await shots(page, '09-profile-saved');
   });
+
+  await pace('the bearing burst (3 classify batches + dream assess)');
 
   await step('bearing: live search + classify', async () => {
     await page.goto(BASE + '/bearing', { waitUntil: 'domcontentloaded' });
@@ -158,6 +239,26 @@ try {
     record('bearing shows tier language', /already possible|attainable|stretch/i.test(body));
     record('bearing quotes dream verbatim', body.includes('make people feel something'), 'verbatim quote check');
     record('bearing shows requirement counts', /\d+\s+of\s+\d+/i.test(body));
+    record('nav tab reads "Matches"', (await page.getByRole('link', { name: /^Matches$/ }).count()) > 0);
+
+    // GEOGRAPHY REGRESSION: the dream is a London (UK) role. Postings used to
+    // come back from London/Corbin KENTUCKY. Read the locations the app
+    // actually cached and assert none are US states.
+    const { data: cacheRows, error: cacheErr } = await admin
+      .from('job_search_cache')
+      .select('query, results')
+      .eq('user_id', USER_ID);
+    if (cacheErr) log('cache read error:', cacheErr.message);
+    const cached = cacheRows?.[0];
+    const locs = (cached?.results?.postings ?? []).map((p) => p?.location ?? '').filter(Boolean);
+    log('search query ->', JSON.stringify(cached?.query ?? null));
+    log('posting locations ->', JSON.stringify(locs));
+    const US_STATE = /\b(KY|Kentucky|TX|Texas|CA|California|NY|New York|OH|Ohio|FL|Florida|IL|Illinois|WA|Washington|GA|Georgia|MA|Massachusetts|PA|Pennsylvania|United States|USA)\b/i;
+    const usHits = locs.filter((l) => US_STATE.test(l));
+    record('GEOGRAPHY: search country is gb', cached?.query?.country === 'gb', String(cached?.query?.country));
+    record('GEOGRAPHY: postings returned', locs.length > 0, `${locs.length} postings`);
+    record('GEOGRAPHY: no US locations in results', usHits.length === 0, usHits.length ? `US hits: ${usHits.join(' | ')}` : 'all non-US');
+    record('GEOGRAPHY: UK locations present', locs.some((l) => /london|england|uk|united kingdom|greater london/i.test(l)), locs.slice(0, 6).join(' | '));
   });
 
   await step('bearing: lock target', async () => {
@@ -176,6 +277,7 @@ try {
     await page.goto(BASE + '/roadmap', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1500);
     await shots(page, '13-roadmap-pregen');
+    await pace('roadmap generation');
     const gen = page.getByRole('button', { name: /draw|generate|route/i }).first();
     if (await gen.count()) {
       await gen.click();
@@ -195,13 +297,17 @@ try {
   });
 
   await step('roadmap: toggle first task', async () => {
-    // A due check-in dialog may be open (fresh roadmap) — record and dismiss it.
-    const dismiss = page.getByRole('button', { name: /not now|dismiss|close/i }).first();
-    if (await dismiss.count()) {
-      record('check-in dialog appeared + dismissible', true);
+    // A check-in must NEVER interrupt a route the user just watched generate
+    // (components/checkin/due.ts gates on roadmap age >= 48h). A dialog here
+    // is a product regression, not an expected state.
+    const dialog = page.getByRole('dialog');
+    const dialogOpen = (await dialog.count()) > 0 && (await dialog.first().isVisible().catch(() => false));
+    record('no check-in dialog on freshly generated roadmap', !dialogOpen,
+      dialogOpen ? 'dialog present: ' + ((await dialog.first().textContent()) ?? '').slice(0, 80) : 'none');
+    if (dialogOpen) {
       await shots(page, '15b-checkin-dialog');
-      await dismiss.click();
-      await page.waitForTimeout(800);
+      const dismiss = page.getByRole('button', { name: /not now|dismiss|close/i }).first();
+      if (await dismiss.count()) { await dismiss.click(); await page.waitForTimeout(800); }
     }
     const toggle = page.getByRole('button', { name: /mark|done|complete/i }).first();
     await toggle.scrollIntoViewIfNeeded();
@@ -216,6 +322,20 @@ try {
     await shots(page, '17-cv');
     const cvbody = (await page.textContent('body')) ?? '';
     record('cv shows unearned/task tags', /unlock|task|waypoint/i.test(cvbody));
+    record('cv shows the questionnaire name', cvbody.includes('Nadia Ellery'), 'basics.name from questionnaire');
+
+    // The living CV must not scroll sideways on a 390px phone.
+    const overflow = await page.evaluate(() => {
+      const de = document.documentElement;
+      const wide = [...document.querySelectorAll('body *')]
+        .filter((el) => el.getBoundingClientRect().right > de.clientWidth + 1)
+        .slice(0, 5)
+        .map((el) => `${el.tagName.toLowerCase()}.${(el.className || '').toString().split(' ').slice(0, 3).join('.')}@${Math.round(el.getBoundingClientRect().right)}`);
+      return { scrollW: de.scrollWidth, clientW: de.clientWidth, wide };
+    });
+    record('cv has no horizontal overflow on mobile',
+      overflow.scrollW <= overflow.clientW + 1,
+      `scrollWidth=${overflow.scrollW} clientWidth=${overflow.clientW}${overflow.wide.length ? ' | ' + overflow.wide.join(', ') : ''}`);
   });
 
   await step('pdf export', async () => {

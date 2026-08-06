@@ -114,16 +114,22 @@ export function RoadmapView({ target, roadmap, reveal = false }: RoadmapViewProp
       >
         <div className="flex min-w-0 items-center gap-3.5">
           <NorthStarGlyph size={22} className="shrink-0" />
+          {/* No eyebrow: "Destination" reads inside the line it names, and
+              the location follows as a readout beneath it, not above. */}
           <div className="min-w-0">
-            <p className="mono-label text-moonlight">
-              Destination{target.location ? ` — ${target.location}` : ""}
-            </p>
-            <p className="truncate font-medium text-starlight">
+            <p className="font-medium text-starlight">
+              <span className="font-normal text-moonlight">Destination — </span>
               {roadmap.targetTitle}
               {roadmap.targetCompany ? (
-                <span className="text-moonlight"> at {roadmap.targetCompany}</span>
+                <span className="font-normal text-moonlight">
+                  {" "}
+                  at {roadmap.targetCompany}
+                </span>
               ) : null}
             </p>
+            {target.location ? (
+              <p className="mono-label mt-1.5 text-moonlight">{target.location}</p>
+            ) : null}
           </div>
         </div>
         <Button variant="secondary" onClick={() => setConfirmOpen(true)}>

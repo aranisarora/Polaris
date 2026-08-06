@@ -5,11 +5,11 @@ import { guardPhase } from "@/lib/flow";
 import { computeScore } from "@/lib/score";
 import { buildDiffLines } from "@/lib/cvdiff";
 import type { CVData, CVVersion } from "@/lib/types";
-import { EmptyState, LinkButton, Panel } from "@/components/ui";
+import { ChartFrame, EmptyState, LinkButton, Panel } from "@/components/ui";
 import { DiffView, type DiffLineItem } from "@/components/cv/DiffView";
 import { ExportButton } from "@/components/cv/ExportButton";
+import { ReadinessMeridian } from "@/components/cv/ReadinessMeridian";
 import { RefreshOnFocus } from "@/components/cv/RefreshOnFocus";
-import { ScoreGauge } from "@/components/cv/ScoreGauge";
 import { VersionHistory } from "@/components/cv/VersionHistory";
 import { fetchActiveTasks, fetchCurrentCV } from "./data";
 
@@ -99,6 +99,12 @@ export default async function CvPage() {
   const latestScore = versions[0]?.score ?? null;
   const score = Math.max(latestScore ?? 0, computeScore(cv, tasks));
 
+  const lastPlotted = versions[0]?.createdAt;
+  const plottedOn =
+    lastPlotted && !Number.isNaN(Date.parse(lastPlotted))
+      ? new Date(lastPlotted).toISOString().slice(0, 10)
+      : null;
+
   const titleById = new Map(tasks.map((task) => [task.id, task.title]));
   const lines: DiffLineItem[] = buildDiffLines(cv, tasks).map((line) => ({
     ...line,
@@ -129,15 +135,22 @@ export default async function CvPage() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3 md:shrink-0 md:pr-2">
-          {/* The gauge names itself — a bare numeral reads as nothing. */}
-          <p className="mono-label text-moonlight">CV readiness</p>
-          <ScoreGauge score={score} />
-          <p className="max-w-64 text-center text-sm text-moonlight">
+        {/* The instrument names itself from its own frame: the corner
+            coordinates carry what used to float above it as an eyebrow, and
+            the north star inside carries the destination. Only the honest
+            one-line meaning sits outside, in prose, where it belongs. */}
+        <div className="mx-auto w-full max-w-[20rem] md:mx-0 md:shrink-0">
+          <ChartFrame
+            grid
+            topLeft="CV readiness"
+            topRight="000–100"
+            bottomLeft={plottedOn ? `Plotted ${plottedOn}` : undefined}
+            contentClassName="px-4 pt-9 pb-9"
+          >
+            <ReadinessMeridian score={score} targetTitle={target.title ?? ""} />
+          </ChartFrame>
+          <p className="mt-4 text-sm leading-relaxed text-moonlight">
             {tierCopy(score, targetName)}
-          </p>
-          <p className="mono-label max-w-64 truncate text-center text-moonlight">
-            target · {target.title}
           </p>
         </div>
       </section>

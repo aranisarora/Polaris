@@ -28,10 +28,12 @@ import {
 } from "@/app/(app)/bearing/actions";
 import {
   applyRecommended,
+  asSentence,
   chunk,
+  classifyRecovery,
   mergeJobs,
   providerLabel,
-} from "./assessments";
+} from "./helpers";
 import { DreamCard } from "./DreamCard";
 import { JobRow } from "./JobRow";
 import { JobRowSkeleton } from "./JobRowSkeleton";
@@ -366,30 +368,39 @@ export function BearingClient({
     </section>
   );
 
-  const failedPanel = failedPostings.length > 0 && (
-    <div
-      role="alert"
-      className="flex flex-col gap-3 rounded-xl border border-ember/40 bg-depth p-4 shadow-panel"
-    >
-      <p className="text-sm font-medium text-starlight">
-        Bearing unavailable for {failedPostings.length}{" "}
-        {failedPostings.length === 1 ? "posting" : "postings"}.
-      </p>
-      {classifyError && <p className="text-sm text-moonlight">{classifyError}</p>}
-      <ul className="flex flex-col gap-1">
-        {failedPostings.map((p) => (
-          <li key={p.id} className="text-sm text-moonlight">
-            {p.title}
-            {p.company ? ` — ${p.company}` : ""}
-          </li>
-        ))}
-      </ul>
-      <div>
-        <Button variant="secondary" loading={retryingFailed} onClick={() => void retryFailed()}>
-          Retry the bearing
-        </Button>
-      </div>
-    </div>
+  // A partial classification failure is a sentence, never a list: the count,
+  // the reason, what survived, one way forward. Printing the unread postings
+  // would turn the surface into the job-board dump the THESIS refuses — and
+  // an unread posting has nothing to say about the user anyway.
+  const unreadCount = failedPostings.length;
+  const failedRecovery = classifyRecovery(classifyError);
+  const failedPanel = unreadCount > 0 && (
+    <ErrorState
+      title={`${unreadCount} ${unreadCount === 1 ? "posting" : "postings"} couldn't be read into this bearing`}
+      detail={[
+        asSentence(classifyError ?? "The instruments went quiet part-way through"),
+        jobs.length > 0
+          ? `Everything below is measured and complete — ${jobs.length} ${
+              jobs.length === 1 ? "posting" : "postings"
+            } read against your profile.`
+          : "Nothing in this bearing could be measured against your profile.",
+      ].join(" ")}
+      action={
+        failedRecovery === "reload" ? (
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Reload the page
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            loading={retryingFailed}
+            onClick={() => void retryFailed()}
+          >
+            Read them again
+          </Button>
+        )
+      }
+    />
   );
 
   // A retake that failed while a bearing was already on screen: the old
