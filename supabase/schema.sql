@@ -167,6 +167,12 @@ create table if not exists public.roadmaps (
   target_id uuid not null references public.locked_targets (id) on delete cascade,
   dream_beyond text,
   narrative jsonb,
+  -- Day one of the plan. Weeks are 7-day blocks from here, not locale weeks,
+  -- so US and UK users read the same calendar. Re-planning from today writes
+  -- this column and nothing else.
+  start_date date not null default current_date,
+  -- The weekly capacity the user chose. The API clamps to 1–60 before write.
+  hours_per_week int not null default 8,
   active boolean not null default true,
   generated_at timestamptz not null default now()
 );
@@ -179,6 +185,22 @@ drop policy if exists "roadmaps: own all" on public.roadmaps;
 create policy "roadmaps: own all" on public.roadmaps
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+-- `create table if not exists` is a no-op on a project provisioned before the
+-- roadmap gained dates, so the new columns need their own catch-up — this is
+-- the file the README tells you to re-run for schema changes. Added nullable,
+-- backfilled, then constrained, so existing roadmaps inherit the day they were
+-- generated instead of today. Identical to
+-- supabase/migrations/20260806120000_roadmap_schedule.sql; both re-run safely.
+alter table public.roadmaps add column if not exists start_date date;
+update public.roadmaps set start_date = generated_at::date where start_date is null;
+alter table public.roadmaps alter column start_date set default current_date;
+alter table public.roadmaps alter column start_date set not null;
+
+alter table public.roadmaps add column if not exists hours_per_week int;
+update public.roadmaps set hours_per_week = 8 where hours_per_week is null;
+alter table public.roadmaps alter column hours_per_week set default 8;
+alter table public.roadmaps alter column hours_per_week set not null;
+
 create table if not exists public.roadmap_tasks (
   id uuid primary key default gen_random_uuid(),
   roadmap_id uuid not null references public.roadmaps (id) on delete cascade,
@@ -188,6 +210,11 @@ create table if not exists public.roadmap_tasks (
   why text not null,
   category text not null check (category in ('project', 'skill', 'certification', 'experience')),
   effort text not null default '',
+  -- Hours of work, the only input the schedule is built from. NULLABLE on
+  -- purpose: tasks written before this column existed have no honest value,
+  -- and readers fill from defaultHours(category) in lib/schedule.ts. Writing a
+  -- fabricated number here would make an old plan look measured.
+  estimate_hours numeric(5, 2),
   done boolean not null default false,
   done_at timestamptz,
   first_week boolean not null default false,
@@ -199,6 +226,31 @@ create index if not exists roadmap_tasks_roadmap on public.roadmap_tasks (roadma
 alter table public.roadmap_tasks enable row level security;
 drop policy if exists "roadmap_tasks: own all" on public.roadmap_tasks;
 create policy "roadmap_tasks: own all" on public.roadmap_tasks
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Catch-up for projects provisioned before tasks carried hours (see above).
+alter table public.roadmap_tasks add column if not exists estimate_hours numeric(5, 2);
+
+-- One sitting's work. `user_id` is denormalised from the parent task so the
+-- RLS policy is the same single-column shape as every other table here —
+-- no join, no recursive policy.
+create table if not exists public.roadmap_steps (
+  id uuid primary key default gen_random_uuid(),
+  task_id uuid not null references public.roadmap_tasks (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  position int not null,
+  title text not null,
+  detail text not null default '',
+  minutes int not null default 30,
+  done boolean not null default false,
+  done_at timestamptz
+);
+
+create index if not exists roadmap_steps_task on public.roadmap_steps (task_id, position);
+
+alter table public.roadmap_steps enable row level security;
+drop policy if exists "roadmap_steps: own all" on public.roadmap_steps;
+create policy "roadmap_steps: own all" on public.roadmap_steps
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- -------------------------------------------------------------- cv versions

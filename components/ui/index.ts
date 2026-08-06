@@ -37,6 +37,8 @@ export { Select } from "./Select";
 export type { SelectProps } from "./Select";
 export { ChoiceCard, ChoiceCardGroup } from "./ChoiceCard";
 export type { ChoiceCardProps, ChoiceCardGroupProps } from "./ChoiceCard";
+export { ViewSwitch } from "./ViewSwitch";
+export type { ViewSwitchProps, ViewSwitchOption } from "./ViewSwitch";
 
 // surfaces
 export { Panel } from "./Panel";

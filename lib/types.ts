@@ -232,6 +232,24 @@ export interface CVLine {
   text: string;
 }
 
+/**
+ * One sitting's work inside a task — the unpacking that makes an estimate
+ * trustworthy. Shaped so a later calendar sync is a mapping, not a rewrite:
+ * a title, a description, a duration (see lib/schedule.ts `PlannedBlock`).
+ */
+export interface RoadmapStep {
+  id: string;
+  position: number;
+  /** Imperative, one sitting: "Scaffold the repo". */
+  title: string;
+  /** What to literally do first, then why this step exists. */
+  detail: string;
+  /** Honest minute estimate for this one sitting. */
+  minutes: number;
+  done: boolean;
+  doneAt: string | null;
+}
+
 export interface RoadmapTask {
   id: string;
   position: number;
@@ -241,6 +259,14 @@ export interface RoadmapTask {
   category: TaskCategory;
   /** Human effort estimate, e.g. "2 weekends", "3 weeks of evenings". */
   effort: string;
+  /**
+   * Hours of work this task costs — the only input the schedule is built
+   * from. Roadmaps generated before dates existed have none, so readers fill
+   * from `defaultHours(category)` (lib/schedule.ts) rather than dropping them.
+   */
+  estimateHours: number;
+  /** 3–6 concrete steps. Empty on roadmaps generated before steps existed. */
+  steps: RoadmapStep[];
   done: boolean;
   doneAt: string | null;
   /** First task is always achievable this week. */
@@ -256,6 +282,14 @@ export interface Roadmap {
   tasks: RoadmapTask[];
   /** Footer when target is a stepping-stone: "This gets you to X. From there, Y becomes attainable." */
   dreamBeyond: string | null;
+  /**
+   * Day one of the plan, ISO date (`YYYY-MM-DD`). Weeks are 7-day blocks from
+   * here — never locale weeks, which would put US and UK users on different
+   * calendars. Re-planning from today rewrites this and nothing else.
+   */
+  startDate: string;
+  /** The weekly capacity the user chose. Dates are hours ÷ this. */
+  hoursPerWeek: number;
   generatedAt: string;
 }
 

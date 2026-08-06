@@ -12,13 +12,15 @@ import {
   StageReadout,
   useReducedMotion,
 } from "@/components/ui";
-import type { GenerationEvent, LockedTarget, Roadmap } from "@/lib/types";
+import type { GenerationEvent, LockedTarget, Roadmap, Tier } from "@/lib/types";
+import { PaceChooser } from "./PaceChooser";
 
 /**
- * The product's peak: the narrated generation moment. One gold CTA draws
- * the route; NDJSON stages stream in and type on as instrument readouts —
- * all kept visible, log-style — then the finished chart is handed over
- * (the parent swaps to RoadmapView with the route draw-in).
+ * The product's peak: the narrated generation moment. One question about
+ * weekly capacity, then one gold CTA draws the route; NDJSON stages stream in
+ * and type on as instrument readouts — all kept visible, log-style — then the
+ * finished chart is handed over (the parent swaps to RoadmapView with the
+ * route draw-in).
  *
  * Errors mid-stream keep the log, name the problem, and offer retry —
  * the locked target is never lost. Reduced motion: stages appear
@@ -27,10 +29,46 @@ import type { GenerationEvent, LockedTarget, Roadmap } from "@/lib/types";
 
 export interface GenerationMomentProps {
   target: LockedTarget;
+  /** The target's tier: it preselects the pace and sizes the estimate. */
+  tier: Tier | null;
+  /**
+   * Today as an ISO `YYYY-MM-DD`, resolved by the parent. Read here it would
+   * risk a hydration mismatch, and the finish date is the one readout that
+   * must not render two ways.
+   */
+  today: string;
   onComplete: (roadmap: Roadmap) => void;
 }
 
 type Phase = "idle" | "streaming" | "error";
+
+/**
+ * The pace to open on, by how far the target sits from the user today. A
+ * stretch target needs more of their week than a role they could apply for
+ * this Friday — this is a starting point, not a verdict, and every card stays
+ * one tap away.
+ */
+const TIER_PACE: Record<Tier, number> = {
+  ready: 4,
+  attainable: 8,
+  stretch: 12,
+};
+
+/**
+ * Midpoint of the total-effort band the prompt asks the model to aim its hours
+ * at (TIER_EFFORT_BAND in lib/gemini/prompts/roadmap.ts: 15–30 / 30–60 /
+ * 60–120). No task hours exist before generation, so the live finish date is
+ * reckoned from the same band the route will be drawn to — which is why the
+ * readout is hedged rather than stated.
+ */
+const TIER_HOURS: Record<Tier, number> = {
+  ready: 22.5,
+  attainable: 45,
+  stretch: 90,
+};
+
+/** No assessment on file: take the middle band rather than the flattering one. */
+const UNTIERED: Tier = "attainable";
 
 interface StageLine {
   key: string;
@@ -121,9 +159,17 @@ function PreviewChart({ targetTitle }: { targetTitle: string }) {
   );
 }
 
-export function GenerationMoment({ target, onComplete }: GenerationMomentProps) {
+export function GenerationMoment({
+  target,
+  tier,
+  today,
+  onComplete,
+}: GenerationMomentProps) {
   const reduced = useReducedMotion();
 
+  const [hoursPerWeek, setHoursPerWeek] = React.useState(
+    () => TIER_PACE[tier ?? UNTIERED],
+  );
   const [phase, setPhase] = React.useState<Phase>("idle");
   const [stages, setStages] = React.useState<StageLine[]>([]);
   const [typedCount, setTypedCount] = React.useState(0);
@@ -169,6 +215,11 @@ export function GenerationMoment({ target, onComplete }: GenerationMomentProps) 
     try {
       const res = await fetch("/api/roadmap/generate", {
         method: "POST",
+        headers: { "content-type": "application/json" },
+        // The only input the calendar is built from. The route clamps it to
+        // 1–60 and falls back to 8 on anything it cannot read, so a torn body
+        // still draws a route.
+        body: JSON.stringify({ hoursPerWeek }),
         signal: controller.signal,
       });
 
@@ -224,7 +275,7 @@ export function GenerationMoment({ target, onComplete }: GenerationMomentProps) 
       if ((err as Error)?.name === "AbortError") return;
       fail("The route couldn't be drawn. Your destination is still locked — try again.");
     }
-  }, []);
+  }, [hoursPerWeek]);
 
   // Hand the chart over once the log has fully typed out.
   const allTyped = typedCount >= stages.length && stages.length > 0;
@@ -293,6 +344,19 @@ export function GenerationMoment({ target, onComplete }: GenerationMomentProps) 
           </div>
         )}
       </ChartFrame>
+
+      {/* The one question the calendar is built from. It stays through the
+          error state so a retry can be re-paced, and goes while the route is
+          drawing — the answer is already in flight by then. */}
+      {phase !== "streaming" && (
+        <PaceChooser
+          value={hoursPerWeek}
+          onChange={setHoursPerWeek}
+          totalHours={TIER_HOURS[tier ?? UNTIERED]}
+          startDate={today}
+          today={today}
+        />
+      )}
 
       {phase === "idle" && (
         <Button size="lg" onClick={start} className="self-start">

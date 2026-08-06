@@ -1,10 +1,12 @@
 import "server-only";
 
 import { z } from "zod";
+import { TIER_LABEL } from "@/lib/types";
 import type {
   CVData,
   DreamInterpretation,
   QuestionnaireAnswers,
+  Tier,
 } from "@/lib/types";
 
 /**
@@ -14,7 +16,12 @@ import type {
  *  1. the "gaps" stage — name the 3 biggest gaps between this user and the
  *     locked target, grounded in the target's real missing[] requirements;
  *  2. the main call — draft 6–10 RoadmapTasks whose whys quote the user's
- *     verbatim dream words and cite real posting-requirement counts.
+ *     verbatim dream words and cite real posting-requirement counts, each
+ *     unpacked into 3–6 concrete steps and priced in hours.
+ *
+ * The model returns hours, never dates. lib/schedule.ts turns hours plus the
+ * user's own weekly capacity into a calendar, which is why a pace change can
+ * re-date a plan for free and without a second generation.
  *
  * Per docs/CONTRACTS.md every prompt that reasons about the user receives
  * and uses their verbatim `dream_text` and `quotedPhrases`.
@@ -225,11 +232,25 @@ const CVLineSchema = z.object({
   text: z.string().min(4).max(220),
 });
 
+/** One sitting's work. `minutes` is what makes a later calendar sync a mapping. */
+const DraftStepSchema = z.object({
+  title: z.string().min(4).max(90),
+  detail: z.string().min(20).max(320),
+  minutes: z.number().int().min(10).max(240),
+});
+
 const DraftTaskSchema = z.object({
   title: z.string().min(4).max(120),
   why: z.string().min(20).max(480),
   category: z.enum(["project", "skill", "certification", "experience"]),
-  effort: z.string().min(2).max(60),
+  // `effort` is deliberately NOT in this contract. The prose ("about 4 hours")
+  // is derived from estimateHours with formatEffort() in lib/schedule.ts when
+  // the route persists the task, so the number and the words can never
+  // disagree — a model asked for both would eventually hand back "2 weekends"
+  // sitting next to 1.5 hours, and the dates would be built on the number
+  // while the user read the words.
+  estimateHours: z.number().min(0.5).max(60),
+  steps: z.array(DraftStepSchema).min(3).max(6),
   cvLine: CVLineSchema.nullable().catch(null),
   position: z.number(),
   firstWeek: z.boolean().catch(false),
@@ -256,6 +277,42 @@ export const ROADMAP_SYSTEM =
 export interface RoadmapPromptContext extends PromptContext {
   /** The 3 named gaps from the gaps stage — the route must close them. */
   gaps: string[];
+  /**
+   * The locked target's tier from job_assessments, which sets the total-effort
+   * band below. Null when no assessment is on file for the target — the route
+   * then asks for honest estimates with no band at all rather than inventing
+   * one, since a wrong band is worse than none.
+   */
+  tier: Tier | null;
+}
+
+/**
+ * Total hours a whole route should come to, by how far the target sits from
+ * the user today. A stretch target that priced out the same as a role they
+ * could apply for this week would be lying about the climb.
+ *
+ * GUIDANCE, never a validator. Following the clamp-don't-reject convention in
+ * lib/gemini/prompts/cv.ts, a total outside its band is used as-is: a rejected
+ * generation costs the user their whole moment (and a slot against a 20/day
+ * quota), and only their own weekly pace turns these hours into dates anyway.
+ */
+const TIER_EFFORT_BAND: Record<Tier, { low: number; high: number }> = {
+  ready: { low: 15, high: 30 },
+  attainable: { low: 30, high: 60 },
+  stretch: { low: 60, high: 120 },
+};
+
+function serializeEffortBand(tier: Tier | null): string {
+  if (tier === null) {
+    return "No tier is on file for this target. Estimate every task honestly and let the total land where it lands.";
+  }
+  const band = TIER_EFFORT_BAND[tier];
+  return (
+    `This target is tiered "${TIER_LABEL[tier]}" for this user, so the whole route should come to roughly ` +
+    `${band.low}–${band.high} hours of focused work. Aim the sum of estimateHours at that band.\n` +
+    "This is guidance, not a rule: if an honest estimate for a task falls outside it, keep the honest number. " +
+    "Never pad a task to reach the band, and never shrink one to fit inside it."
+  );
 }
 
 export function buildRoadmapPrompt(ctx: RoadmapPromptContext): string {
@@ -289,17 +346,31 @@ ${serializeProfile(ctx.profile)}
 REAL POSTING DATA (cite these counts in whys — never invent numbers):
 ${serializeRequirementCounts(ctx.requirementCounts, ctx.totalAssessed)}
 
+HOW HEAVY THIS ROUTE SHOULD BE:
+${serializeEffortBand(ctx.tier)}
+
 Each task object:
 - "title": imperative and specific, ≤ 10 words (e.g. "Ship a public TypeScript project").
 - "why": 1–3 sentences, second person. Every why must tie the task to named evidence from THEIR profile (a real skill, project, or role by name) AND to the target's real requirements — cite the posting counts above where they exist ("X of ${ctx.totalAssessed || "N"} postings ask for…"). ${quoteRule}
 - "category": one of "project" | "skill" | "certification" | "experience".
-- "effort": a human estimate like "2 weekends", "3 weeks of evenings", "1 evening".
+- "estimateHours": honest hours of focused work for the whole task, 0.5 to 60. Their calendar is computed from this number, so a flattering estimate becomes a date they miss.
+- "steps": 3 to 6 step objects that unpack the task — see the rules below.
 - "cvLine": { "section": "experience" | "skills" | "projects" | "education", "text": a FINISHED CV line exactly as it will appear once the task is done — concrete, first-person-implied, quantified where honest. Never a placeholder. Always provide it.
 - "position": 1-based order along the route.
 - "firstWeek": true on the FIRST task only.
 
+Unpacking each task into steps — this is where the plan becomes doable:
+- Each step is ONE SITTING: something they start and finish in one go.
+- Name the concrete thing — the tool, the site, the file, the person to email, the number to hit. "Open a public GitHub repo and push a Vite + TypeScript starter" beats "set up version control".
+- Never write a bare "research", "explore", "learn about" or "look into" step. Those verbs are allowed only when the step ends in a named artifact ("read three of the postings above and write the two requirements all three share into a note").
+- "title": imperative, ≤ 90 characters, one sitting's work (e.g. "Scaffold the repo").
+- "detail": 1–2 sentences, second person, the same voice as "why". Say what to do FIRST, then why this step exists (e.g. "Run \`npm create vite@latest\` and pick the TypeScript template. Recruiters open the README before they open the code.").
+- "minutes": 10 to 240, honest for that one sitting.
+- The step minutes must sum to within ±20% of that task's estimateHours × 60. If they don't, change the estimate or change the steps until they do.
+- Steps carry the HOW. "why" keeps carrying why the task matters — leave the profile evidence, the posting counts and the verbatim quotes in "why", and do not repeat them in the steps.
+
 Ordering rules:
-- Task 1 must be genuinely achievable within one week from a standing start, and firstWeek must be true on it alone.
+- Task 1 must be genuinely achievable within one week from a standing start, and firstWeek must be true on it alone. Keep its estimateHours among the smallest in the set.
 - Sequence nearest-first: quick wins early, the heaviest gap-closers later, so the route feels climbable.
 - Cover all 3 named gaps across the set. 6 tasks minimum, 10 maximum.
 
