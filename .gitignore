@@ -48,3 +48,6 @@ tmp-*.mjs
 
 .vercel
 .env*
+
+# Supabase CLI link state — machine-local, and pooler-url carries credentials
+supabase/.temp/
